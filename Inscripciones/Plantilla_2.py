@@ -3,7 +3,9 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import sqlite3
-'''probando si esta verga se sincroniza con git'''
+'''probando si esta verga se sincroniza con git
+    ha funcionado, ahora a probar si se sincroniza con git hub'''
+
 
 class Inscripciones_2:
     def __init__(self, master=None):
