@@ -4,6 +4,8 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import sqlite3
 
+class prueba2:
+    pass
 class Inscripciones:
     def __init__(self, master=None):
         # Vewntan principal
