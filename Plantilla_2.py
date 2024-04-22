@@ -3,8 +3,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import sqlite3
-class prueba:
-    pass
 
 class Inscripciones_2:
     def __init__(self, master=None):
