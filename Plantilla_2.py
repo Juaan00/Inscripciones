@@ -3,6 +3,8 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import sqlite3
+from tkcalendar import DateEntry
+import datetime
 class prueba:
     pass
 
@@ -33,10 +35,42 @@ class Inscripciones_2:
         self.lblFecha = ttk.Label(self.frm_1, name="lblfecha")
         self.lblFecha.configure(background="#f7f9fd", text='Fecha:')
         self.lblFecha.place(anchor="nw", x=630, y=80)
-        #Entry Fecha
-        self.fecha = ttk.Entry(self.frm_1, name="fecha")
+
+        self.fecha = DateEntry(self.frm_1,locale = 'es_Es', date_pattern = 'dd/mm/yyyy')
         self.fecha.configure(justify="center")
         self.fecha.place(anchor="nw", width=90, x=680, y=80)
+        def cuandoEscriba(event): 
+            if event.char.isdigit():
+                texto = self.fecha.get()
+                letras = 0 #verifica el numero de digitos
+                for i in texto:
+                    letras +=1
+                if len(self.fecha.get()) > 9: #es 9 ya que al ingresar algo nuevo, primero aplica y luego verifica
+                    self.fecha.delete(9, tk.END)
+
+                if letras == 2:
+                    self.fecha.insert(2,"/")
+                elif letras == 5:
+                    self.fecha.insert(5,"/")
+            else:
+                return "break"
+        def validarFecha(event):
+            try:
+                self.vFecha = self.fecha.get()
+                #compara el formato del texto con el formato y las fechas de libreria
+                self.vFecha = datetime.datetime.strptime(self.vFecha,'%d/%m/%Y') 
+                print ('fecha valida')
+            except ValueError:
+                print ('Error: Digite una fecha valida')
+
+        #cuando oprima una tecla cualquiera, ejecuta
+        self.fecha.bind("<Key>", cuandoEscriba) 
+
+        #evita que valide el borrar como digito
+        self.fecha.bind("<BackSpace>", lambda _:self.fecha.delete(tk.END)) 
+        self.fecha.bind("<Return>", validarFecha)
+        self.fecha.bind("<Tab>", validarFecha)
+
         #Label Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
         self.lblIdAlumno.configure(background="#f7f9fd", text='Id Alumno:')
