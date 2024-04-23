@@ -3,10 +3,13 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import sqlite3
+<<<<<<< HEAD
 from tkcalendar import DateEntry
 import datetime
 class prueba:
     pass
+=======
+>>>>>>> 984f9fd2f4d9a077fad041066207fb8a42427410
 
 class Inscripciones_2:
     def __init__(self, master=None):
