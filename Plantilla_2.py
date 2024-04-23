@@ -3,13 +3,11 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import sqlite3
-<<<<<<< HEAD
 from tkcalendar import DateEntry
 import datetime
+import ctypes
 class prueba:
     pass
-=======
->>>>>>> 984f9fd2f4d9a077fad041066207fb8a42427410
 
 class Inscripciones_2:
     def __init__(self, master=None):
@@ -20,6 +18,9 @@ class Inscripciones_2:
         self.win.geometry("800x600")
         self.win.resizable(False, False)
         self.win.title("Inscripciones de Materias y Cursos")
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('Inscripciones')
+        self.win.iconbitmap('img\LogoinscripcionesIco.ico')
+
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
         self.frm_1.configure(background="#f7f9fd", height=600, width=800)
