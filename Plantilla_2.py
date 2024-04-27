@@ -6,20 +6,40 @@ import sqlite3
 from tkcalendar import DateEntry
 import datetime
 import ctypes
+from pathlib import Path
+
 class prueba:
     pass
 
+
+PATH = str((Path(__file__).resolve()).parent)
+ICONO = r"/img/LogoinscripcionesIco.ico"
+DB = r""
+
+
 class Inscripciones_2:
+
+        
     def __init__(self, master=None):
          # Ventana principal
         self.db_name = 'Inscripciones.db'    
         self.win = tk.Tk(master)
+
+        def centrar(win, ancho, alto):
+             self.altura_pantalla = win.winfo_screenheight()
+             self.ancho_pantalla = win.winfo_screenwidth()
+
+             self.x = (self.ancho_pantalla // 2) - (ancho // 2)
+             self.y = (self.altura_pantalla // 2) - (alto // 2)
+
         self.win.configure(background="#f7f9fd", height=600, width=800)
-        self.win.geometry("800x600")
+        centrar(self.win, 800, 600)
+        self.win.geometry(f"+{self.x}+{self.y}")
         self.win.resizable(False, False)
+        
         self.win.title("Inscripciones de Materias y Cursos")
         ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('Inscripciones')
-        self.win.iconbitmap('img\LogoinscripcionesIco.ico')
+        self.win.iconbitmap(PATH + ICONO)
 
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
@@ -117,9 +137,10 @@ class Inscripciones_2:
         self.lblHorario.configure(background="#f7f9fd",state="normal",text='Hora:')
         self.lblHorario.place(anchor="nw", x=635, y=185)
         #Entry del Horario
-        self.horario = ttk.Entry(self.frm_1, name="entry3")
-        self.horario.configure(justify="left", width=166)
-        self.horario.place(anchor="nw", width=100, x=680, y=185)
+        self.horario = ttk.Combobox(self.frm_1, name="entry6")
+        self.horas = ("7:00am-9:00am","9:00am-11:00am","11:00am-12:00pm","2:00pm-4:00pm","4:00pm-6:00pm","6:00pm-8:00pm")
+        self.cmbx_horario = ttk.Combobox(self.frm_1, name="cmbx_horas", values=self.horas)
+        self.cmbx_horario.place(anchor="nw", width=120, x=670, y=185)
 
         ''' Botones  de la Aplicación'''
         #Botón Guardar
