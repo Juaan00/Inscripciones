@@ -13,6 +13,8 @@ ICONO = r"/img/LogoinscripcionesIco.ico"
 DB = r""
 
 
+class Inscripciones:
+    pass
 class Inscripciones_2:
 
         
