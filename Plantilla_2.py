@@ -11,8 +11,8 @@ from pathlib import Path
 PATH = str((Path(__file__).resolve()).parent)
 ICONO = r"/img/LogoinscripcionesIco.ico"
 DB = r""
-class Inscripciones:
-    pass
+
+
 class Inscripciones_2:
 
         
