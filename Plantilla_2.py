@@ -12,9 +12,6 @@ PATH = str((Path(__file__).resolve()).parent)
 ICONO = r"/img/LogoinscripcionesIco.ico"
 DB = r""
 
-class Probando_rama_secundaria:
-    print("Probando rama secundaria")
-
 class Inscripciones_2:
 
         
