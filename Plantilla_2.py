@@ -13,7 +13,7 @@ ICONO = r"/img/LogoinscripcionesIco.ico"
 DB = r""
 
 class Probando_rama_secundaria:
-    pass
+    print("Probando rama secundaria")
 
 class Inscripciones_2:
 
