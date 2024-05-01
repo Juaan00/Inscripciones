@@ -1,18 +1,22 @@
 # !/usr/bin/python3
 # -*- coding: utf-8 -*-
 import tkinter as tk
-from tkinter import ttk
+import tkinter.ttk as ttk
 import sqlite3
-from tkcalendar import DateEntry
+#from tkcalendar import DateEntry
+from tkinter import messagebox
 import datetime
 import ctypes
 from pathlib import Path
 
 PATH = str((Path(__file__).resolve()).parent)
-ICONO = r"/img/LogoinscripcionesIco.ico"
+ICONO = r"/img/LogoinscripcionesIco.png"
 DB = r""
 
-class Inscripciones_2: 
+
+class Inscripciones_2:
+
+        
     def __init__(self, master=None):
          # Ventana principal
         self.db_name = 'Inscripciones.db'    
@@ -31,8 +35,10 @@ class Inscripciones_2:
         self.win.resizable(False, False)
         
         self.win.title("Inscripciones de Materias y Cursos")
-        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('Inscripciones')
-        self.win.iconbitmap(PATH + ICONO)
+        #ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('Inscripciones')
+        #self.win.iconbitmap(PATH + ICONO)
+        #icono = ttk.PhotoImage(file= PATH + ICONO)
+        #self.win.wm_iconphoto(False, icono)
 
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
@@ -53,24 +59,64 @@ class Inscripciones_2:
         self.lblFecha.configure(background="#f7f9fd", text='Fecha:')
         self.lblFecha.place(anchor="nw", x=630, y=80)
 
-        self.fecha = DateEntry(self.frm_1,locale = 'es_Es', date_pattern = 'dd/mm/yyyy')
+        self.fecha = tk.Entry(self.frm_1, name="fechas")
         self.fecha.configure(justify="center")
         self.fecha.place(anchor="nw", width=90, x=680, y=80)
-        def cuandoEscriba(event): 
-            if event.char.isdigit():
-                texto = self.fecha.get()
-                letras = 0 #verifica el numero de digitos
-                for i in texto:
-                    letras +=1
-                if len(self.fecha.get()) > 9: #es 9 ya que al ingresar algo nuevo, primero aplica y luego verifica
-                    self.fecha.delete(9, tk.END)
+        # def cuandoEscriba(event): 
+        #     if event.char.isdigit():
+        #         texto = self.fecha.get()
+        #         letras = 0 #verifica el numero de digitos
+        #         for i in texto:
+        #             letras +=1
+        #         if len(self.fecha.get()) > 9: #es 9 ya que al ingresar algo nuevo, primero aplica y luego verifica
+        #             self.fecha.delete(9, tk.END)
 
-                if letras == 2:
+        #         if letras == 2:
+        #             self.fecha.insert(2,"/")
+        #         elif letras == 5:
+        #             self.fecha.insert(5,"/")
+        #     else:
+        #         return "break"
+            
+        self.act_date = False
+
+        def cuandoEscriba(event):
+            #global act_date
+            if event.char.isdigit() or event.char =='/':
+                fechaRef = self.fecha.get()
+                if len(fechaRef) == 2 or len(fechaRef) ==5:
+                    self.act_date = True
+
+                if len(fechaRef) == 2:
                     self.fecha.insert(2,"/")
-                elif letras == 5:
+                    
+                if len(fechaRef) == 5:
                     self.fecha.insert(5,"/")
+            if event.char.isdigit() or event.char =='\x08' or event.char =='': # \x08 = Backspace, '' = Delete
+                self.act_date=True
+
+        def limite(event):
+            fechaRef = self.fecha.get()
+            #print (fecha)
+            try:
+                if len(fechaRef) > 10:
+                    raise ValueError("digite maximo 8 numeros")
+            except ValueError as problem:
+                messagebox.showerror("Error", str(problem))
+                self.fecha.delete(10, tk.END)
+
+        def verificarNumeros(char):
+            #global act_date
+
+            if self.act_date:
+                self.act_date = False 
+                return char.isdigit() or char == '/'
             else:
-                return "break"
+                if char == '/' and self.act_date:
+                    return char.isdigit() or char == '/'
+                else:
+                    return char.isdigit()
+
         def validarFecha(event):
             try:
                 self.vFecha = self.fecha.get()
@@ -78,15 +124,24 @@ class Inscripciones_2:
                 self.vFecha = datetime.datetime.strptime(self.vFecha,'%d/%m/%Y') 
                 print ('fecha valida')
             except ValueError:
-                print ('Error: Digite una fecha valida')
+                messagebox.showerror("Error", 'Digite un formato de fecha valida')
+                #print ('Error: Digite una fecha valida')
 
         #cuando oprima una tecla cualquiera, ejecuta
         self.fecha.bind("<Key>", cuandoEscriba) 
-
+        ##############################################################
         #evita que valide el borrar como digito
-        self.fecha.bind("<BackSpace>", lambda _:self.fecha.delete(tk.END)) 
+        #self.fecha.bind("<BackSpace>", lambda _:self.fecha.delete(tk.END)) 
+
         self.fecha.bind("<Return>", validarFecha)
         self.fecha.bind("<Tab>", validarFecha)
+        #self.fecha.bind("<FocusOut>", validarFecha)#no borrar
+
+        ############################################################
+        self.fecha.bind("<Key>", cuandoEscriba)
+        self.fecha.validate_cmd = self.frm_1.register(verificarNumeros)
+        self.fecha.config(validate="key", validatecommand=(self.fecha.validate_cmd,"%S"))
+        self.fecha.bind("<KeyRelease>", limite)
 
         #Label Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
@@ -97,18 +152,20 @@ class Inscripciones_2:
         self.cmbx_Id_Alumno.place(anchor="nw", width=112, x=100, y=80)
         #Label Alumno
         self.lblNombres = ttk.Label(self.frm_1, name="lblnombres")
-        self.lblNombres.configure(text='Nombre(s):')
+        self.lblNombres.configure(background="#f7f9fd",text='Nombre(s):')
         self.lblNombres.place(anchor="nw", x=20, y=130)
         #Entry Alumno
-        self.nombres = ttk.Entry(self.frm_1, name="nombres")
+        self.nombres = ttk.Entry(self.frm_1, name="nombres", state='readonly')
         self.nombres.place(anchor="nw", width=200, x=100, y=130)
         #Label Apellidos
         self.lblApellidos = ttk.Label(self.frm_1, name="lblapellidos")
-        self.lblApellidos.configure(text='Apellido(s):')
+        self.lblApellidos.configure(background="#f7f9fd", text='Apellido(s):')
         self.lblApellidos.place(anchor="nw", x=400, y=130)
         #Entry Apellidos
         self.apellidos = ttk.Entry(self.frm_1, name="apellidos")
         self.apellidos.place(anchor="nw", width=200, x=485, y=130)
+        self.apellidos.insert(0,"apellisodss")
+        self.apellidos.config(state='readonly')
         #Label Curso
         self.lblIdCurso = ttk.Label(self.frm_1, name="lblidcurso")
         self.lblIdCurso.configure(background="#f7f9fd",state="normal",text='Id Curso:')
@@ -122,7 +179,7 @@ class Inscripciones_2:
         self.lblDscCurso.configure(background="#f7f9fd",state="normal",text='Curso:')
         self.lblDscCurso.place(anchor="nw", x=275, y=185)
         #Entry de Descripción del Curso 
-        self.descripc_Curso = ttk.Entry(self.frm_1, name="descripc_curso")
+        self.descripc_Curso = ttk.Entry(self.frm_1, name="descripc_curso", state='readonly')
         self.descripc_Curso.configure(justify="left", width=166)
         self.descripc_Curso.place(anchor="nw", width=300, x=325, y=185)
         #Label Horario
@@ -150,9 +207,32 @@ class Inscripciones_2:
         self.btnEliminar.configure(text='Eliminar')
         self.btnEliminar.place(anchor="nw", x=360, y=260, width=80)
         #Botón Cancelar
-        self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar", cursor="hand2")
+
+        def limpiar():
+            self.num_Inscripcion.delete(0,tk.END)
+            self.fecha.delete(0, tk.END)
+            self.cmbx_Id_Alumno.delete(0,tk.END)
+            self.id_Curso.delete(0,tk.END)
+            self.cmbx_horario.delete(0,tk.END)
+
+            # al estar ReadOnly 
+            self.nombres.config(state="Normal")
+            self.nombres.delete(0,tk.END)
+            self.nombres.config(state='readonly')
+            
+            self.apellidos.config(state='normal')
+            self.apellidos.delete(0,tk.END)
+            self.apellidos.config(state='readonly')
+
+            self.descripc_Curso.config(state="Normal")
+            self.descripc_Curso.delete(0,tk.END)
+            self.descripc_Curso.config(state='readonly')
+
+        self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar", command= limpiar, cursor="hand2")
         self.btnCancelar.configure(text='Cancelar')
         self.btnCancelar.place(anchor="nw", x=465, y=260, width=80)
+
+        self.btnCancelar.bind()
         #Botón Grabar
         self.btnGrabar = ttk.Button(self.frm_1, name="btngrabar", cursor="hand2")
         self.btnGrabar.configure(text='Grabar')
