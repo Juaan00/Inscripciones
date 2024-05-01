@@ -167,9 +167,9 @@ class Inscripciones_2:
         self.tView_cols = ['Estudiante', 'Curso_descripcion','tV_descripción' ]
         
         self.tView.configure(columns=self.tView_cols)
-        self.tView.column("Estudiante",anchor="w",stretch=True,width=10,minwidth=10)
-        self.tView.column("Curso_descripcion",anchor="w",stretch=True,width=10,minwidth=10)
-        self.tView.column("tV_descripción",anchor="w",stretch=True,width=10,minwidth=10)
+        self.tView.column("Estudiante",anchor="w",stretch=True,width=20,minwidth=10)
+        self.tView.column("Curso_descripcion",anchor="w",stretch=True,width=20,minwidth=10)
+        self.tView.column("tV_descripción",anchor="w",stretch=True,width=20,minwidth=10)
         #Cabeceras
         self.tView.heading("Estudiante",anchor="w", text='Estudiante')
         self.tView.heading("Curso_descripcion",anchor="w", text='Curso')
@@ -195,7 +195,7 @@ class Inscripciones_2:
     ''' A partir de este punto se deben incluir las funciones
      para el manejo de la base de datos '''
     
-    conn=sqlite3.connect('..\db\Inscripciones.db')
+    conn=sqlite3.connect('db\Inscripciones.db')
     cursor =conn.cursor()
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Alumnos (
