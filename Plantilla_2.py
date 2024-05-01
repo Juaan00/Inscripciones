@@ -195,7 +195,7 @@ class Inscripciones_2:
     ''' A partir de este punto se deben incluir las funciones
      para el manejo de la base de datos '''
     
-    conn=sqlite3.connect(r'..\db\Inscripciones.db')
+    conn=sqlite3.connect('..\db\Inscripciones.db')
     cursor =conn.cursor()
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS Alumnos (
