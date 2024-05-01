@@ -194,18 +194,18 @@ class Inscripciones_2:
 
         ''' Botones  de la Aplicación'''
         #Botón Guardar
-        self.btnGuardar = ttk.Button(self.frm_1, name="btnguardar")
-        self.btnGuardar.configure(text='Guardar')
-        self.btnGuardar.place(anchor="nw", x=200, y=260)
+        self.btnConsultar = ttk.Button(self.frm_1, name="btnconsultar", cursor="hand2")
+        self.btnConsultar.configure(text='Consultar')
+        self.btnConsultar.place(anchor="nw", x=150, y=260, width=80)
         
         #Botón Editar
-        self.btnEditar = ttk.Button(self.frm_1, name="btneditar")
+        self.btnEditar = ttk.Button(self.frm_1, name="btneditar", cursor="hand2")
         self.btnEditar.configure(text='Editar')
-        self.btnEditar.place(anchor="nw", x=300, y=260)
+        self.btnEditar.place(anchor="nw", x=255, y=260,  width=80)
         #Botón Eliminar
-        self.btnEliminar = ttk.Button(self.frm_1, name="btneliminar")
+        self.btnEliminar = ttk.Button(self.frm_1, name="btneliminar", cursor="hand2")
         self.btnEliminar.configure(text='Eliminar')
-        self.btnEliminar.place(anchor="nw", x=400, y=260)
+        self.btnEliminar.place(anchor="nw", x=360, y=260, width=80)
         #Botón Cancelar
 
         def limpiar():
@@ -228,37 +228,50 @@ class Inscripciones_2:
             self.descripc_Curso.delete(0,tk.END)
             self.descripc_Curso.config(state='readonly')
 
-        self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar", command= limpiar)
+        self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar", command= limpiar, cursor="hand2")
         self.btnCancelar.configure(text='Cancelar')
-        self.btnCancelar.place(anchor="nw", x=500, y=260)
+        self.btnCancelar.place(anchor="nw", x=465, y=260, width=80)
 
         self.btnCancelar.bind()
+        #Botón Grabar
+        self.btnGrabar = ttk.Button(self.frm_1, name="btngrabar", cursor="hand2")
+        self.btnGrabar.configure(text='Grabar')
+        self.btnGrabar.place(anchor="nw", x=570, y=260, width=80)
         #Separador
         separator1 = ttk.Separator(self.frm_1)
         separator1.configure(orient="horizontal")
         separator1.place(anchor="nw", width=796, x=2, y=245)
 
         ''' Treeview de la Aplicación'''
+        def cancel(event):
+            return "break"
+
         #Treeview
-        self.tView = ttk.Treeview(self.frm_1, name="tview")
+        self.tView = ttk.Treeview(self.frm_1, name="tview",show='headings')
+        
         self.tView.configure(selectmode="extended")
         #Columnas del Treeview
-        self.tView_cols = ['tV_descripción']
-        self.tView_dcols = ['tV_descripción']
-        self.tView.configure(columns=self.tView_cols,displaycolumns=self.tView_dcols)
-        self.tView.column("#0",anchor="w",stretch=True,width=10,minwidth=10)
-        self.tView.column("tV_descripción",anchor="w",stretch=True,width=200,minwidth=50)
+        self.tView_cols = ['Codigo', 'Curso_descripcion','tV_descripción', 'Horario' ]
+        self.tView.bind("<Button-1>", cancel, add="+")
+        self.tView.configure(columns=self.tView_cols)
+        self.tView.column("#0", width=0)
+        self.tView.column("Codigo",anchor="w",stretch=False,width=181)
+        self.tView.column("Curso_descripcion",anchor="w",stretch=False,width=181)
+        self.tView.column("tV_descripción",anchor="w",stretch=False,width=181)
+        self.tView.column("Horario",anchor="w",stretch=False,width=181)
         #Cabeceras
-        self.tView.heading("#0", anchor="w", text='Curso')
+        self.tView.heading("Codigo",anchor="w", text='Código')
+        self.tView.heading("Curso_descripcion",anchor="w", text='Curso')
         self.tView.heading("tV_descripción", anchor="w", text='Descripción')
-        self.tView.place(anchor="nw", height=300, width=790, x=4, y=300)
+        self.tView.heading("Horario", anchor="w", text='Horario')
+        self.tView.place(anchor="nw", height=250, width=740, x=30, y=300)
         #Scrollbars
         self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
         self.scroll_H.configure(orient="horizontal")
-        self.scroll_H.place(anchor="s", height=12, width=1534, x=15, y=595)
+        self.scroll_H.place(anchor="nw", height=15, width=724, x=31, y=534)
         self.scroll_Y = ttk.Scrollbar(self.frm_1, name="scroll_y")
         self.scroll_Y.configure(orient="vertical")
-        self.scroll_Y.place(anchor="s", height=275, width=12, x=790, y=582)
+        self.scroll_Y.place(anchor="nw", height=248, width=16, x=753, y=301)
         self.frm_1.pack(side="top")
         self.frm_1.pack_propagate(0)
 
