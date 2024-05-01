@@ -162,13 +162,14 @@ class Inscripciones_2:
         #Treeview
         self.tView = ttk.Treeview(self.frm_1, name="tview")
         self.item1=self.tView.insert("",'end', text='Curso 1', values=('Curso 1'))
-        self.tView.insert(self.item1,'end', text='Curso 1')
         self.tView.configure(selectmode="extended")
         #Columnas del Treeview
-        self.tView_cols = ['tV_descripción']
+        self.tView_cols = ['Estudiante', 'Curso_descripcion','tV_descripción' ]
+        
         self.tView.configure(columns=self.tView_cols)
-        self.tView.column("#0",anchor="w",stretch=True,width=10,minwidth=10)
-        self.tView.column("tV_descripción",anchor="w",stretch=True,width=200,minwidth=50)
+        self.tView.column("Estudiante",anchor="w",stretch=True,width=10,minwidth=10)
+        self.tView.column("Curso_descripcion",anchor="w",stretch=True,width=10,minwidth=10)
+        self.tView.column("tV_descripción",anchor="w",stretch=True,width=10,minwidth=10)
         #Cabeceras
         self.tView.heading("Estudiante",anchor="w", text='Estudiante')
         self.tView.heading("Curso_descripcion",anchor="w", text='Curso')
@@ -194,10 +195,10 @@ class Inscripciones_2:
     ''' A partir de este punto se deben incluir las funciones
      para el manejo de la base de datos '''
     
-    conn=sqlite3.connect('..\\db\\Inscripciones.db')
+    conn=sqlite3.connect(r'..\db\Inscripciones.db')
     cursor =conn.cursor()
     cursor.execute("""
-    CREATE TABLE Alumnos (
+    CREATE TABLE IF NOT EXISTS Alumnos (
         id INTEGER PRIMARY KEY,
         nombre TEXT,
         apellido TEXT,
@@ -205,7 +206,7 @@ class Inscripciones_2:
     )
     """)
     cursor.execute("""
-    CREATE TABLE Carreras (
+    CREATE TABLE IF NOT EXISTS Carreras (
         id INTEGER PRIMARY KEY,
         nombre TEXT,
         apellido TEXT,
@@ -213,7 +214,7 @@ class Inscripciones_2:
     )
     """)
     cursor.execute("""
-    CREATE TABLE Cursos (
+    CREATE TABLE IF NOT EXISTS Cursos (
         id INTEGER PRIMARY KEY,
         nombre TEXT,
         apellido TEXT,
@@ -221,7 +222,7 @@ class Inscripciones_2:
     )
     """)
     cursor.execute("""
-    CREATE TABLE Inscritos (
+    CREATE TABLE IF NOT EXISTS Inscritos (
         id INTEGER PRIMARY KEY,
         nombre TEXT,
         apellido TEXT,
