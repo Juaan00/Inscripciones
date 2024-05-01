@@ -1,7 +1,7 @@
 # !/usr/bin/python3
 # -*- coding: utf-8 -*-
 import tkinter as tk
-import tkinter.ttk as ttk
+from tkinter import ttk
 import sqlite3
 from tkcalendar import DateEntry
 import datetime
@@ -12,12 +12,7 @@ PATH = str((Path(__file__).resolve()).parent)
 ICONO = r"/img/LogoinscripcionesIco.ico"
 DB = r""
 
-
-class Inscripciones:
-    pass
-class Inscripciones_2:
-
-        
+class Inscripciones_2: 
     def __init__(self, master=None):
          # Ventana principal
         self.db_name = 'Inscripciones.db'    
@@ -166,15 +161,17 @@ class Inscripciones_2:
         ''' Treeview de la Aplicación'''
         #Treeview
         self.tView = ttk.Treeview(self.frm_1, name="tview")
+        self.item1=self.tView.insert("",'end', text='Curso 1', values=('Curso 1'))
+        self.tView.insert(self.item1,'end', text='Curso 1')
         self.tView.configure(selectmode="extended")
         #Columnas del Treeview
         self.tView_cols = ['tV_descripción']
-        self.tView_dcols = ['tV_descripción']
-        self.tView.configure(columns=self.tView_cols,displaycolumns=self.tView_dcols)
+        self.tView.configure(columns=self.tView_cols)
         self.tView.column("#0",anchor="w",stretch=True,width=10,minwidth=10)
         self.tView.column("tV_descripción",anchor="w",stretch=True,width=200,minwidth=50)
         #Cabeceras
-        self.tView.heading("#0", anchor="w", text='Curso')
+        self.tView.heading("Estudiante",anchor="w", text='Estudiante')
+        self.tView.heading("Curso_descripcion",anchor="w", text='Curso')
         self.tView.heading("tV_descripción", anchor="w", text='Descripción')
         self.tView.place(anchor="nw", height=300, width=790, x=4, y=300)
         #Scrollbars
@@ -196,6 +193,43 @@ class Inscripciones_2:
 
     ''' A partir de este punto se deben incluir las funciones
      para el manejo de la base de datos '''
+    
+    conn=sqlite3.connect('..\\db\\Inscripciones.db')
+    cursor =conn.cursor()
+    cursor.execute("""
+    CREATE TABLE Alumnos (
+        id INTEGER PRIMARY KEY,
+        nombre TEXT,
+        apellido TEXT,
+        grado INTEGER
+    )
+    """)
+    cursor.execute("""
+    CREATE TABLE Carreras (
+        id INTEGER PRIMARY KEY,
+        nombre TEXT,
+        apellido TEXT,
+        grado INTEGER
+    )
+    """)
+    cursor.execute("""
+    CREATE TABLE Cursos (
+        id INTEGER PRIMARY KEY,
+        nombre TEXT,
+        apellido TEXT,
+        grado INTEGER
+    )
+    """)
+    cursor.execute("""
+    CREATE TABLE Inscritos (
+        id INTEGER PRIMARY KEY,
+        nombre TEXT,
+        apellido TEXT,
+        grado INTEGER
+    )
+    """)
+    conn.commit()
+    conn.close()
 
 if __name__ == "__main__":
     app = Inscripciones_2()
