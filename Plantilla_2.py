@@ -9,10 +9,6 @@ import datetime
 import ctypes
 from pathlib import Path
 
-class prueba:
-    pass
-
-
 PATH = str((Path(__file__).resolve()).parent)
 ICONO = r"/img/LogoinscripcionesIco.png"
 DB = r""
