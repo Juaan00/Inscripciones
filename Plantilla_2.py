@@ -171,25 +171,27 @@ class Inscripciones_2:
         
         self.tView.configure(selectmode="extended")
         #Columnas del Treeview
-        self.tView_cols = ['Estudiante', 'Curso_descripcion','tV_descripción' ]
+        self.tView_cols = ['Codigo', 'Curso_descripcion','tV_descripción', 'Horario' ]
         self.tView.bind("<Button-1>", cancel, add="+")
         self.tView.configure(columns=self.tView_cols)
         self.tView.column("#0", width=0)
-        self.tView.column("Estudiante",anchor="w",stretch=False,width=241)
-        self.tView.column("Curso_descripcion",anchor="w",stretch=False,width=241)
-        self.tView.column("tV_descripción",anchor="w",stretch=False,width=241)
+        self.tView.column("Codigo",anchor="w",stretch=False,width=181)
+        self.tView.column("Curso_descripcion",anchor="w",stretch=False,width=181)
+        self.tView.column("tV_descripción",anchor="w",stretch=False,width=181)
+        self.tView.column("Horario",anchor="w",stretch=False,width=181)
         #Cabeceras
-        self.tView.heading("Estudiante",anchor="w", text='Estudiante')
+        self.tView.heading("Codigo",anchor="w", text='Código')
         self.tView.heading("Curso_descripcion",anchor="w", text='Curso')
         self.tView.heading("tV_descripción", anchor="w", text='Descripción')
+        self.tView.heading("Horario", anchor="w", text='Horario')
         self.tView.place(anchor="nw", height=250, width=740, x=30, y=300)
         #Scrollbars
         self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
         self.scroll_H.configure(orient="horizontal")
-        self.scroll_H.place(anchor="nw", height=15, width=723, x=31, y=534)
+        self.scroll_H.place(anchor="nw", height=15, width=724, x=31, y=534)
         self.scroll_Y = ttk.Scrollbar(self.frm_1, name="scroll_y")
         self.scroll_Y.configure(orient="vertical")
-        self.scroll_Y.place(anchor="nw", height=248, width=15, x=754, y=301)
+        self.scroll_Y.place(anchor="nw", height=248, width=16, x=753, y=301)
         self.frm_1.pack(side="top")
         self.frm_1.pack_propagate(0)
 
