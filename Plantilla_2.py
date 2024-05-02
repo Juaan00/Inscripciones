@@ -54,7 +54,7 @@ class Inscripciones_2:
         self.lblNoInscripcion.configure(background="#f7f9fd", text='No.Inscripción:')
         self.lblNoInscripcion.place(anchor="nw", x=20, y=185)
         #Conmbox No. Inscripción
-        self.noInscripcion = ttk.Combobox(self.frm_1, name="noInscripcion", state='disable')
+        self.noInscripcion = ttk.Entry(self.frm_1, name="noInscripcion", state='readonly')
         self.noInscripcion.place(anchor="nw", width=100, x=120, y=185)
 
         #Label Fecha
@@ -79,7 +79,7 @@ class Inscripciones_2:
         self.lblIdAlumno.configure(background="#f7f9fd", text='Id Alumno:')
         self.lblIdAlumno.place(anchor="nw", x=20, y=20)
         #Combobox id_Alumno
-        self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno", state="normal")
+        self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno", state="readonly")
 
         self.cmbx_Id_Alumno.place(anchor="nw", width=100, x=100, y=20)
 
@@ -145,7 +145,7 @@ class Inscripciones_2:
         self.lblDscCurso.configure(background="#f7f9fd", state='readonly',text='Codigo del Curso:')
         self.lblDscCurso.place(anchor="nw", x=240, y=185)
         #Entry Codigo del Curso 
-        self.descripc_Curso = ttk.Entry(self.frm_1, name="descripc_curso", state='readonly')
+        self.descripc_Curso = ttk.Combobox(self.frm_1, name="descripc_curso", state='disabled')
         self.descripc_Curso.configure(justify="left", width=166)
         self.descripc_Curso.place(anchor="nw", width=300, x=350, y=185)
 
@@ -154,14 +154,12 @@ class Inscripciones_2:
         @staticmethod
         def activar_boton_grabar():
             self.btnGrabar.config(state="normal")
-
+        #Botón Consultar
         def add_consultar(entry, value):
             entry.config(state="normal")
             entry.delete(0, 'end')
             entry.insert(0, value)
             entry.config(state="readonly")
-
-        #Botón Consultar
 
 
         def consultar():
@@ -170,19 +168,19 @@ class Inscripciones_2:
                 messagebox.showerror("Inscripciones", "Debe seleccionar un alumno")
                 return
             else:
-                activar_boton_grabar()
+                self.cmbx_Id_Alumno.config(state="disabled")
                 self.btnConsultar.config(state="disabled")
                 for i in self.lista_alumnos:
                     if valor == i[0]:
                         add_consultar(self.cmbx_Id_Carrera, i[1])
                         add_consultar(self.nombres, i[2])
                         add_consultar(self.apellidos, i[3])
+                        add_consultar(self.fecha, i[4])
                         add_consultar(self.direccion, i[5])
-                        add_consultar(self.ciudad, i[8])
-                        add_consultar(self.departamento, i[9])
                         add_consultar(self.telCel, i[6])
                         add_consultar(self.telFijo, i[7])
-                        add_consultar(self.fecha, i[4])
+                        add_consultar(self.ciudad, i[8])
+                        add_consultar(self.departamento, i[9])
                         break
                 
 
@@ -192,9 +190,27 @@ class Inscripciones_2:
 
 
         #Botón Editar
-        self.btnEditar = ttk.Button(self.frm_1, name="btneditar", cursor="hand2")
+        def editar():
+            activar_boton_grabar()
+            if not self.is_fields_enabled:
+                self.nombres.config(state="normal")
+                self.apellidos.config(state="normal")
+                self.descripc_Curso.config(state="readonly")
+                self.fecha.config(state="normal")
+                self.cmbx_Id_Alumno.config(state="disabled")
+                self.cmbx_Id_Carrera.config(state="normal")
+                self.ciudad.config(state="normal")
+                self.departamento.config(state="normal")
+                self.direccion.config(state="normal")
+                self.telCel.config(state="normal")
+                self.telFijo.config(state="normal")
+                self.is_fields_enabled = True
+            else:
+                pass
+        self.btnEditar = ttk.Button(self.frm_1, name="btneditar", cursor="hand2", command=editar)
         self.btnEditar.configure(text='Editar')
         self.btnEditar.place(anchor="nw", x=255, y=260,  width=80)
+
         #Botón Eliminar
         self.btnEliminar = ttk.Button(self.frm_1, name="btneliminar", cursor="hand2")
         self.btnEliminar.configure(text='Eliminar')
@@ -229,22 +245,7 @@ class Inscripciones_2:
         #Botón Grabar
         #duncion para grabar
         def grabar():
-            if not self.is_fields_enabled:
-                self.nombres.config(state="normal")
-                self.apellidos.config(state="normal")
-                self.descripc_Curso.config(state="normal")
-                self.fecha.config(state="normal")
-                self.cmbx_Id_Alumno.config(state="normal")
-                self.cmbx_Id_Carrera.config(state="normal")
-                self.ciudad.config(state="normal")
-                self.departamento.config(state="normal")
-                self.direccion.config(state="normal")
-                self.telCel.config(state="normal")
-                self.telFijo.config(state="normal")
-                self.noInscripcion.config(state="normal")
-                self.is_fields_enabled = True
-            else:
-                pass
+            pass
         
 
         self.btnGrabar = ttk.Button(self.frm_1, name="btngrabar", cursor="hand2", command=grabar)
@@ -265,19 +266,21 @@ class Inscripciones_2:
         
         self.tView.configure(selectmode="extended")
         #Columnas del Treeview
-        self.tView_cols = ['NoInscripción', 'CódigoCurso','tV_descripción', 'Horas' ]
+        self.tView_cols = ['Alumno','NoInscripción', 'CódigoCurso','tV_descripción', 'Horas' ]
         self.tView.bind("<Button-1>", cancel, add="+")
         self.tView.configure(columns=self.tView_cols)
         self.tView.column("#0", width=0)
-        self.tView.column("NoInscripción",anchor="w",stretch=False,width=91)
-        self.tView.column("CódigoCurso",anchor="w",stretch=False,width=211)
-        self.tView.column("tV_descripción",anchor="w",stretch=False,width=211)
-        self.tView.column("Horas",anchor="w",stretch=False,width=211)
+        self.tView.column("Alumno",anchor="w",stretch=False,width=180)
+        self.tView.column("NoInscripción",anchor="w",stretch=False,width=92)
+        self.tView.column("CódigoCurso",anchor="w",stretch=False,width=180)
+        self.tView.column("tV_descripción",anchor="w",stretch=False,width=180)
+        self.tView.column("Horas",anchor="w",stretch=False,width=92)
         #Cabeceras
+        self.tView.heading("Alumno",anchor="w", text='Alumno')
         self.tView.heading("NoInscripción",anchor="w", text='No.Inscripción')
-        self.tView.heading("CódigoCurso",anchor="w", text='Código del Curso')
+        self.tView.heading("CódigoCurso",anchor="w", text='Código de Curso')
         self.tView.heading("tV_descripción", anchor="w", text='Descripción')
-        self.tView.heading("Horas", anchor="w", text='Número de Horas Semanales')
+        self.tView.heading("Horas", anchor="w", text='No.Horas')
         self.tView.place(anchor="nw", height=250, width=740, x=30, y=300)
         #Scrollbars
         self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
@@ -298,72 +301,6 @@ class Inscripciones_2:
 
     ''' A partir de este punto se deben incluir las funciones
      para el manejo de la base de datos '''
-
-# # cursor.executemany("INSERT INTO Carreras(Código_Carrera, Descripción, Num_Semestres) VALUES(?,?,?)", carreras)
-
-#     # cursor.execute("DELETE FROM Carreras")
-
-# def Inscribir_Curso():
-#         cursos = []
-#         entrada_1 = input("Ingrese los datos del curso en una sola linea separado por el símbolo #:     ").split("#")
-#         datos = tuple(entrada_1)
-#         print(datos)
-#         cursor.execute("INSERT INTO Cursos(Código_Curso, Descripción_Curso, Num_Horas) VALUES (?,?,?)", datos)
-        
-        
-#     #Inscribir_Curso()
-
-# def Obtener_Datos():
-#         opcion = input("Ingrese los datos de la tabla que desea recuperar:  ")
-#         cursor.execute(f" SELECT * FROM {opcion}")
-#         datos = cursor.fetchall()
-#         for i in datos:
-#             print(i)
-
-#     #Obtener_Datos()
-
-# def Obtener_Un_Dato():
-#         opción = input("Ingrese dato(s) que desea recuperar de la siguiente manera (Tabla&Columna&Valor):  ").split("&")
-#         # print(opción)
-#         cursor.execute(f" SELECT * FROM {opción[0]} WHERE {opción[1]} = '{opción[2]}' ")
-#         # cursor.execute(f" SELECT * FROM {opción[0]} WHERE Código_Curso = '{opción[1]}' ")
-#         # cursor.execute("SELECT * FROM Cursos WHERE Código_Curso = 'PYT-015' ")
-#         datos = cursor.fetchall()
-#         for i in datos:
-#             print(i)
-        
-#     #Obtener_Un_Dato()
-
-# def Eliminar_Un_Dato():
-#         opcion = input("Ingrese dato que desea eliminar de la siguiente manera (Tabla&Columna&Valor):   ").split("&")
-#         cursor.execute(f"DELETE FROM {opcion[0]} WHERE {opcion[1]} = '{opcion[2]}' ")
-#         print("El dato ha sido eliminado")
-
-#     #Eliminar_Un_Dato()
-
-# def Obtener_Info_Estudiante():
-#         info = []
-#         opcion = input("Ingrese el número de registro al que desea conocer la respectiva información")
-#         cursor.execute(f"SELECT * FROM Inscritos WHERE No_Inscritos = '{opcion}' ")
-#         datos = cursor.fetchall()
-#         info.append(datos[0])
-#         acciones = [f"SELECT * FROM Alumnos WHERE Id_Alumno = '{datos[0][1]}' ",
-#                     f"SELECT * FROM Cursos WHERE Código_Curso = '{datos[0][3]}' "
-#         ]
-#         for i in acciones:
-#             cursor.execute(i)
-#             datos_1 = cursor.fetchall()
-#             info.append(datos_1[0])
-#         cursor.execute(f"SELECT * FROM Carreras WHERE Código_Carrera = '{info[1][1]}' ")
-#         datos_2 = cursor.fetchall()
-#         info.append(datos_2[0])
-#         for i in info:
-#             print(i)
-#             # for u in i:
-#             #     print(u)
-#         print(info)
-
-#     #Obtener_Info_Estudiante()
  
     def run_sqlite(self):
         self.conn = sqlite3.connect('db\\Inscripciones.db')
@@ -468,6 +405,14 @@ class Inscripciones_2:
             str(i[0])
             self.lista_idalumnos.append(i[0])
         self.cmbx_Id_Alumno['values'] = self.lista_idalumnos
+    
+    def get_data_cursos(self):
+        self.cursor.execute("SELECT * FROM Cursos")
+        self.data = self.cursor.fetchall()
+        self.lista_cursos = []
+        for i in self.data:
+            self.lista_cursos.append(f'{str(i[0])}-{str(i[1])}')
+        self.descripc_Curso['values'] = self.lista_cursos
     def get_data_complete(self):
         self.cursor.execute("SELECT * FROM Alumnos")
         self.data = self.cursor.fetchall()
@@ -487,5 +432,6 @@ if __name__ == "__main__":
     app.run_sqlite()
     app.get_data_idalumno()
     app.get_data_complete()
+    app.get_data_cursos()
     app.run()
     app.close_sqlite()
