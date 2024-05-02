@@ -2,18 +2,20 @@ import sqlite3
 
 #No ejecutar aun
 
-conn = sqlite3.connect('Inscripciones.db')
+conn = sqlite3.connect('db/Inscripciones.db')
+
+conn.execute("PRAGMA foreign_keys = 1")
 
 cursor = conn.cursor()
 
+
 # cursor.execute('''CREATE TABLE IF NOT EXISTS  Inscritos(
-#     No_Inscritos INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-#     Id_Alumno VARCHAR(20) NOT NULL,
+#     No_Inscritos INTEGER PRIMARY KEY,
+#     Id_Alumno VARCHAR (20) NOT NULL,
 #     Fecha_de_Inscripción DATE NOT NULL,
 #     Código_Curso VARCHAR(20),
 #     FOREIGN KEY (Código_Curso) REFERENCES Cursos(Código_Curso),
 #     FOREIGN KEY (Id_Alumno) REFERENCES Alumnos(Id_Alumno)
-    
 # )''')
 
 # cursor.execute('''CREATE TABLE IF NOT EXISTS  Cursos(
@@ -33,7 +35,7 @@ cursor = conn.cursor()
 #     Id_Carrera VARCHAR(15) NOT NULL,
 #     Nombres VARCHAR(50),
 #     Apellidos VARCHAR(50),
-#     Fecha_Ingreso DATE,
+#     Fecha_Ingreso DATE NOT NULL,
 #     Dirección VARCHAR(60),
 #     Telef_Cel VARCHAR (18),
 #     Telef_Fijo VARCHAR (15),
@@ -98,18 +100,32 @@ cursor = conn.cursor()
 
 # cursor.executemany("INSERT INTO Alumnos(Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento) VALUES(?,?,?,?,?,?,?,?,?,?)", estudiantes)
 
-carreras = [
-    ('2544','Ingeniería Eléctrica','10'),
-    ('2545','Ingeniería Electrónica','10'),
-    ('2546','Ingeniería Industrial','10'),
-    ('2548','Ingeniería Mecatrónica','10'),
-    ('2549','Ingeniería Química','10'),
-    ('2879','Ingeniería de Sistemas','10')
-]
+# carreras = [
+#     ('2544','Ingeniería Eléctrica','10'),
+#     ('2545','Ingeniería Electrónica','10'),
+#     ('2546','Ingeniería Industrial','10'),
+#     ('2548','Ingeniería Mecatrónica','10'),
+#     ('2549','Ingeniería Química','10'),
+#     ('2879','Ingeniería de Sistemas','10')
+# ]
 
-cursor.executemany("INSERT INTO Carreras(Código_Carrera, Descripción, Num_Semestres) VALUES(?,?,?)", carreras)
+# cursor.executemany("INSERT INTO Carreras(Código_Carrera, Descripción, Num_Semestres) VALUES(?,?,?)", carreras)
 
-# cursor.execute("DELETE FROM Carreras")
+# cursor.execute("DELETE FROM Inscritos")
+# cursor.execute("INSERT INTO Inscritos(Id_Alumno,Fecha_de_Inscripción,Código_Curso) VALUES('5547157920','2024-05-05','1000026')")
+# cursor.execute("DROP TABLE IF EXISTS Alumnos")
+# cursor.execute("DELETE FROM Inscritos WHERE No_Inscritos = 1")
+
+# cursor.execute("ALTER TABLE Inscritos ADD COLUMN No_Inscrito INTEGER PRIMARY KEY DROP COLUMN No_Inscritos")
+
+def Nuevo_Inscrito():
+    # inscrito = []
+    entrada_1 = input("Ingrese los datos del inscrito en una sola linea separado por el símbolo &:     ").split("&")
+    datos = tuple(entrada_1)
+    print(datos)
+    cursor.execute("INSERT INTO Inscritos(Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES (?,?,?)", datos)
+
+Nuevo_Inscrito()
 
 def Inscribir_Curso():
     cursos = []
@@ -128,19 +144,40 @@ def Obtener_Datos():
     for i in datos:
         print(i)
 
-#Obtener_Datos()
+# Obtener_Datos()
+
+def Obtener_Datos_Columna():
+    # opcion = input("Ingrese los datos de la tabla/columna que desea recuperar separados por una &:  ").split("&")
+    # cursor.execute(f" SELECT {opcion[1]} FROM {opcion[0]}")
+    cursor.execute(f" SELECT Código_Curso FROM Inscritos WHERE Id_Alumno = '5547157920' ")
+    datos = cursor.fetchall()
+    lista_cursos = []
+    for i in datos:
+        lista_cursos += i
+    print(lista_cursos)
+
+Obtener_Datos_Columna()
 
 def Obtener_Un_Dato():
     opción = input("Ingrese dato(s) que desea recuperar de la siguiente manera (Tabla&Columna&Valor):  ").split("&")
     # print(opción)
-    cursor.execute(f" SELECT * FROM {opción[0]} WHERE {opción[1]} = '{opción[2]}' ")
+    cursor.execute(f" SELECT * FROM {opción[0]} WHERE {opción[1]} = {opción[2]} ")
     # cursor.execute(f" SELECT * FROM {opción[0]} WHERE Código_Curso = '{opción[1]}' ")
     # cursor.execute("SELECT * FROM Cursos WHERE Código_Curso = 'PYT-015' ")
     datos = cursor.fetchall()
+    lista = []
     for i in datos:
-        print(i)
-    
-#Obtener_Un_Dato()
+        lista += i
+    # cursor.execute(f"SELECT Nombres, Apellidos FROM Alumnos WHERE Id_Alumno = {lista[1]}")
+    # datos_1 = cursor.fetchall()
+    # for i in datos_1:
+    #     lista += i
+    # cursor.execute(f"SELECT Descripción_Curso FROM Cursos WHERE Código_Curso = '{lista[3]}'")
+    # datos_2 = cursor.fetchall()
+    # for i in datos_2:
+    #     lista += i
+    print(lista)
+# Obtener_Un_Dato()
 
 def Eliminar_Un_Dato():
     opcion = input("Ingrese dato que desea eliminar de la siguiente manera (Tabla&Columna&Valor):   ").split("&")
