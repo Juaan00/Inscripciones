@@ -181,7 +181,7 @@ class Inscripciones_2:
                         add_consultar(self.telFijo, i[7])
                         add_consultar(self.ciudad, i[8])
                         add_consultar(self.departamento, i[9])
-                        break
+                insert_data()
                 
 
         self.btnConsultar = ttk.Button(self.frm_1, name="btnconsultar", cursor="hand2", command=consultar)
@@ -272,8 +272,8 @@ class Inscripciones_2:
         self.tView.column("#0", width=0)
         self.tView.column("Alumno",anchor="w",stretch=False,width=180)
         self.tView.column("NoInscripción",anchor="w",stretch=False,width=92)
-        self.tView.column("CódigoCurso",anchor="w",stretch=False,width=180)
-        self.tView.column("tV_descripción",anchor="w",stretch=False,width=180)
+        self.tView.column("CódigoCurso",anchor="w",stretch=False,width=120)
+        self.tView.column("tV_descripción",anchor="w",stretch=False,width=240)
         self.tView.column("Horas",anchor="w",stretch=False,width=92)
         #Cabeceras
         self.tView.heading("Alumno",anchor="w", text='Alumno')
@@ -291,6 +291,14 @@ class Inscripciones_2:
         self.scroll_Y.place(anchor="nw", height=248, width=16, x=753, y=301)
         self.frm_1.pack(side="top")
         self.frm_1.pack_propagate(0)
+
+        #Inserts
+        def insert_data():
+            valornombre=self.nombres.get()
+            valorapellido=self.apellidos.get()
+            nombre = valornombre+" "+valorapellido
+            print(nombre)
+            self.tView.insert("", "end", values=(nombre, "1", "2015734", "Programación de Computadores", "12"))
 
         # Main widget
         self.mainwindow = self.win
