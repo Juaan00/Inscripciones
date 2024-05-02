@@ -151,7 +151,18 @@ class Inscripciones_2:
 
 
         ''' Botones  de la Aplicación'''
+        @staticmethod
+        def activar_boton_grabar():
+            self.btnGrabar.config(state="normal")
+
+        def add_consultar(entry, value):
+            entry.config(state="normal")
+            entry.delete(0, 'end')
+            entry.insert(0, value)
+            entry.config(state="readonly")
+
         #Botón Consultar
+
 
         def consultar():
             valor=self.cmbx_Id_Alumno.get()
@@ -159,35 +170,19 @@ class Inscripciones_2:
                 messagebox.showerror("Inscripciones", "Debe seleccionar un alumno")
                 return
             else:
+                activar_boton_grabar()
+                self.btnConsultar.config(state="disabled")
                 for i in self.lista_alumnos:
                     if valor == i[0]:
-                        self.cmbx_Id_Carrera.config(state="normal")
-                        self.cmbx_Id_Carrera.insert(0, i[1])
-                        self.cmbx_Id_Carrera.config(state="readonly") 
-                        self.nombres.config(state="normal")
-                        self.nombres.insert(0, i[2])
-                        self.nombres.config(state="readonly")
-                        self.apellidos.config(state="normal")
-                        self.apellidos.insert(0, i[3])
-                        self.apellidos.config(state="readonly")
-                        self.direccion.config(state="normal")
-                        self.direccion.insert(0, i[5])
-                        self.direccion.config(state="readonly")
-                        self.ciudad.config(state="normal")
-                        self.ciudad.insert(0, i[8])
-                        self.ciudad.config(state="readonly")
-                        self.departamento.config(state="normal")
-                        self.departamento.insert(0, i[9])
-                        self.departamento.config(state="readonly")
-                        self.telCel.config(state="normal")
-                        self.telCel.insert(0, i[6])
-                        self.telCel.config(state="readonly")
-                        self.telFijo.config(state="normal")
-                        self.telFijo.insert(0, i[7])
-                        self.telFijo.config(state="readonly")
-                        self.fecha.config(state="normal")
-                        self.fecha.insert(0, i[4])
-                        self.fecha.config(state="readonly")
+                        add_consultar(self.cmbx_Id_Carrera, i[1])
+                        add_consultar(self.nombres, i[2])
+                        add_consultar(self.apellidos, i[3])
+                        add_consultar(self.direccion, i[5])
+                        add_consultar(self.ciudad, i[8])
+                        add_consultar(self.departamento, i[9])
+                        add_consultar(self.telCel, i[6])
+                        add_consultar(self.telFijo, i[7])
+                        add_consultar(self.fecha, i[4])
                         break
                 
 
@@ -250,9 +245,11 @@ class Inscripciones_2:
                 self.is_fields_enabled = True
             else:
                 pass
+        
 
         self.btnGrabar = ttk.Button(self.frm_1, name="btngrabar", cursor="hand2", command=grabar)
         self.btnGrabar.configure(text='Grabar')
+        self.btnGrabar.config(state="disabled")
         self.btnGrabar.place(anchor="nw", x=570, y=260, width=80)
         #Separador
         separator1 = ttk.Separator(self.frm_1)
@@ -477,13 +474,13 @@ class Inscripciones_2:
         self.lista_alumnos = []
         for i in self.data:
             self.lista_alumnos.append(i)
-        print(self.lista_alumnos)
         
     def close_sqlite(self):
         self.conn.commit()
         self.conn.close()
         print('Conexión cerrada')
         
+
 
 if __name__ == "__main__":
     app = Inscripciones_2()
