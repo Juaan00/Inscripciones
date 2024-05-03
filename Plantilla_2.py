@@ -155,12 +155,6 @@ class Inscripciones_2:
         def activar_boton_grabar():
             self.btnGrabar.config(state="normal")
         #Botón Consultar
-        def add_consultar(entry, value):
-            entry.config(state="normal")
-            entry.delete(0, 'end')
-            entry.insert(0, value)
-            entry.config(state="readonly")
-
 
         def consultar():
             valor=self.cmbx_Id_Alumno.get()
@@ -172,16 +166,22 @@ class Inscripciones_2:
                 self.btnConsultar.config(state="disabled")
                 for i in self.lista_alumnos:
                     if valor == i[0]:
-                        add_consultar(self.cmbx_Id_Carrera, i[1])
-                        add_consultar(self.nombres, i[2])
-                        add_consultar(self.apellidos, i[3])
-                        add_consultar(self.fecha, i[4])
-                        add_consultar(self.direccion, i[5])
-                        add_consultar(self.telCel, i[6])
-                        add_consultar(self.telFijo, i[7])
-                        add_consultar(self.ciudad, i[8])
-                        add_consultar(self.departamento, i[9])
-                insert_data()
+                        self.add_consultar(self.cmbx_Id_Carrera, i[1])
+                        self.add_consultar(self.nombres, i[2])
+                        self.add_consultar(self.apellidos, i[3])
+                        self.add_consultar(self.fecha, i[4])
+                        self.add_consultar(self.direccion, i[5])
+                        self.add_consultar(self.telCel, i[6])
+                        self.add_consultar(self.telFijo, i[7])
+                        self.add_consultar(self.ciudad, i[8])
+                        self.add_consultar(self.departamento, i[9])
+                inscripciones=self.get_data_inscripciones(valor) 
+                print(inscripciones)
+                if inscripciones==None:
+                    pass
+                else:
+                    insert_data(inscripciones)
+                    self.numero_codigo_inscripcion(valor)
                 
 
         self.btnConsultar = ttk.Button(self.frm_1, name="btnconsultar", cursor="hand2", command=consultar)
@@ -270,11 +270,11 @@ class Inscripciones_2:
         self.tView.bind("<Button-1>", cancel, add="+")
         self.tView.configure(columns=self.tView_cols)
         self.tView.column("#0", width=0)
-        self.tView.column("Alumno",anchor="w",stretch=False,width=180)
-        self.tView.column("NoInscripción",anchor="w",stretch=False,width=92)
-        self.tView.column("CódigoCurso",anchor="w",stretch=False,width=120)
-        self.tView.column("tV_descripción",anchor="w",stretch=False,width=240)
-        self.tView.column("Horas",anchor="w",stretch=False,width=92)
+        self.tView.column("Alumno",anchor="w",stretch=True,width=180)
+        self.tView.column("NoInscripción",anchor="w",stretch=True,width=92)
+        self.tView.column("CódigoCurso",anchor="w",stretch=True,width=120)
+        self.tView.column("tV_descripción",anchor="w",stretch=True,width=240)
+        self.tView.column("Horas",anchor="w",stretch=True,width=92)
         #Cabeceras
         self.tView.heading("Alumno",anchor="w", text='Alumno')
         self.tView.heading("NoInscripción",anchor="w", text='No.Inscripción')
@@ -293,15 +293,23 @@ class Inscripciones_2:
         self.frm_1.pack_propagate(0)
 
         #Inserts
-        def insert_data():
+        def insert_data(inscripciones):
             valornombre=self.nombres.get()
             valorapellido=self.apellidos.get()
             nombre = valornombre+" "+valorapellido
-            print(nombre)
-            self.tView.insert("", "end", values=(nombre, "1", "2015734", "Programación de Computadores", "12"))
+            self.tView.insert("", "end", values=(nombre, '', '', '', ''))
+            for i in inscripciones:
+                curso=self.get_data_cursos_estudiantes(i[3])
+                for j in curso:
+                    self.tView.insert("", "end", values=('', i[0], j[0], j[1], j[2]))
 
         # Main widget
         self.mainwindow = self.win
+    def add_consultar(self,entry, value):
+            entry.config(state="normal")
+            entry.delete(0, 'end')
+            entry.insert(0, value)
+            entry.config(state="readonly")
 
     def run(self):
         self.mainwindow.mainloop()
@@ -402,9 +410,10 @@ class Inscripciones_2:
         ]
         self.cursor.executemany("INSERT OR IGNORE INTO Cursos(Código_Curso, Descripción_Curso, Num_Horas) VALUES(?,?,?)", cursos)
 
+        self.cursor.executemany("INSERT OR IGNORE INTO Carreras(Id_Carrera, Descripción, Num_Semestres) VALUES(?,?,?)", carreras)
+
         self.cursor.executemany("INSERT OR IGNORE INTO Alumnos(Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento) VALUES(?,?,?,?,?,?,?,?,?,?)", estudiantes)
 
-        self.cursor.executemany("INSERT OR IGNORE INTO Carreras(Id_Carrera, Descripción, Num_Semestres) VALUES(?,?,?)", carreras)
     def get_data_idalumno(self):
         self.cursor.execute("SELECT Id_Alumno FROM Alumnos")
         self.data = self.cursor.fetchall()
@@ -421,6 +430,7 @@ class Inscripciones_2:
         for i in self.data:
             self.lista_cursos.append(f'{str(i[0])}-{str(i[1])}')
         self.descripc_Curso['values'] = self.lista_cursos
+
     def get_data_complete(self):
         self.cursor.execute("SELECT * FROM Alumnos")
         self.data = self.cursor.fetchall()
@@ -432,7 +442,31 @@ class Inscripciones_2:
         self.conn.commit()
         self.conn.close()
         print('Conexión cerrada')
-        
+    def get_data_inscripciones(self, id_alumno):
+        inscripciones_alumno = []
+        for i in self.lista_alumnos:
+            if id_alumno == i[0]:
+                print(i[0])
+                self.cursor.execute("SELECT * FROM Inscritos WHERE id_Alumno = ?", (i[0],))
+                self.data = self.cursor.fetchall()
+                for j in self.data:
+                    inscripciones_alumno.append(j)
+                    return inscripciones_alumno
+                
+    def get_data_cursos_estudiantes(self, codigo_curso):
+        self.cursor.execute("SELECT * FROM Cursos WHERE Código_Curso = ?", (codigo_curso,))
+        self.data = self.cursor.fetchall()
+        return self.data
+    def insertar_inscripciones(self, id_alumno, fecha, codigo_curso):
+        self.cursor.execute("INSERT INTO Inscritos(Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES(?,?,?)", (id_alumno, fecha, codigo_curso))
+        self.conn.commit()
+
+    def numero_codigo_inscripcion(self, id_alumno):
+        inscripciones_alumno=self.data=self.get_data_inscripciones(id_alumno)
+        lista_inscripciones = []
+        for i in inscripciones_alumno:
+            lista_inscripciones.append(i[0])
+        self.add_consultar(self.noInscripcion, lista_inscripciones)
 
 
 if __name__ == "__main__":
