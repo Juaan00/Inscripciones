@@ -125,7 +125,7 @@ def Nuevo_Inscrito():
     print(datos)
     cursor.execute("INSERT INTO Inscritos(Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES (?,?,?)", datos)
 
-Nuevo_Inscrito()
+# Nuevo_Inscrito()
 
 def Inscribir_Curso():
     cursos = []
@@ -138,13 +138,24 @@ def Inscribir_Curso():
 #Inscribir_Curso()
 
 def Obtener_Datos():
-    opcion = input("Ingrese los datos de la tabla que desea recuperar:  ")
-    cursor.execute(f" SELECT * FROM {opcion}")
+    opcion = input("Ingrese el número de registro al que desea conocer la respectiva información:  ")
+    # cursor.execute(f" SELECT * FROM Inscritos")
+    cursor.execute(f''' SELECT * FROM Inscritos JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
+                   JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso 
+                   JOIN Carreras ON Alumnos.Id_Carrera = Carreras.Código_Carrera 
+                   WHERE Inscritos.No_Inscritos = {opcion}''')
+    # cursor.execute(f'''SELECT * FROM Inscritos
+    #                JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso
+    #                WHERE Inscritos.Id_Alumno = {opcion}
+    #                ''')
     datos = cursor.fetchall()
     for i in datos:
         print(i)
 
-# Obtener_Datos()
+    # fecha_split = datos[0][2].split("-")
+    # fecha = f"{fecha_split[2]}/{fecha_split[1]}/{fecha_split[0]}"
+    # print(fecha)
+Obtener_Datos()
 
 def Obtener_Datos_Columna():
     # opcion = input("Ingrese los datos de la tabla/columna que desea recuperar separados por una &:  ").split("&")
@@ -156,7 +167,7 @@ def Obtener_Datos_Columna():
         lista_cursos += i
     print(lista_cursos)
 
-Obtener_Datos_Columna()
+# Obtener_Datos_Columna()
 
 def Obtener_Un_Dato():
     opción = input("Ingrese dato(s) que desea recuperar de la siguiente manera (Tabla&Columna&Valor):  ").split("&")
