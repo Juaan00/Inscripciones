@@ -11,7 +11,7 @@ from pathlib import Path
 from subprocess import run
 
 PATH = str((Path(__file__).resolve()).parent)
-ICONO = r"/img/LogoinscripcionesIco.png"
+ICONO = r"img/LogoinscripcionesIco.png"
 DB = r"db/Inscripciones.db"
 
 
@@ -46,7 +46,7 @@ class Inscripciones_2:
         self.frm_1 = tk.Frame(self.win, name="frm_1")
         self.frm_1.configure(background="#f7f9fd", height=600, width=800)
         # self.lblNoInscripcion = ttk.Label(self.frm_1, name="lblnoinscripcion")
-        # self.lblNoInscripcion.configure(background="#f7f9fd",font="{Arial} 11 {bold}",
+        # self.lblNoInscripcion.configure(background="#f7f9fd",font="{Arial} 9 {bold}",
         #                                 justify="left",state="normal",
         #                                 takefocus=False,text='No.Inscripción')
         #  #Label No. Inscripción
@@ -119,7 +119,7 @@ class Inscripciones_2:
         
         #Label id_Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
-        self.lblIdAlumno.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblIdAlumno.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Id Alumno')
         self.lblIdAlumno.place(anchor="nw", x=20, y=40)
         #Combobox id_Alumno
@@ -130,7 +130,7 @@ class Inscripciones_2:
         
         #Label Nombres
         self.lblNombres = ttk.Label(self.frm_1, name="lblnombres")
-        self.lblNombres.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblNombres.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Nombre(s)')
         self.lblNombres.place(anchor="nw", x=150, y=40)
         #Entry Nombres
@@ -139,7 +139,7 @@ class Inscripciones_2:
 
         #Label Apellidos
         self.lblApellidos = ttk.Label(self.frm_1, name="lblapellidos")
-        self.lblApellidos.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblApellidos.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Apellido(s)')
         self.lblApellidos.place(anchor="nw", x=360, y=40)
         #Entry Apellidos
@@ -149,7 +149,7 @@ class Inscripciones_2:
         
         #Label Fecha
         self.lblFecha = ttk.Label(self.frm_1, name="lblfecha")
-        self.lblFecha.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblFecha.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Fecha Ingreso')
         self.lblFecha.place(anchor="nw", x=570, y=40)
 
@@ -239,7 +239,7 @@ class Inscripciones_2:
         
         #Label No. Inscripción
         self.lblNoInscripcion = ttk.Label(self.frm_1, name="lblnoinscripcion")
-        self.lblNoInscripcion.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblNoInscripcion.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                                         state="normal",text='No.Inscripción')
         self.lblNoInscripcion.place(anchor="nw", x=680, y=40)
         #Conmbox No. Inscripción
@@ -248,7 +248,7 @@ class Inscripciones_2:
         
         #Label Direccion
         self.lblDireccion = ttk.Label(self.frm_1, name="lbldireccion")
-        self.lblDireccion.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblDireccion.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Dirección')
         self.lblDireccion.place(anchor="nw", x=20, y=100)
         #Entry Direccion
@@ -257,7 +257,7 @@ class Inscripciones_2:
 
         #Label Ciudad
         self.lblCiudad = ttk.Label(self.frm_1, name="lblciudad")
-        self.lblCiudad.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblCiudad.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Ciudad')
         self.lblCiudad.place(anchor="nw", x=240, y=100)
         #Entry Ciudad
@@ -266,7 +266,7 @@ class Inscripciones_2:
         
         #Label Departamento
         self.lblDepartamento = ttk.Label(self.frm_1, name="lbldepartamento")
-        self.lblDepartamento.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblDepartamento.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                         state="normal", takefocus=False,text='Departamento')
         self.lblDepartamento.place(anchor="nw", x=390, y=100)
         #Entry Departamento
@@ -276,7 +276,7 @@ class Inscripciones_2:
 
         #Label Telefono Celular
         self.lblTelCel = ttk.Label(self.frm_1, name="lbltelcel")
-        self.lblTelCel.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblTelCel.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                         state="normal", takefocus=False,text='Teléfono Celular')
         self.lblTelCel.place(anchor="nw", x=540, y=100)
         #Entry Telefono Celular
@@ -285,7 +285,7 @@ class Inscripciones_2:
 
         #Label Telefono Fijo
         self.lblTelFijo = ttk.Label(self.frm_1, name="lbltelfijo")
-        self.lblTelFijo.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblTelFijo.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                         state="normal", takefocus=False,text='Teléfono Fijo')
         self.lblTelFijo.place(anchor="nw", x=670, y=100)
         #Entry Telefono Fijo
@@ -294,7 +294,7 @@ class Inscripciones_2:
     
         #Label id_carrera
         self.lblIdCarrera = ttk.Label(self.frm_1, name="lblidcarrera")
-        self.lblIdCarrera.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblIdCarrera.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Id Carrera')
         self.lblIdCarrera.place(anchor="nw", x=20, y=160)
         #Combobox id_carrera
@@ -303,7 +303,7 @@ class Inscripciones_2:
 
         #Label Codigo del Curso
         self.lblDscCurso = ttk.Label(self.frm_1, name="lbldsccurso")
-        self.lblDscCurso.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblDscCurso.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                         state="normal", takefocus=False,text='Código del Curso')
         self.lblDscCurso.place(anchor="nw", x=100, y=160)
         #Entry Codigo del Curso 
@@ -313,7 +313,7 @@ class Inscripciones_2:
         
         #Label Nombre de Curso
         self.lblNombreCurso = ttk.Label(self.frm_1, name="lblnombrecurso")
-        self.lblNombreCurso.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblNombreCurso.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                         state="normal", takefocus=False,text='Nombre del Curso')
         self.lblNombreCurso.place(anchor="nw", x=230, y=160)
         #Entry Nombre de Curso
@@ -322,7 +322,7 @@ class Inscripciones_2:
         
         #Label Horario
         self.lblHorario = ttk.Label(self.frm_1, name="lblhorario")
-        self.lblHorario.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblHorario.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                         state="normal", takefocus=False,text='Horario')
         self.lblHorario.place(anchor="nw", x=490, y=160)
         #Entry Horario
@@ -331,7 +331,7 @@ class Inscripciones_2:
         
         #Fecha de Inscripción
         self.lblFechaInscripcion = ttk.Label(self.frm_1, name="lblfechainscripcion")
-        self.lblFechaInscripcion.configure(background="#f7f9fd",font="{Arial} 11 {bold}", justify="left",
+        self.lblFechaInscripcion.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
                         state="normal", takefocus=False,text='Fecha Inscripción')
         self.lblFechaInscripcion.place(anchor="nw", x=686, y=160)
         #Entry Fecha de Inscripción
