@@ -155,13 +155,13 @@ class Inscripciones_2:
 
         def consultar():
             self.btnConsultar.config(state="disabled")
+            self.lista_alumnos=self.get_data_complete()
             valor=self.cmbx_Id_Alumno.get()
             if valor== '':
                 messagebox.showerror("Inscripciones", "Para Consultar Debe seleccionar un id Alumno primero")
                 return
             else:
                 self.cmbx_Id_Alumno.config(state="disabled")
-                self.lista_alumnos=self.get_data_complete()
                 for i in self.lista_alumnos:
                     if valor == i[0]:
                         self.add_consultar(self.cmbx_Id_Carrera, i[1])
@@ -178,7 +178,7 @@ class Inscripciones_2:
                     pass
                 else:
                     insert_data(inscripciones)
-                
+                self.get_data_entrys()
 
         self.btnConsultar = ttk.Button(self.frm_1, name="btnconsultar", cursor="hand2", command=consultar)
         self.btnConsultar.configure(text='Consultar')
@@ -187,52 +187,66 @@ class Inscripciones_2:
 
         #Botón Editar
 
-        def editar_validacion():
-            self.run_sqlite()
-            print(self.nombres.cget('state'))
-            if self.nombres.get() == '':
-                    messagebox.showerror("Inscripciones", "Para Editar Debe CONSULTAR un id Alumno primero")
-                    return
-            elif self.nombres.cget('state') == 'disabled':
-                    self.nombres.config(state="normal")
-                    self.apellidos.config(state="normal")
-                    self.fecha.config(state="normal")
-                    self.cmbx_Id_Alumno.config(state="disabled")
-                    self.cmbx_Id_Carrera.config(state="normal")
-                    self.ciudad.config(state="normal")
-                    self.departamento.config(state="normal")
-                    self.direccion.config(state="normal")
-                    self.telCel.config(state="normal")
-                    self.telFijo.config(state="normal")
-                    if self.noInscripcion.get() == '':
-                        return
-                    else:
-                        self.descripc_Curso.config(state="readonly")
-                        return
-            elif self.noInscripcion.get()== '':
-                    return
-            elif self.descripc_Curso.get()!= '':
-                    self.descripc_Curso.config(state="readonly")
-                    return
+        # def editar_validacion():
+        #     self.run_sqlite()
+        #     print(self.nombres.cget('state'))
+        #     if self.nombres.get() == '':
+        #             messagebox.showerror("Inscripciones", "Para Editar Debe CONSULTAR un id Alumno primero")
+        #             return
+        #     elif self.nombres.cget('state') == 'disabled':
+        #             self.nombres.config(state="normal")
+        #             self.apellidos.config(state="normal")
+        #             self.fecha.config(state="normal")
+        #             self.cmbx_Id_Alumno.config(state="disabled")
+        #             self.cmbx_Id_Carrera.config(state="normal")
+        #             self.ciudad.config(state="normal")
+        #             self.departamento.config(state="normal")
+        #             self.direccion.config(state="normal")
+        #             self.telCel.config(state="normal")
+        #             self.telFijo.config(state="normal")
+        #             if self.noInscripcion.get() == '':
+        #                 return
+        #             else:
+        #                 self.descripc_Curso.config(state="readonly")
+        #                 return
+        #     elif self.noInscripcion.get()== '':
+        #             return
+        #     elif self.descripc_Curso.get()!= '':
+        #             self.descripc_Curso.config(state="readonly")
+        #             return
         def editar():
-            editar_validacion()
-            self.cursor.execute("UPDATE Alumnos SET Nombres = ?, Apellidos = ?, Fecha_Ingreso = ?, Dirección = ?, Telef_Cel = ?, Telef_Fijo = ?, Ciudad = ?, Departamento = ? WHERE Id_Alumno = ?", (self.add_editar(self.nombres), self.add_editar(self.apellidos), self.add_editar(self.fecha), self.add_editar(self.direccion), self.add_editar(self.telCel), self.add_editar(self.telFijo), self.add_editar(self.ciudad), self.add_editar(self.departamento), self.cmbx_Id_Alumno.get()))
-            if self.noInscripcion.get() == '':
-                pass
+            # editar_validacion()
+            id_alumno=self.add_editar(self.cmbx_Id_Alumno)
+            id_carrera=self.add_editar(self.cmbx_Id_Carrera)
+            nombres=self.add_editar(self.nombres)
+            apellidos=self.add_editar(self.apellidos)
+            fecha=self.add_editar(self.fecha)
+            direccion=self.add_editar(self.direccion)
+            telCel=self.add_editar(self.telCel)
+            telFijo=self.add_editar(self.telFijo)
+            ciudad=self.add_editar(self.ciudad)
+            departamento=self.add_editar(self.departamento)
+            no_inscripcion=self.add_editar(self.noInscripcion)
+            id_curso=self.descripc_Curso.get().split('-')[0]
+            if no_inscripcion!=self.noInscripcion_actual or id_alumno!=self.idalumno_actual or id_carrera!=self.idcarrera_actual or nombres!=self.nombre_actual or apellidos!=self.apellido_actual or fecha!=self.fecha_actual or direccion!=self.direccion_actual or telCel!=self.telcel_actual or telFijo!=self.telfijo_actual or ciudad!=self.ciudad_actual or departamento!=self.departamento_actual or id_curso!=self.id_curso_actual:
+                self.cursor.execute("UPDATE Alumnos SET Nombres = ?, Apellidos = ?, Fecha_Ingreso = ?, Dirección = ?, Telef_Cel = ?, Telef_Fijo = ?, Ciudad = ?, Departamento = ? WHERE Id_Alumno = ?", (self.add_editar(self.nombres), self.add_editar(self.apellidos), self.add_editar(self.fecha), self.add_editar(self.direccion), self.add_editar(self.telCel), self.add_editar(self.telFijo), self.add_editar(self.ciudad), self.add_editar(self.departamento), self.cmbx_Id_Alumno.get()))
+                self.conn.commit()
+                if self.noInscripcion.get() == '':
+                    pass
+                else:
+                    numero_inscripcion=int(self.add_editar(self.noInscripcion))
+                    nuevo_curso=self.descripc_Curso.get().split('-')[0]
+                    self.lista_inscripciones=self.get_data_inscricpiones_complete(id_alumno)
+                    for i in self.lista_inscripciones: 
+                        if i[0] == numero_inscripcion:
+                            self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE No_Inscritos = ?", (nuevo_curso, numero_inscripcion))
+                            self.conn.commit()
+                messagebox.showinfo("Inscripciones", "Cambios realizados con éxito")
+                limpiar()
+                return
             else:
-                numero_inscripcion=self.add_editar(self.noInscripcion)
-                numero_inscripcion=int(numero_inscripcion)
-                id_alumno=self.cmbx_Id_Alumno.get()
-                nuevo_curso=self.descripc_Curso.get()
-                nuevo_curso=nuevo_curso.split('-')[0]
-                cursos=self.get_data_cursos_estudiantes(nuevo_curso)
-                self.lista_inscripciones=self.get_data_inscricpiones_complete(id_alumno)
-                print(numero_inscripcion, id_alumno, cursos, nuevo_curso)
-                for i in self.lista_inscripciones: 
-                    if i[0] == numero_inscripcion:
-                        self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE No_Inscritos = ?", (nuevo_curso, numero_inscripcion))
-            self.conn.commit()
-            limpiar()
+                messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
+                return
 
         self.btnEditar = ttk.Button(self.frm_1, name="btneditar", cursor="hand2", command=editar)
         self.btnEditar.configure(text='Editar')
@@ -334,8 +348,10 @@ class Inscripciones_2:
                 return
             else:
                 self.add_consultar(self.noInscripcion, values[0])
+                self.noInscripcion.config(state="disabled")
                 curso=values[1]+'-'+values[2]    
                 self.add_consultar(self.descripc_Curso, curso)
+            self.get_data_entrys()
 
         # vincula el evento de selección a la función
         self.tView.bind('<ButtonRelease-1>', selected_item)
@@ -346,7 +362,6 @@ class Inscripciones_2:
         entry.config(state="normal")
         entry.delete(0, 'end')
         entry.insert(0, value)
-        entry.config(state="disabled")
     def add_limpiar(self, entry):
         entry.config(state="normal")
         entry.delete(0, 'end')
@@ -428,7 +443,20 @@ class Inscripciones_2:
     #         self.insertar_inscripciones(i[0], datetime.date.today(), '1000006')
     #         self.insertar_inscripciones(i[0], datetime.date.today(), '1000005')
     #         self.insertar_inscripciones(i[0], datetime.date.today(), '1000003')
-
+    def get_data_entrys(self):
+        self.nombre_actual=self.nombres.get()
+        self.apellido_actual=self.apellidos.get()
+        self.fecha_actual=self.fecha.get()
+        self.direccion_actual=self.direccion.get()
+        self.telcel_actual=self.telCel.get()
+        self.telfijo_actual=self.telFijo.get()
+        self.ciudad_actual=self.ciudad.get()
+        self.departamento_actual=self.departamento.get()
+        self.noinscripcion_actual=self.noInscripcion.get()
+        self.idalumno_actual=self.cmbx_Id_Alumno.get()
+        self.idcarrera_actual=self.cmbx_Id_Carrera.get()
+        self.noInscripcion_actual=self.noInscripcion.get()
+        self.id_curso_actual=self.descripc_Curso.get().split('-')[0]
 
 if __name__ == "__main__":
     app = Inscripciones_2()
