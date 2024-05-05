@@ -4,7 +4,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import sqlite3
 #from tkcalendar import DateEntry
-from tkinter import messagebox
+from tkinter import StringVar, messagebox
 import datetime
 from pathlib import Path
 from subprocess import run
@@ -18,9 +18,86 @@ ICONO = r"/img/LogoinscripcionesIco.png"
 ICONO_CONSULTA = r"/img/lupa.png"
 DB = r"db/Inscripciones.db"
 
+class comunicacionBD():
+    def __init__(self):
+        self.conexion= sqlite3.connect(DB)
+    
+    def agregar_datos(self, bd, pront, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
+        cursor = self.conexion.cursor()
+        query = '''INSERT INTO Inscripciones (No_Inscritos, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES ('{}','{}','{}','{}')'''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
+        cursor.execute(query)
+        self.conexion.commit()
+        cursor.close()
+
+    def eliminar_datos(self, codigo):
+        cursor = self.conexion.cursor()
+        query = '''DELETE FROM Inscritos WHERE Código_Curso = '{}' '''.format(codigo)
+        cursor.execute(query)
+        self.conexion.commit()
+        cursor.close()
+    
+    def actualiza_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
+        cursor = self.conexion.cursor()
+        query = ''' UPDATE Inscripciones SET No_Inscritos = '{}', Id_Alumno = '{}', Fecha_de_Inscripción = '{}', Código_Curso = '{}'  '''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
+        cursor.execute(query)
+        dato = cursor.rowcount
+        self.conexion.commit()
+        cursor.close()
+        return dato
 
 class Inscripciones_2:
+    def tree_view(self):
+        def restrictor(Event):
+            # Reviso si una zona especifica alrededor del cursor toca el separador de columnas
+            # Esta zona la obtuve con prueba y error.
+            for x in range(-10, 10):
+                for y in range(1):
+                    #Si el separador de columnas está dentro de la zona, entonces doy por hecho que el usuario está intentando cambiar de tamaño la columna.
+                    if(self.tView.identify_region(Event.x+x, Event.y+y) == "separator"):
+                        self.tView.event_generate("<ButtonRelease-1>") # si esta en el rango, hace creer al equipo que solto el clic
+                        break
 
+        self.tView = ttk.Treeview(self.frm_1, name="tview",show='headings')
+        self.tView.configure(selectmode="extended")
+        #Columnas del Treeview
+        self.tView_cols = ['NoInscripción', 'CódigoCurso','tV_descripción', 'Horario' ]
+
+        #self.tView.place(anchor="nw", height=250, width=740, x=30, y=300)
+
+        self.tView.configure(columns=self.tView_cols)
+        self.tView.column("#0", width=0) # este es necesario?
+        self.tView.column("NoInscripción",anchor="w",stretch=False,width=110)
+        self.tView.column("CódigoCurso",anchor="w",stretch=False,width=110)
+        self.tView.column("tV_descripción",anchor="w",stretch=False,width=290)
+        self.tView.column("Horario",anchor="w",stretch=False,width=224)
+
+        #Cabeceras
+        self.tView.heading("NoInscripción",anchor="w", text='No.Inscripción')
+        self.tView.heading("CódigoCurso",anchor="w", text='Código de Curso')
+        self.tView.heading("tV_descripción", anchor="w", text='Descripción')
+        self.tView.heading("Horario", anchor="w", text='Horario')
+        self.tView.place(anchor="nw", height=250, width=740, x=30, y=300)
+        
+        #Scrollbars
+        self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
+        self.scroll_H.configure(orient="horizontal")
+        self.scroll_H.place(anchor="nw", height=15, width=724, x=31, y=534)
+        self.scroll_Y = ttk.Scrollbar(self.frm_1, name="scroll_y")
+        self.scroll_Y.configure(orient="vertical")
+        self.scroll_Y.place(anchor="nw", height=248, width=16, x=753, y=301)
+    
+        self.frm_1.pack(side="top")
+        self.frm_1.pack_propagate(0)
+
+        # Hago que mi función sea llamada cada vez que el usuario hace clic y mueve el cursor.
+        self.tView.bind("<B1-Motion>", restrictor)
+        
+    def centrar(self, win, ancho, alto):
+             self.altura_pantalla = win.winfo_screenheight()
+             self.ancho_pantalla = win.winfo_screenwidth()
+
+             self.x = (self.ancho_pantalla // 2) - (ancho // 2)
+             self.y = (self.altura_pantalla // 2) - (alto // 2)
         
     def __init__(self, master=None):
          # Ventana principal
@@ -28,16 +105,9 @@ class Inscripciones_2:
         self.win = tk.Tk(master)
         self.is_fields_enabled = False
 
-        def centrar(win, ancho, alto):
-             self.altura_pantalla = win.winfo_screenheight()
-             self.ancho_pantalla = win.winfo_screenwidth()
-
-             self.x = (self.ancho_pantalla // 2) - (ancho // 2)
-             self.y = (self.altura_pantalla // 2) - (alto // 2)
-
         self.win.configure(background="#f7f9fd", height=600, width=800)
-        centrar(self.win, 800, 600)
-        self.win.geometry(f"+{self.x-8}+{self.y-12}")
+        self.centrar(self.win, 800, 600)
+        self.win.geometry(f"+{self.x}+{self.y}")
         self.win.resizable(False, False)
         # Título de la ventana
         self.win.title("Inscripciones de Materias y Cursos")
@@ -51,6 +121,12 @@ class Inscripciones_2:
             self.icon = tk.PhotoImage(file= PATH + ICONO)
             self.win.iconphoto(True, self.icon)
             
+
+        self.DatosBD = comunicacionBD()
+        self.NoInscripcion = tk.StringVar()
+        self.IdAlumno = tk.StringVar()
+        self.CodigoCurso = tk.StringVar()
+        self.FechaInscripcion = tk.StringVar()
 
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
@@ -95,86 +171,71 @@ class Inscripciones_2:
         self.fecha = tk.Entry(self.frm_1, name="fechas")
         self.fecha.configure(justify="right")
         self.fecha.place(anchor="nw", width=90, x=570, y=60)
-        # def cuandoEscriba(event): 
-        #     if event.char.isdigit():
-        #         texto = self.fecha.get()
-        #         letras = 0 #verifica el numero de digitos
-        #         for i in texto:
-        #             letras +=1
-        #         if len(self.fecha.get()) > 9: #es 9 ya que al ingresar algo nuevo, primero aplica y luego verifica
-        #             self.fecha.delete(9, tk.END)
-
-        #         if letras == 2:
-        #             self.fecha.insert(2,"/")
-        #         elif letras == 5:
-        #             self.fecha.insert(5,"/")
-        #     else:
-        #         return "break"
             
-        # self.act_date = False
+        self.act_date = False
 
-        # def cuandoEscriba(event):
-        #     #global act_date
-        #     if event.char.isdigit() or event.char =='/':
-        #         fechaRef = self.fecha.get()
-        #         if len(fechaRef) == 2 or len(fechaRef) ==5:
-        #             self.act_date = True
+        def cuandoEscriba(event):
+            #global act_date
+            if event.char.isdigit() or event.char =='/':
+                fechaRef = self.fecha.get()
+                if len(fechaRef) == 2 or len(fechaRef) ==5:
+                    self.act_date = True
 
-        #         if len(fechaRef) == 2:
-        #             self.fecha.insert(2,"/")
+                if len(fechaRef) == 2:
+                    self.fecha.insert(2,"/")
                     
-        #         if len(fechaRef) == 5:
-        #             self.fecha.insert(5,"/")
-        #     if event.char.isdigit() or event.char =='\x08' or event.char =='': # \x08 = Backspace, '' = Delete
-        #         self.act_date=True
+                if len(fechaRef) == 5:
+                    self.fecha.insert(5,"/")
+            if event.char.isdigit() or event.char =='\x08' or event.char =='': # \x08 = Backspace, '' = Delete
+                self.act_date=True
 
-        # def limite(event):
-        #     fechaRef = self.fecha.get()
-        #     #print (fecha)
-        #     try:
-        #         if len(fechaRef) > 10:
-        #             raise ValueError("digite maximo 8 numeros")
-        #     except ValueError as problem:
-        #         messagebox.showerror("Error", str(problem))
-        #         self.fecha.delete(10, tk.END)
+        def limite(event):
+            fechaRef = self.fecha.get()
+            #print (fecha)
+            try:
+                if len(fechaRef) > 10:
+                    raise ValueError("digite maximo 8 numeros")
+            except ValueError as problem:
+                messagebox.showerror("Error", str(problem))
+                self.fecha.delete(10, tk.END)
 
-        # def verificarNumeros(char):
-        #     #global act_date
+        def verificarNumeros(char):
+            #global act_date
 
-        #     if self.act_date:
-        #         self.act_date = False 
-        #         return char.isdigit() or char == '/'
-        #     else:
-        #         if char == '/' and self.act_date:
-        #             return char.isdigit() or char == '/'
-        #         else:
-        #             return char.isdigit()
+            if self.act_date:
+                self.act_date = False 
+                return char.isdigit() or char == '/'
+            else:
+                if char == '/' and self.act_date:
+                    return char.isdigit() or char == '/'
+                else:
+                    return char.isdigit()
 
-        # def validarFecha(event):
-        #     try:
-        #         self.vFecha = self.fecha.get()
-        #         #compara el formato del texto con el formato y las fechas de libreria
-        #         self.vFecha = datetime.datetime.strptime(self.vFecha,'%d/%m/%Y') 
-        #         print ('fecha valida')
-        #     except ValueError:
-        #         messagebox.showerror("Error", 'Digite un formato de fecha valida')
-        #         #print ('Error: Digite una fecha valida')
+        def validarFecha(event):
+            try:
+                self.vFecha = self.fecha.get()
+                #compara el formato del texto con el formato y las fechas de libreria
+                self.vFecha = datetime.datetime.strptime(self.vFecha,'%d/%m/%Y') 
+                print ('fecha valida')
+            except ValueError:
+                messagebox.showerror("Error", 'Digite un formato de fecha valida')
+                #print ('Error: Digite una fecha valida')
 
-        # #cuando oprima una tecla cualquiera, ejecuta
-        # self.fecha.bind("<Key>", cuandoEscriba) 
-        # ##############################################################
-        # #evita que valide el borrar como digito
-        # #self.fecha.bind("<BackSpace>", lambda _:self.fecha.delete(tk.END)) 
+        #cuando oprima una tecla cualquiera, ejecuta
+        self.fecha.bind("<Key>", cuandoEscriba) 
+        ##############################################################
+        #evita que valide el borrar como digito
+        #self.fecha.bind("<BackSpace>", lambda _:self.fecha.delete(tk.END)) 
 
-        # self.fecha.bind("<Return>", validarFecha)
-        # self.fecha.bind("<Tab>", validarFecha)
-        # #self.fecha.bind("<FocusOut>", validarFecha)#no borrar
+        self.fecha.bind("<Return>", validarFecha)
+        self.fecha.bind("<Tab>", validarFecha)
+        #self.fecha.bind("<FocusOut>", validarFecha)#no borrar
 
-        # ############################################################
-        # self.fecha.bind("<Key>", cuandoEscriba)
-        # self.fecha.validate_cmd = self.frm_1.register(verificarNumeros)
-        # self.fecha.config(validate="key", validatecommand=(self.fecha.validate_cmd,"%S"))
-        # self.fecha.bind("<KeyRelease>", limite)
+        ############################################################
+        self.fecha.bind("<Key>", cuandoEscriba)
+        self.fecha.validate_cmd = self.frm_1.register(verificarNumeros)
+        self.fecha.config(validate="key", validatecommand=(self.fecha.validate_cmd,"%S"))
+        self.fecha.bind("<KeyRelease>", limite)
         
         #Label No. Inscripción
         self.lblNoInscripcion = ttk.Label(self.frm_1, name="lblnoinscripcion")
@@ -280,8 +341,6 @@ class Inscripciones_2:
 
         ''' Botones  de la Aplicación'''
         
-
-        
         #Botón Consultar
         self.btnConsultar = ttk.Button(self.frm_1, name="btnconsultar",command=self.consultar, cursor="hand2")
         self.btnConsultar.configure(text='Consultar')
@@ -319,7 +378,7 @@ class Inscripciones_2:
         self.btnEditar.place(anchor="nw", x=255, y=260,  width=80)
         
         #Botón Eliminar
-        self.btnEliminar = ttk.Button(self.frm_1, name="btneliminar", cursor="hand2")
+        self.btnEliminar = ttk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.eliminar_data)
         self.btnEliminar.configure(text='Eliminar')
         self.btnEliminar.place(anchor="nw", x=360, y=260, width=80)
         
@@ -351,46 +410,17 @@ class Inscripciones_2:
         separator1.place(anchor="nw", width=796, x=2, y=245)
 
         ''' Treeview de la Aplicación'''
-        def cancel(event):
-            return "break"
 
         #Treeview
-        self.tView = ttk.Treeview(self.frm_1, name="tview",show='headings')
-        self.tView.configure(selectmode="extended")
-        #Columnas del Treeview
-        self.tView_cols = ['NoInscripción', 'Alumno', 'CódigoCurso','tV_descripción', 'Horario' ]
-        self.tView.bind("<Button-1>", cancel, add="+")
-        self.tView.configure(columns=self.tView_cols)
-        self.tView.column("#0", width=0)
-        self.tView.column("NoInscripción",anchor="w",stretch=False,width=60)
-        self.tView.column("Alumno",anchor="w",stretch=False,width=180)
-        self.tView.column("CódigoCurso",anchor="w",stretch=False,width=100)
-        self.tView.column("tV_descripción",anchor="w",stretch=False,width=240)
-        self.tView.column("Horario",anchor="w",stretch=False,width=144)
-        #Cabeceras
-        self.tView.heading("NoInscripción",anchor="w", text='No.Inscripción')
-        self.tView.heading("Alumno",anchor="w", text='Alumno')
-        self.tView.heading("CódigoCurso",anchor="w", text='Código de Curso')
-        self.tView.heading("tV_descripción", anchor="w", text='Descripción')
-        self.tView.heading("Horario", anchor="w", text='Horario')
-        self.tView.place(anchor="nw", height=250, width=740, x=30, y=300)
-        
-        #Scrollbars
-        self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
-        self.scroll_H.configure(orient="horizontal")
-        self.scroll_H.place(anchor="nw", height=15, width=724, x=31, y=534)
-        self.scroll_Y = ttk.Scrollbar(self.frm_1, name="scroll_y")
-        self.scroll_Y.configure(orient="vertical")
-        self.scroll_Y.place(anchor="nw", height=248, width=16, x=753, y=301)
-        self.frm_1.pack(side="top")
-        self.frm_1.pack_propagate(0)
-        
-        def insert_data():
-            valornombre=self.nombres.get()
-            valorapellido=self.apellidos.get()
-            nombre = valornombre+" "+valorapellido
-            print(nombre)
-            self.tView.insert("", "end", values=(nombre, "1", "2015734", "Programación de Computadores", "12"))
+        self.tree_view()
+
+        #Probar data, borrable
+        # def insert_data():
+        #     valornombre=self.nombres.get()
+        #     valorapellido=self.apellidos.get()
+        #     nombre = valornombre+" "+valorapellido
+        #     print(nombre)
+        #     self.tView.insert("", "end", values=(nombre, "1", "2015734", "Programación de Computadores", "12"))
 
         # Main widget
         self.mainwindow = self.win
@@ -441,15 +471,17 @@ class Inscripciones_2:
         self.ventana_emergente.iconphoto(False, self.icon_consulta)
                 
         self.ventana_emergente.resizable(False, False)
-        self.altura_pantalla_1 = self.win.winfo_screenheight()
-        self.ancho_pantalla_1 = self.win.winfo_screenwidth()
-        print(f"Alto: {self.altura_pantalla_1} Ancho: {self.ancho_pantalla_1}")
+        # self.altura_pantalla_1 = self.win.winfo_screenheight()
+        # self.ancho_pantalla_1 = self.win.winfo_screenwidth()
+        # print(f"Alto: {self.altura_pantalla_1} Ancho: {self.ancho_pantalla_1}")
         self.ventana_emergente.geometry("400x300")
+        self.centrar(self.ventana_emergente, 400, 300)
+        self.ventana_emergente.geometry(f"+{self.x}+{self.y}")
         # self.ventana_emergente.eval('tk::PlaceWindow . center')
-        self.x_1 = (self.ancho_pantalla_1 / 2) - (400 / 2)
-        self.y_1 = (self.altura_pantalla_1 / 2) - (300 / 2)
-        print(f"X: {int(self.x_1)} Y: {int(self.y_1)}")
-        self.ventana_emergente.geometry(f"400x300+{int(self.x_1)}+{int(self.y_1)-9}")
+        # self.x_1 = (self.ancho_pantalla_1 / 2) - (400 / 2)
+        # self.y_1 = (self.altura_pantalla_1 / 2) - (300 / 2)
+        # print(f"X: {int(self.x_1)} Y: {int(self.y_1)}")
+        # self.ventana_emergente.geometry(f"400x300+{int(self.x_1)}+{int(self.y_1)-9}")
         self.frm_consulta = tk.Frame(self.win, name="frm_consulta")
         self.frm_consulta.configure(background="#f7f9fd", height=600, width=800)
         
@@ -487,32 +519,7 @@ class Inscripciones_2:
                 i.config(state="readonly")
             self.a += 1
                  
-        self.tView_c1 = ttk.Treeview(self.frm_1, name="tview",show='headings')
-        self.tView_c1.configure(selectmode="extended")
-        self.tView_c1.place(anchor="nw", height=250, width=740, x=30, y=300)
-        self.tView_cols_c1 = ['NoInscripción', 'CódigoCurso','tV_descripción', 'Horario' ]
-        self.tView_c1.configure(columns=self.tView_cols_c1)
-        self.tView_c1.column("#0", width=0)
-        self.tView_c1.column("NoInscripción",anchor="w",stretch=False,width=100)
-        self.tView_c1.column("CódigoCurso",anchor="w",stretch=False,width=110)
-        self.tView_c1.column("tV_descripción",anchor="w",stretch=False,width=290)
-        self.tView_c1.column("Horario",anchor="w",stretch=False,width=224)
-        #Cabeceras
-        self.tView_c1.heading("NoInscripción",anchor="w", text='No.Inscripción')
-        self.tView_c1.heading("CódigoCurso",anchor="w", text='Código de Curso')
-        self.tView_c1.heading("tV_descripción", anchor="w", text='Descripción')
-        self.tView_c1.heading("Horario", anchor="w", text='Horario')
-        self.tView_c1.place(anchor="nw", height=250, width=740, x=30, y=300)
-        
-        #Scrollbars
-        self.scroll_H_c1 = ttk.Scrollbar(self.frm_1, name="scroll_h")
-        self.scroll_H_c1.configure(orient="horizontal")
-        self.scroll_H_c1.place(anchor="nw", height=15, width=724, x=31, y=534)
-        self.scroll_Y_c1 = ttk.Scrollbar(self.frm_1, name="scroll_y")
-        self.scroll_Y_c1.configure(orient="vertical")
-        self.scroll_Y_c1.place(anchor="nw", height=248, width=16, x=753, y=301)
-        self.frm_1.pack(side="top")
-        self.frm_1.pack_propagate(0)
+        self.tree_view()
 
         self.cursor.execute(f'''SELECT * FROM Inscritos
                    JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso
@@ -522,7 +529,57 @@ class Inscripciones_2:
         for i in datos_materias:
             self.lista_materia = []
             self.lista_materia += i
-            self.tView_c1.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[4], self.lista_materia[5], self.lista_materia[6]))
+            self.tView.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[4], self.lista_materia[5], self.lista_materia[6]))
+
+    #borrable
+    # def eliminar_data (self):
+    #     print('Eliminar')
+    #     print(str(self.tView.selection()[0]))
+    #     try:
+    #         print(str(self.tView.item(self.tView.selection())))
+    #         self.tView.item(self.tView.selection())['text'][0]
+            
+    #     except IndexError as problem:
+    #         messagebox.showerror("Error", str(problem))
+    #         return
+        
+    def limpiar_data(self):
+        self.NoInscripcion.set('')
+        self.IdAlumno.set('')
+        self.CodigoCurso.set('')
+        self.FechaInscripcion.set('')
+
+    def obtener_fila(self, event):
+        item = self.tView.focus()
+        self.data = self.tView.item(item)
+        self.NoInscripcion.set(self.data["values"][0])
+        self.CodigoCurso.set(self.data["values"][1])
+        self.IdAlumno.set(self.data["values"][2])
+        self.FechaInscripcion.set(self.data["values"][3])
+
+        print(str(self.NoInscripcion.get()))
+        print(str(self.IdAlumno.get()))
+        print(str(self.CodigoCurso.get()))
+        print(str(self.FechaInscripcion.get()))
+    
+    def eliminar_data (self):
+        self.limpiar_data()
+        item = self.tView.selection()[0]
+        alert = messagebox.askquestion('Eliminando datos', 'Desea eliminar este valor?')
+        if alert == 'yes':            
+            self.tView.delete(item)
+            self.DatosBD.eliminar_datos(self.data["values"][1])
+            print('Borrado')
+        
+
+        # name = self.tView.item(self.tView.selection())['text']
+        # query = 'DELETE FROM product WHERE name = ?'
+        # self.run_query(query, (name,))
+
+        # self.cursor.execute(f"DELETE from inscpciones where ID=" + self)
+        # self.cursor.close()
+        # self.cursor.commit()
+
         
     # def get_data_idalumno(self):
     #     self.cursor.execute("SELECT Id_Alumno FROM Alumnos")
