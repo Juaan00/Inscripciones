@@ -140,7 +140,13 @@ def Inscribir_Curso():
 def Obtener_Datos():
     opcion = input("Ingrese el número de registro al que desea conocer la respectiva información:  ")
     # cursor.execute(f" SELECT * FROM Inscritos")
-    cursor.execute(f''' SELECT * FROM Inscritos JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
+    # self.entry = [self.noInscripcion, self.cmbx_Id_Alumno, self.fecha, self.fechaInscripcion, 
+    #             self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.direccion, self.ciudad, 
+    #             self.departamento, self.telCel, self.telFijo, self.codigo_Curso, self.nombreCurso, 
+    #             self.horario]
+    cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Fecha_Ingreso, No_Inscritos, Dirección, Ciudad, Departamento, 
+                   Telef_Cel, Telef_Fijo, Id_Carrera, Inscritos.Código_Curso, Descripción_Curso, Num_Horas, Inscritos.Fecha_de_Inscripción  FROM Inscritos 
+                   JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
                    JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso 
                    JOIN Carreras ON Alumnos.Id_Carrera = Carreras.Código_Carrera 
                    WHERE Inscritos.No_Inscritos = {opcion}''')

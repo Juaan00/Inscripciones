@@ -6,12 +6,13 @@ import sqlite3
 #from tkcalendar import DateEntry
 from tkinter import messagebox
 import datetime
-import ctypes
+from ctypes import windll
 from pathlib import Path
 from subprocess import run
 
 PATH = str((Path(__file__).resolve()).parent)
-ICONO = r"img/LogoinscripcionesIco.png"
+ICONO = r"/img/LogoinscripcionesIco.png"
+ICONO_CONSULTA = r"/img/lupa.png"
 DB = r"db/Inscripciones.db"
 
 
@@ -33,90 +34,20 @@ class Inscripciones_2:
 
         self.win.configure(background="#f7f9fd", height=600, width=800)
         centrar(self.win, 800, 600)
-        self.win.geometry(f"+{self.x}+{self.y}")
+        self.win.geometry(f"+{self.x-8}+{self.y-12}")
         self.win.resizable(False, False)
-        
+        # Título de la ventana
         self.win.title("Inscripciones de Materias y Cursos")
-        #ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID('Inscripciones')
-        #self.win.iconbitmap(PATH + ICONO)
-        #icono = ttk.PhotoImage(file= PATH + ICONO)
-        #self.win.wm_iconphoto(False, icono)
+        # Icono de la ventana
+        windll.shell32.SetCurrentProcessExplicitAppUserModelID('Inscripciones')
+        self.win.iconbitmap(PATH + ICONO)
+        icono = tk.PhotoImage(file= PATH + ICONO)
+        self.win.wm_iconphoto(False, icono)
 
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
         self.frm_1.configure(background="#f7f9fd", height=600, width=800)
-        # self.lblNoInscripcion = ttk.Label(self.frm_1, name="lblnoinscripcion")
-        # self.lblNoInscripcion.configure(background="#f7f9fd",font="{Arial} 9 {bold}",
-        #                                 justify="left",state="normal",
-        #                                 takefocus=False,text='No.Inscripción')
-        #  #Label No. Inscripción
-        # self.lblNoInscripcion.place(anchor="nw", x=680, y=20)
-        # #Entry No. Inscripción
-        # self.num_Inscripcion = ttk.Entry(self.frm_1, name="num_inscripcion")
-        # self.num_Inscripcion.configure(justify="right")
-        # self.num_Inscripcion.place(anchor="nw", width=100, x=682, y=42)
-        
 
-        # #Label Alumno
-        # self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
-        # self.lblIdAlumno.configure(background="#f7f9fd", text='Id Alumno:')
-        # self.lblIdAlumno.place(anchor="nw", x=20, y=80)
-        # #Combobox Alumno
-        # self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno")
-        # self.cmbx_Id_Alumno.place(anchor="nw", width=112, x=100, y=80)
-        # #Label Alumno
-        # self.lblNombres = ttk.Label(self.frm_1, name="lblnombres")
-        # self.lblNombres.configure(background="#f7f9fd",text='Nombre(s):')
-        # self.lblNombres.place(anchor="nw", x=20, y=130)
-        # #Entry Alumno
-        # self.nombres = ttk.Entry(self.frm_1, name="nombres", state='readonly')
-        # self.nombres.place(anchor="nw", width=200, x=100, y=130)
-        # #Label Apellidos
-        # self.lblApellidos = ttk.Label(self.frm_1, name="lblapellidos")
-        # self.lblApellidos.configure(background="#f7f9fd", text='Apellido(s):')
-        # self.lblApellidos.place(anchor="nw", x=400, y=130)
-        # #Entry Apellidos
-        # self.apellidos = ttk.Entry(self.frm_1, name="apellidos")
-        # self.apellidos.place(anchor="nw", width=200, x=485, y=130)
-        # self.apellidos.insert(0,"apellisodss")
-        # self.apellidos.config(state='readonly')
-        # #Label Curso
-        # self.lblIdCurso = ttk.Label(self.frm_1, name="lblidcurso")
-        # self.lblIdCurso.configure(background="#f7f9fd",state="normal",text='Id Curso:')
-        # self.lblIdCurso.place(anchor="nw", x=20, y=185)
-        # #Entry Curso
-        # self.id_Curso = ttk.Entry(self.frm_1, name="id_curso")
-        # self.id_Curso.configure(justify="left", width=166)
-        # self.id_Curso.place(anchor="nw", width=166, x=100, y=185)
-        # #Label Descripción del Curso
-        # self.lblDscCurso = ttk.Label(self.frm_1, name="lbldsccurso")
-        # self.lblDscCurso.configure(background="#f7f9fd",state="normal",text='Curso:')
-        # self.lblDscCurso.place(anchor="nw", x=275, y=185)
-        # #Entry de Descripción del Curso 
-        # self.descripc_Curso = ttk.Entry(self.frm_1, name="descripc_curso", state='readonly')
-        # self.descripc_Curso.configure(justify="left", width=166)
-        # self.descripc_Curso.place(anchor="nw", width=300, x=325, y=185)
-        # #Label Horario
-        # self.lblHorario = ttk.Label(self.frm_1, name="label3")
-        # self.lblHorario.configure(background="#f7f9fd",state="normal",text='Hora:')
-        # self.lblHorario.place(anchor="nw", x=635, y=185)
-        # # #Entry del Horario
-        # # self.horario = ttk.Combobox(self.frm_1, name="entry6")
-        # # self.horas = ("7:00am-9:00am","9:00am-11:00am","11:00am-12:00pm","2:00pm-4:00pm","4:00pm-6:00pm","6:00pm-8:00pm")
-        # # self.cmbx_horario = ttk.Combobox(self.frm_1, name="cmbx_horas", values=self.horas)
-        # # self.cmbx_horario.place(anchor="nw", width=120, x=670, y=185)
-        
-
-        # #Label Fecha
-        # self.lblFecha = ttk.Label(self.frm_1, name="lblfecha")
-        # self.lblFecha.configure(background="#f7f9fd", text='Fecha:')
-        # self.lblFecha.place(anchor="nw", x=420, y=20)
-        # #Entry Fecha
-        # self.fecha = tk.Entry(self.frm_1, name="fechas", state='readonly')
-        # self.fecha.configure(justify="center")
-        # self.fecha.place(anchor="nw", width=100, x=500, y=20)
-        
-        
         #Label id_Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
         self.lblIdAlumno.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
@@ -346,7 +277,7 @@ class Inscripciones_2:
         #Botón Consultar
         self.btnConsultar = ttk.Button(self.frm_1, name="btnconsultar",command=self.consultar, cursor="hand2")
         self.btnConsultar.configure(text='Consultar')
-        self.btnConsultar.place(anchor="nw", x=100, y=260)
+        self.btnConsultar.place(anchor="nw", x=150, y=260)
         
         
         # @staticmethod
@@ -384,35 +315,24 @@ class Inscripciones_2:
         self.btnEliminar.configure(text='Eliminar')
         self.btnEliminar.place(anchor="nw", x=360, y=260, width=80)
         
-        
-        
-        
         #Botón Cancelar
-        # def limpiar():
-        #     self.num_Inscripcion.delete(0,tk.END)
-        #     self.fecha.delete(0, tk.END)
-        #     self.cmbx_Id_Alumno.delete(0,tk.END)
-        #     self.id_Curso.delete(0,tk.END)
-        #     self.cmbx_horario.delete(0,tk.END)
+        # def limpiar(self):
+        #     self.entry = [self.noInscripcion, self.cmbx_Id_Alumno, self.fecha, self.fechaInscripcion, 
+        #                   self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.direccion, self.ciudad, 
+        #                   self.departamento, self.telCel, self.telFijo, self.codigo_Curso, self.nombreCurso, 
+        #                   self.horario]
+        #     for i in self.entry:
+        #         return i.delete(0, tk.END)
 
-        #     # al estar ReadOnly 
-        #     self.nombres.config(state="Normal")
-        #     self.nombres.delete(0,tk.END)
-        #     self.nombres.config(state='readonly')
-            
-        #     self.apellidos.config(state='normal')
-        #     self.apellidos.delete(0,tk.END)
-        #     self.apellidos.config(state='readonly')
-
-        #     self.descripc_Curso.config(state="Normal")
-        #     self.descripc_Curso.delete(0,tk.END)
-        #     self.descripc_Curso.config(state='readonly')
-
-        self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar", cursor="hand2")
+        self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar", cursor="hand2", command=self.limpiar)
         self.btnCancelar.configure(text='Cancelar')
         self.btnCancelar.place(anchor="nw", x=465, y=260, width=80)
-
-        self.btnCancelar.bind()
+        # self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar", cursor="hand2", command=self.limpiar)
+        # self.btnCancelar.configure(text='Cancelar')
+        # self.btnCancelar.place(anchor="nw", x=465, y=260, width=80)
+        # self.btnCancelar.bind()
+        
+    
         #Botón Grabar
         self.btnGrabar = ttk.Button(self.frm_1, name="btngrabar", cursor="hand2")
         self.btnGrabar.configure(text='Grabar')
@@ -494,62 +414,71 @@ class Inscripciones_2:
         self.fecha_n = f"{self.split[2]}/{self.split[1]}/{self.split[0]}"
         return self.fecha_n
     
-    def limpiar_parntalla(self):
-        pass
+    def limpiar(self):
+        self.entry = [self.noInscripcion, self.cmbx_Id_Alumno, self.fecha, self.fechaInscripcion, 
+                        self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.direccion, self.ciudad, 
+                        self.departamento, self.telCel, self.telFijo, self.codigo_Curso, self.nombreCurso, 
+                        self.horario]
+        for i in self.entry:
+            i.config(state="normal")
+            i.delete(0, tk.END)
+        
+        self.tView.delete(*self.tView.get_children())
     
     def consultar(self):
-        # self.cursor.execute(f"SELECT * FROM Inscritos WHERE No_Inscritos = {self.noInscripcion.get()}")
-        self.cursor.execute(f''' SELECT * FROM Inscritos JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
-                   JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso 
-                   JOIN Carreras ON Alumnos.Id_Carrera = Carreras.Código_Carrera 
-                   WHERE Inscritos.No_Inscritos = {self.noInscripcion.get()}''')
+        
+        self.ventana_emergente = tk.Toplevel()
+        self.ventana_emergente.title("Consulta de Datos")
+        self.icon_consulta = tk.PhotoImage(file= PATH + ICONO_CONSULTA)
+        self.ventana_emergente.iconphoto(False, self.icon_consulta)
+                
+        self.ventana_emergente.resizable(False, False)
+        self.altura_pantalla_1 = self.win.winfo_screenheight()
+        self.ancho_pantalla_1 = self.win.winfo_screenwidth()
+        print(f"Alto: {self.altura_pantalla_1} Ancho: {self.ancho_pantalla_1}")
+        self.ventana_emergente.geometry("400x300")
+        # self.ventana_emergente.eval('tk::PlaceWindow . center')
+        self.x_1 = (self.ancho_pantalla_1 / 2) - (400 / 2)
+        self.y_1 = (self.altura_pantalla_1 / 2) - (300 / 2)
+        print(f"X: {int(self.x_1)} Y: {int(self.y_1)}")
+        self.ventana_emergente.geometry(f"400x300+{int(self.x_1)}+{int(self.y_1)-9}")
+        self.frm_consulta = tk.Frame(self.win, name="frm_consulta")
+        self.frm_consulta.configure(background="#f7f9fd", height=600, width=800)
+        
+        
+        self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Fecha_Ingreso, No_Inscritos, Dirección, Ciudad, Departamento, 
+                            Telef_Cel, Telef_Fijo, Id_Carrera, Inscritos.Código_Curso, Descripción_Curso, Num_Horas, Fecha_de_Inscripción  FROM Inscritos 
+                    JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
+                    JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso 
+                    JOIN Carreras ON Alumnos.Id_Carrera = Carreras.Código_Carrera 
+                    WHERE Inscritos.No_Inscritos = {self.noInscripcion.get()}''')
         self.datos = self.cursor.fetchall()
         self.lista = []
         for i in self.datos:
             self.lista += i 
         
-        # self.fecha_ins_split = self.lista[2].split("-") #8
-        # self.fecha_ins = f"{self.fecha_ins_split[2]}/{self.fecha_ins_split[1]}/{self.fecha_ins_split[0]}"
-        self.fecha_ins = self.fecha_split(self.lista[2])
+        self.fecha_ins = self.fecha_split(self.lista[3])
         
-        # self.fecha_ing_split = self.lista[8].split("-") #8
-        # self.fecha_ing = f"{self.fecha_ing_split[2]}/{self.fecha_ing_split[1]}/{self.fecha_ing_split[0]}"
-        self.fecha_ing = self.fecha_split(self.lista[8])
+        self.fecha_ing = self.fecha_split(self.lista[14])
         
+        self.limpiar()
         
-        self.noInscripcion.delete(0, tk.END)
-        self.noInscripcion.insert(0, self.lista[0])
-        self.cmbx_Id_Alumno.delete(0, tk.END)
-        self.cmbx_Id_Alumno.insert(0, self.lista[1])
-        self.fecha.delete(0, tk.END)
-        self.fecha.insert(0, self.fecha_ing)
-        self.fechaInscripcion.delete(0, tk.END)
-        self.fechaInscripcion.insert(0, self.fecha_ins)
-        self.cmbx_Id_Carrera .delete(0, tk.END)
-        self.cmbx_Id_Carrera .insert(0, self.lista[17])
-        self.nombres.delete(0, tk.END)
-        self.nombres.insert(0, self.lista[6])
-        self.apellidos.delete(0, tk.END)
-        self.apellidos.insert(0, self.lista[7])
-        self.direccion.delete(0, tk.END)
-        self.direccion.insert(0, self.lista[9])
-        self.ciudad.delete(0, tk.END)
-        self.ciudad.insert(0, self.lista[12])
-        self.departamento.delete(0, tk.END)
-        self.departamento.insert(0, self.lista[13])
-        self.telCel.delete(0, tk.END)
-        self.telCel.insert(0, self.lista[10])
-        self.telFijo.delete(0, tk.END)
-        self.telFijo.insert(0, self.lista[11])
-        self.codigo_Curso.delete(0, tk.END)
-        self.codigo_Curso.insert(0, self.lista[14])
-        self.nombreCurso.delete(0, tk.END)
-        self.nombreCurso.insert(0, self.lista[15])
-        self.horario.delete(0, tk.END)
-        self.horario.insert(0, self.lista[16])
-        
-        
-        self.tView.delete(*self.tView.get_children())
+        self.entry_datos = [self.cmbx_Id_Alumno, self.nombres, self.apellidos, self.fecha, self.noInscripcion, self.direccion, self.ciudad,
+                 self.departamento, self.telCel, self.telFijo, self.cmbx_Id_Carrera, self.codigo_Curso, self.nombreCurso, self.horario, 
+                 self.fechaInscripcion]
+        self.a = 0
+        for i in self.entry_datos:
+            if i == self.fecha:
+                i.insert(0, self.fecha_ing)
+                i.config(state="readonly")
+            elif i == self.fechaInscripcion:
+                i.insert(0, self.fecha_ins)
+                i.config(state="readonly")
+            else:
+                i.insert(0, self.lista[self.a])
+                i.config(state="readonly")
+            self.a += 1
+                 
         self.tView_c1 = ttk.Treeview(self.frm_1, name="tview",show='headings')
         self.tView_c1.configure(selectmode="extended")
         self.tView_c1.place(anchor="nw", height=250, width=740, x=30, y=300)
@@ -579,7 +508,7 @@ class Inscripciones_2:
 
         self.cursor.execute(f'''SELECT * FROM Inscritos
                    JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso
-                   WHERE Inscritos.Id_Alumno = {self.lista[1]}
+                   WHERE Inscritos.Id_Alumno = {self.lista[0]}
                    ''')
         datos_materias = self.cursor.fetchall()
         for i in datos_materias:
@@ -613,7 +542,8 @@ class Inscripciones_2:
     def close_sqlite(self):
         self.conn.commit()
         self.conn.close()
-        # run("clear", shell=True)
+        run("cls", shell=True)
+        # run("clear", shell=True) opcion mac
         print('Conexión cerrada')
 
 if __name__ == "__main__":
