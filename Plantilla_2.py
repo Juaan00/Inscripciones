@@ -6,9 +6,12 @@ import sqlite3
 #from tkcalendar import DateEntry
 from tkinter import messagebox
 import datetime
-from ctypes import windll
 from pathlib import Path
 from subprocess import run
+from platform import system
+
+if system() == "Windows":
+    from ctypes import windll
 
 PATH = str((Path(__file__).resolve()).parent)
 ICONO = r"/img/LogoinscripcionesIco.png"
@@ -39,10 +42,15 @@ class Inscripciones_2:
         # Título de la ventana
         self.win.title("Inscripciones de Materias y Cursos")
         # Icono de la ventana
-        windll.shell32.SetCurrentProcessExplicitAppUserModelID('Inscripciones')
-        self.win.iconbitmap(PATH + ICONO)
-        icono = tk.PhotoImage(file= PATH + ICONO)
-        self.win.wm_iconphoto(False, icono)
+        if system() == "Windows":
+            windll.shell32.SetCurrentProcessExplicitAppUserModelID('Inscripciones')
+            self.win.iconbitmap(PATH + ICONO)
+            icono = tk.PhotoImage(file= PATH + ICONO)
+            self.win.wm_iconphoto(False, icono)
+        elif system() == "Linux" or system() == "Darwin":
+            self.icon = tk.PhotoImage(file= PATH + ICONO)
+            self.win.iconphoto(True, self.icon)
+            
 
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
