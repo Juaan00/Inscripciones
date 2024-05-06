@@ -522,6 +522,11 @@ class Inscripciones_2:
             self.int.set(0)
             self.int1.set(0)
             self.int2.set(0)
+            
+    def click(self,event):
+        self.item = self.tView.selection()[0]
+        self.values = self.tView.item(self.item, 'values')
+        return self.consultar(self.values[0])
     
     def consultar_no_inscripción(self):
         self.tView_c_inscripcion = ttk.Treeview(self.frm_1, name="tview",show='headings')
@@ -560,7 +565,11 @@ class Inscripciones_2:
                             ''')
         self.datos = self.cursor.fetchall()
         for i in self.datos:
+            # self.fecha = self.fecha_split(i[3])
             self.tView_c_inscripcion.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4]))
+        
+        self.tView_c_inscripcion.bind("<Double-1>", self.click)
+        # print(self.tView_c_inscripcion.selection())
         
     def consultar_id_alumno(self):
         self.tView_c_alumno = ttk.Treeview(self.frm_1, name="tview",show='headings')
@@ -645,14 +654,14 @@ class Inscripciones_2:
             self.tView_c_cursos.insert("", tk.END, values=(i[0], i[1], i[2]))
 
         
-    def consultar(self):
+    def consultar(self, event):
                 
         self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Fecha_Ingreso, No_Inscritos, Dirección, Ciudad, Departamento, 
                             Telef_Cel, Telef_Fijo, Id_Carrera, Inscritos.Código_Curso, Descripción_Curso, Num_Horas, Fecha_de_Inscripción  FROM Inscritos 
                     JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
                     JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso 
                     JOIN Carreras ON Alumnos.Id_Carrera = Carreras.Código_Carrera 
-                    WHERE Inscritos.No_Inscritos = {self.noInscripcion.get()}''')
+                    WHERE Inscritos.No_Inscritos = {event}''')
         self.datos = self.cursor.fetchall()
         self.lista = []
         for i in self.datos:
