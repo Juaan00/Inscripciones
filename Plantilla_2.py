@@ -65,7 +65,7 @@ class Inscripciones_2:
         #self.tView.place(anchor="nw", height=250, width=740, x=30, y=300)
 
         self.tView.configure(columns=self.tView_cols)
-        self.tView.column("#0", width=0) # este es necesario?
+        self.tView.column("#0", width=0) # este es necesario? 
         self.tView.column("NoInscripción",anchor="w",stretch=False,width=110)
         self.tView.column("CódigoCurso",anchor="w",stretch=False,width=110)
         self.tView.column("tV_descripción",anchor="w",stretch=False,width=290)
@@ -342,7 +342,7 @@ class Inscripciones_2:
         ''' Botones  de la Aplicación'''
         
         #Botón Consultar
-        self.btnConsultar = ttk.Button(self.frm_1, name="btnconsultar",command=self.consultar, cursor="hand2")
+        self.btnConsultar = ttk.Button(self.frm_1, name="btnconsultar",command=self.consultar_ventana, cursor="hand2")
         self.btnConsultar.configure(text='Consultar')
         self.btnConsultar.place(anchor="nw", x=150, y=260)
         
@@ -463,29 +463,190 @@ class Inscripciones_2:
         
         self.tView.delete(*self.tView.get_children())
     
-    def consultar(self):
+    def consultar_ventana(self):
         
-        self.ventana_emergente = tk.Toplevel()
+        self.ventana_emergente = tk.Toplevel(self.win)
         self.ventana_emergente.title("Consulta de Datos")
-        self.icon_consulta = tk.PhotoImage(file= PATH + ICONO_CONSULTA)
+        self.icon_consulta = tk.PhotoImage(file= PATH + ICONO)
         self.ventana_emergente.iconphoto(False, self.icon_consulta)
-                
+         
         self.ventana_emergente.resizable(False, False)
-        # self.altura_pantalla_1 = self.win.winfo_screenheight()
-        # self.ancho_pantalla_1 = self.win.winfo_screenwidth()
-        # print(f"Alto: {self.altura_pantalla_1} Ancho: {self.ancho_pantalla_1}")
-        self.ventana_emergente.geometry("400x300")
-        self.centrar(self.ventana_emergente, 400, 300)
+        self.ventana_emergente.geometry("400x200")
+        self.centrar(self.ventana_emergente, 400, 200)
         self.ventana_emergente.geometry(f"+{self.x}+{self.y}")
-        # self.ventana_emergente.eval('tk::PlaceWindow . center')
-        # self.x_1 = (self.ancho_pantalla_1 / 2) - (400 / 2)
-        # self.y_1 = (self.altura_pantalla_1 / 2) - (300 / 2)
-        # print(f"X: {int(self.x_1)} Y: {int(self.y_1)}")
-        # self.ventana_emergente.geometry(f"400x300+{int(self.x_1)}+{int(self.y_1)-9}")
-        self.frm_consulta = tk.Frame(self.win, name="frm_consulta")
-        self.frm_consulta.configure(background="#f7f9fd", height=600, width=800)
         
+        self.frm_consulta = tk.Frame(self.ventana_emergente, name="frm_consulta")
+        self.frm_consulta.configure(background= "#f7f9fd", height=200, width=400)
+        self.frm_consulta.pack(fill='both', expand=True)
         
+        self.lblOpciones = ttk.Label(self.frm_consulta, name="lblOpciones")
+        self.lblOpciones.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+                                state="normal", takefocus=False,text="Para realizar la consulta escoja una de las siguientes opciones: ")
+        self.lblOpciones.place(anchor="nw", x=20, y=20)
+        
+        self.int = tk.IntVar()
+        self.int.set(0)
+        self.int1 = tk.IntVar()
+        self.int1.set(0)
+        self.int2 = tk.IntVar()
+        self.int2.set(0)
+          
+        self.checkNoInscripcion = ttk.Checkbutton(self.frm_consulta, name="checkNoInscripcion", variable=self.int, onvalue=1, offvalue=0)
+        self.checkNoInscripcion.configure(text="No. Inscripción")
+        self.checkNoInscripcion.place(anchor="nw", x=40, y=50)
+        self.checkIdAlumno = ttk.Checkbutton(self.frm_consulta, name="checkIdAlumno")
+        self.checkIdAlumno.configure(text="Id Alumno", variable=self.int1, onvalue=1, offvalue=0)
+        self.checkIdAlumno.place(anchor="nw", x=40, y=80)
+        self.checkCursos = ttk.Checkbutton(self.frm_consulta, name="checkCursos")
+        self.checkCursos.configure(text="Cursos", variable=self.int2, onvalue=1, offvalue=0)
+        self.checkCursos.place(anchor="nw", x=40, y=110)
+        self.btnEscoger = ttk.Button(self.frm_consulta, name="btnEscoger", cursor="hand2", command=self.boton_escoger)
+        self.btnEscoger.configure(text="Consultar Datos")
+        self.btnEscoger.place(anchor="nw", x=135, y=160)
+        
+ 
+    def boton_escoger(self):
+        if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0:
+            self.ventana_emergente.destroy()
+            self.consultar_no_inscripción()
+        elif self.int1.get() == 1 and self.int.get() == 0 and self.int2.get() == 0:
+            print("Escoger Id Alumno")
+            self.ventana_emergente.destroy()
+            self.consultar_id_alumno()
+        elif self.int2.get() == 1 and self.int.get() == 0 and self.int1.get() == 0:
+            self.ventana_emergente.destroy()
+            self.consultar_cursos()
+
+        else:
+            messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
+            self.int.set(0)
+            self.int1.set(0)
+            self.int2.set(0)
+    
+    def consultar_no_inscripción(self):
+        self.tView_c_inscripcion = ttk.Treeview(self.frm_1, name="tview",show='headings')
+        self.tView_c_inscripcion.configure(selectmode="extended")
+        self.tView_c_inscripcion.place(anchor="nw", height=250, width=740, x=30, y=300)
+        self.tView_cols_c1 = ['NoInscripción', 'Nombres','Apellidos', 'Fecha_Inscripción', 'Código_Curso' ]
+        self.tView_c_inscripcion.configure(columns=self.tView_cols_c1)
+        self.tView_c_inscripcion.column("#0", width=0)
+        self.tView_c_inscripcion.column("NoInscripción",anchor="w",stretch=False,width=100)
+        self.tView_c_inscripcion.column("Nombres",anchor="w",stretch=False,width=110)
+        self.tView_c_inscripcion.column("Apellidos",anchor="w",stretch=False,width=290)
+        self.tView_c_inscripcion.column("Fecha_Inscripción",anchor="w",stretch=False,width=224)
+        self.tView_c_inscripcion.column("Código_Curso",anchor="w",stretch=False,width=224)
+        #Cabeceras
+        self.tView_c_inscripcion.heading("NoInscripción",anchor="w", text='No.Inscripción')
+        self.tView_c_inscripcion.heading("Nombres",anchor="w", text='Nombre(s)')
+        self.tView_c_inscripcion.heading("Apellidos", anchor="w", text='Apellido(s)')
+        self.tView_c_inscripcion.heading("Fecha_Inscripción", anchor="w", text='Fecha de Inscripción')
+        self.tView_c_inscripcion.heading("Código_Curso", anchor="w", text='Código de Curso')
+        self.tView_c_inscripcion.place(anchor="nw", height=250, width=740, x=30, y=300)
+        #Scrollbars
+        self.scroll_H_c_inscripcion = ttk.Scrollbar(self.frm_1, name="scroll_h")
+        self.scroll_H_c_inscripcion.configure(orient="horizontal")
+        self.scroll_H_c_inscripcion.place(anchor="nw", height=15, width=724, x=31, y=534)
+        self.scroll_Y_c_inscripcion = ttk.Scrollbar(self.frm_1, name="scroll_y")
+        self.scroll_Y_c_inscripcion.configure(orient="vertical")
+        self.scroll_Y_c_inscripcion.place(anchor="nw", height=248, width=16, x=753, y=301)
+        self.scroll_H_c_inscripcion.configure(command=self.tView_c_inscripcion.xview)
+        self.scroll_Y_c_inscripcion.configure(command=self.tView_c_inscripcion.yview)   
+        self.tView_c_inscripcion.configure(xscrollcommand=self.scroll_H_c_inscripcion.set, yscrollcommand=self.scroll_Y_c_inscripcion.set)
+        self.frm_1.pack(side="top")
+        self.frm_1.pack_propagate(0)
+        
+        self.cursor.execute(''' SELECT Inscritos.No_Inscritos, Nombres, Apellidos, Inscritos.Fecha_de_Inscripción, Código_Curso FROM Inscritos
+                            JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno
+                            ''')
+        self.datos = self.cursor.fetchall()
+        for i in self.datos:
+            self.tView_c_inscripcion.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4]))
+        
+    def consultar_id_alumno(self):
+        self.tView_c_alumno = ttk.Treeview(self.frm_1, name="tview",show='headings')
+        self.tView_c_alumno.configure(selectmode="extended")
+        self.tView_c_alumno.place(anchor="nw", height=250, width=740, x=30, y=300)
+        self.tView_cols_c1 = ['Id_Alumno','Nombres','Apellidos','Id_Carrera','Fecha_de_Ingreso','Dirección','Ciudad','Departamento','Tel_Cel','Tel_Fijo']
+        self.tView_c_alumno.configure(columns=self.tView_cols_c1)
+        self.tView_c_alumno.column("#0", width=0)
+        self.tView_c_alumno.column("Id_Alumno",anchor="w",stretch=False,width=100)
+        self.tView_c_alumno.column("Nombres",anchor="w",stretch=False,width=110)
+        self.tView_c_alumno.column("Apellidos",anchor="w",stretch=False,width=200)
+        self.tView_c_alumno.column("Id_Carrera",anchor="w",stretch=False,width=204)
+        self.tView_c_alumno.column("Fecha_de_Ingreso",anchor="w",stretch=False,width=204)
+        self.tView_c_alumno.column("Dirección",anchor="w",stretch=False,width=204)
+        self.tView_c_alumno.column("Ciudad",anchor="w",stretch=False,width=204)
+        self.tView_c_alumno.column("Departamento",anchor="w",stretch=False,width=204)
+        self.tView_c_alumno.column("Tel_Cel",anchor="w",stretch=False,width=204)
+        self.tView_c_alumno.column("Tel_Fijo",anchor="w",stretch=False,width=204)
+        #Cabeceras
+        self.tView_c_alumno.heading("Id_Alumno",anchor="w", text='Id Alumno')
+        self.tView_c_alumno.heading("Nombres",anchor="w", text='Nombre(s)')
+        self.tView_c_alumno.heading("Apellidos", anchor="w", text='Apellido(s)')
+        self.tView_c_alumno.heading("Id_Carrera", anchor="w", text='Id Carrera')
+        self.tView_c_alumno.heading("Fecha_de_Ingreso", anchor="w", text='Fecha de Ingreso')
+        self.tView_c_alumno.heading("Dirección", anchor="w", text='Dirección')
+        self.tView_c_alumno.heading("Ciudad", anchor="w", text='Ciudad')
+        self.tView_c_alumno.heading("Departamento", anchor="w", text='Departamento')
+        self.tView_c_alumno.heading("Tel_Cel", anchor="w", text='Teléfono Celular')
+        self.tView_c_alumno.heading("Tel_Fijo", anchor="w", text='Teléfono Fijo')
+
+        self.tView_c_alumno.place(anchor="nw", height=250, width=740, x=30, y=300)
+        #Scrollbars
+        self.scroll_H_c_alumno = ttk.Scrollbar(self.frm_1, name="scroll_h")
+        self.scroll_H_c_alumno.configure(orient="horizontal")
+        self.scroll_H_c_alumno.place(anchor="nw", height=15, width=724, x=31, y=534)
+        self.scroll_Y_c_alumno = ttk.Scrollbar(self.frm_1, name="scroll_y")
+        self.scroll_Y_c_alumno.configure(orient="vertical")
+        self.scroll_Y_c_alumno.place(anchor="nw", height=248, width=16, x=753, y=301)
+        self.scroll_H_c_alumno.configure(command=self.tView_c_alumno.xview)
+        self.scroll_Y_c_alumno.configure(command=self.tView_c_alumno.yview)   
+        self.tView_c_alumno.configure(xscrollcommand=self.scroll_H_c_alumno.set, yscrollcommand=self.scroll_Y_c_alumno.set)
+        self.frm_1.pack(side="top")
+        self.frm_1.pack_propagate(0)
+        
+        self.cursor.execute(''' SELECT Id_alumno, Nombres, Apellidos, Id_Carrera, Fecha_Ingreso, Dirección, Ciudad, Departamento, Telef_Cel, Telef_Fijo FROM Alumnos''') 
+        self.datos = self.cursor.fetchall()
+        for i in self.datos:
+            self.tView_c_alumno.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
+        
+    
+    def consultar_cursos(self):
+        self.tView_c_cursos = ttk.Treeview(self.frm_1, name="tview",show='headings')
+        self.tView_c_cursos.configure(selectmode="extended")
+        self.tView_c_cursos.place(anchor="nw", height=250, width=740, x=30, y=300)
+        self.tView_cols_c1 = ['Código_Curso','Descripción_Curso','Num_Horas']
+        self.tView_c_cursos.configure(columns=self.tView_cols_c1)
+        self.tView_c_cursos.column("#0", width=0)
+        self.tView_c_cursos.column("Código_Curso",anchor="w",stretch=False,width=100)
+        self.tView_c_cursos.column("Descripción_Curso",anchor="w",stretch=False,width=250)
+        self.tView_c_cursos.column("Num_Horas",anchor="w",stretch=False,width=250)
+        #Cabeceras
+        self.tView_c_cursos.heading("Código_Curso",anchor="w", text='Código Curso')
+        self.tView_c_cursos.heading("Descripción_Curso", anchor="w", text='Descripción Curso')
+        self.tView_c_cursos.heading("Num_Horas", anchor="w", text='Número de Horas')
+        self.tView_c_cursos.place(anchor="nw", height=250, width=740, x=30, y=300)
+        #Scrollbars
+        self.scroll_H_c_cursos = ttk.Scrollbar(self.frm_1, name="scroll_h")
+        self.scroll_H_c_cursos.configure(orient="horizontal")
+        self.scroll_H_c_cursos.place(anchor="nw", height=15, width=724, x=31, y=534)
+        self.scroll_Y_c_cursos = ttk.Scrollbar(self.frm_1, name="scroll_y")
+        self.scroll_Y_c_cursos.configure(orient="vertical")
+        self.scroll_Y_c_cursos.place(anchor="nw", height=248, width=16, x=753, y=301)
+        self.scroll_H_c_cursos.configure(command=self.tView_c_cursos.xview)
+        self.scroll_Y_c_cursos.configure(command=self.tView_c_cursos.yview)
+        self.tView_c_cursos.configure(xscrollcommand=self.scroll_H_c_cursos.set, yscrollcommand=self.scroll_Y_c_cursos.set)
+        self.frm_1.pack(side="top")
+        self.frm_1.pack_propagate(0)
+        
+        self.cursor.execute(''' SELECT Código_Curso, Descripción_Curso, Num_Horas FROM Cursos''')
+        self.datos = self.cursor.fetchall()
+        for i in self.datos:
+            self.tView_c_cursos.insert("", tk.END, values=(i[0], i[1], i[2]))
+
+        
+    def consultar(self):
+                
         self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Fecha_Ingreso, No_Inscritos, Dirección, Ciudad, Departamento, 
                             Telef_Cel, Telef_Fijo, Id_Carrera, Inscritos.Código_Curso, Descripción_Curso, Num_Horas, Fecha_de_Inscripción  FROM Inscritos 
                     JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
@@ -607,8 +768,10 @@ class Inscripciones_2:
     def close_sqlite(self):
         self.conn.commit()
         self.conn.close()
-        run("cls", shell=True)
-        # run("clear", shell=True) opcion mac
+        if system() == "Windows":
+            run("cls", shell=True)
+        elif system() == "Linux" or system() == "Darwin":
+            run("clear", shell=True) 
         print('Conexión cerrada')
 
 if __name__ == "__main__":
