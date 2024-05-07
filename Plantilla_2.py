@@ -15,8 +15,13 @@ if system() == "Windows":
 
 PATH = str((Path(__file__).resolve()).parent)
 ICONO = r"/img/LogoinscripcionesIco.png"
-ICONO_CONSULTA = r"/img/lupa.png"
+ICONO_CONSULTA = r"/img/busqueda.png"
+ICONO_EDITAR = r"/img/editar.png"
+ICONO_ELIMINAR = r"/img/eliminar.png"
+ICONO_CANCELAR = r"/img/escoba.png"
+ICONO_GUARDAR = r"/img/disco.png"
 DB = r"db/Inscripciones.db"
+
 
 class comunicacionBD():
     def __init__(self):
@@ -45,53 +50,7 @@ class comunicacionBD():
         cursor.close()
         return dato
 
-class Inscripciones_2:
-    def tree_view(self):
-        def restrictor(Event):
-            # Reviso si una zona especifica alrededor del cursor toca el separador de columnas
-            # Esta zona la obtuve con prueba y error.
-            for x in range(-10, 10):
-                for y in range(1):
-                    #Si el separador de columnas está dentro de la zona, entonces doy por hecho que el usuario está intentando cambiar de tamaño la columna.
-                    if(self.tView.identify_region(Event.x+x, Event.y+y) == "separator"):
-                        self.tView.event_generate("<ButtonRelease-1>") # si esta en el rango, hace creer al equipo que solto el clic
-                        break
-
-        self.tView = ttk.Treeview(self.frm_1, name="tview",show='headings')
-        self.tView.configure(selectmode="extended")
-        #Columnas del Treeview
-        self.tView_cols = ['NoInscripción', 'CódigoCurso','tV_descripción', 'Horario' ]
-
-        #self.tView.place(anchor="nw", height=250, width=740, x=30, y=300)
-
-        self.tView.configure(columns=self.tView_cols)
-        self.tView.column("#0", width=0) # este es necesario? 
-        self.tView.column("NoInscripción",anchor="w",stretch=False,width=110)
-        self.tView.column("CódigoCurso",anchor="w",stretch=False,width=110)
-        self.tView.column("tV_descripción",anchor="w",stretch=False,width=290)
-        self.tView.column("Horario",anchor="w",stretch=False,width=224)
-
-        #Cabeceras
-        self.tView.heading("NoInscripción",anchor="w", text='No.Inscripción')
-        self.tView.heading("CódigoCurso",anchor="w", text='Código de Curso')
-        self.tView.heading("tV_descripción", anchor="w", text='Descripción')
-        self.tView.heading("Horario", anchor="w", text='Horario')
-        self.tView.place(anchor="nw", height=250, width=740, x=30, y=300)
-        
-        #Scrollbars
-        self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
-        self.scroll_H.configure(orient="horizontal")
-        self.scroll_H.place(anchor="nw", height=15, width=724, x=31, y=534)
-        self.scroll_Y = ttk.Scrollbar(self.frm_1, name="scroll_y")
-        self.scroll_Y.configure(orient="vertical")
-        self.scroll_Y.place(anchor="nw", height=248, width=16, x=753, y=301)
-    
-        self.frm_1.pack(side="top")
-        self.frm_1.pack_propagate(0)
-
-        # Hago que mi función sea llamada cada vez que el usuario hace clic y mueve el cursor.
-        self.tView.bind("<B1-Motion>", restrictor)
-        
+class Inscripciones_2:    
     def centrar(self, win, ancho, alto):
              self.altura_pantalla = win.winfo_screenheight()
              self.ancho_pantalla = win.winfo_screenwidth()
@@ -138,8 +97,7 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text='Id Alumno')
         self.lblIdAlumno.place(anchor="nw", x=20, y=40)
         #Combobox id_Alumno
-        self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno", 
-                                           postcommand=self.combx_id_alumno)
+        self.cmbx_Id_Alumno = ttk.Entry(self.frm_1, name="cmbx_id_alumno",state=tk.DISABLED)
 
         self.cmbx_Id_Alumno.place(anchor="nw", width=110, x=20, y=60)
         
@@ -149,7 +107,7 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text='Nombre(s)')
         self.lblNombres.place(anchor="nw", x=150, y=40)
         #Entry Nombres
-        self.nombres = ttk.Entry(self.frm_1, name="nombres")
+        self.nombres = ttk.Entry(self.frm_1, name="nombres",state=tk.DISABLED)
         self.nombres.place(anchor="nw", width=190, x=150, y=60)
 
         #Label Apellidos
@@ -158,7 +116,7 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text='Apellido(s)')
         self.lblApellidos.place(anchor="nw", x=360, y=40)
         #Entry Apellidos
-        self.apellidos = ttk.Entry(self.frm_1, name="apellidos")
+        self.apellidos = ttk.Entry(self.frm_1, name="apellidos",state=tk.DISABLED)
         self.apellidos.place(anchor="nw", width=190, x=360, y=60)
         self.apellidos.insert(0,"")
         
@@ -168,7 +126,7 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text='Fecha Ingreso')
         self.lblFecha.place(anchor="nw", x=570, y=40)
 
-        self.fecha = tk.Entry(self.frm_1, name="fechas")
+        self.fecha = tk.Entry(self.frm_1, name="fechas",state=tk.DISABLED)
         self.fecha.configure(justify="right")
         self.fecha.place(anchor="nw", width=90, x=570, y=60)
             
@@ -243,7 +201,7 @@ class Inscripciones_2:
                                         state="normal",text='No.Inscripción')
         self.lblNoInscripcion.place(anchor="nw", x=680, y=40)
         #Conmbox No. Inscripción
-        self.noInscripcion = ttk.Combobox(self.frm_1, name="noInscripcion", postcommand=self.combx_no_incripcion)
+        self.noInscripcion = ttk.Entry(self.frm_1, name="noInscripcion",state=tk.DISABLED)
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=60)
         
         #Label Direccion
@@ -252,7 +210,7 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text='Dirección')
         self.lblDireccion.place(anchor="nw", x=20, y=100)
         #Entry Direccion
-        self.direccion = ttk.Entry(self.frm_1, name="direccion")
+        self.direccion = ttk.Entry(self.frm_1, name="direccion",state=tk.DISABLED)
         self.direccion.place(anchor="nw", width=200, x=20, y=120)
 
         #Label Ciudad
@@ -261,7 +219,7 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text='Ciudad')
         self.lblCiudad.place(anchor="nw", x=240, y=100)
         #Entry Ciudad
-        self.ciudad = ttk.Entry(self.frm_1, name="ciudad",)
+        self.ciudad = ttk.Entry(self.frm_1, name="ciudad",state=tk.DISABLED)
         self.ciudad.place(anchor="nw", width=130, x=240, y=120)
         
         #Label Departamento
@@ -270,7 +228,7 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Departamento')
         self.lblDepartamento.place(anchor="nw", x=390, y=100)
         #Entry Departamento
-        self.departamento = ttk.Entry(self.frm_1, name="departamento")
+        self.departamento = ttk.Entry(self.frm_1, name="departamento",state=tk.DISABLED)
         self.departamento.place(anchor="nw", width=130, x=390, y=120)
         
 
@@ -280,7 +238,7 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Teléfono Celular')
         self.lblTelCel.place(anchor="nw", x=540, y=100)
         #Entry Telefono Celular
-        self.telCel = ttk.Entry(self.frm_1, name="telcel")
+        self.telCel = ttk.Entry(self.frm_1, name="telcel",state=tk.DISABLED)
         self.telCel.place(anchor="nw", width=110, x=540, y=120)
 
         #Label Telefono Fijo
@@ -289,7 +247,7 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Teléfono Fijo')
         self.lblTelFijo.place(anchor="nw", x=670, y=100)
         #Entry Telefono Fijo
-        self.telFijo = ttk.Entry(self.frm_1, name="telfijo")
+        self.telFijo = ttk.Entry(self.frm_1, name="telfijo",state=tk.DISABLED)
         self.telFijo.place(anchor="nw", width=110, x=670, y=120)
     
         #Label id_carrera
@@ -298,7 +256,7 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text='Id Carrera')
         self.lblIdCarrera.place(anchor="nw", x=20, y=160)
         #Combobox id_carrera
-        self.cmbx_Id_Carrera = ttk.Entry(self.frm_1, name="cmbx_id_carrera")
+        self.cmbx_Id_Carrera = ttk.Entry(self.frm_1, name="cmbx_id_carrera",state=tk.DISABLED)
         self.cmbx_Id_Carrera.place(anchor="nw", width=60, x=20, y=180)
 
         #Label Codigo del Curso
@@ -307,7 +265,7 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Código del Curso')
         self.lblDscCurso.place(anchor="nw", x=100, y=160)
         #Entry Codigo del Curso 
-        self.codigo_Curso = ttk.Combobox(self.frm_1, name="descripc_curso")
+        self.codigo_Curso = ttk.Entry(self.frm_1, name="descripc_curso",state=tk.DISABLED)
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=180)
         
@@ -317,7 +275,7 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Nombre del Curso')
         self.lblNombreCurso.place(anchor="nw", x=230, y=160)
         #Entry Nombre de Curso
-        self.nombreCurso = ttk.Entry(self.frm_1, name="nombrecurso")
+        self.nombreCurso = ttk.Entry(self.frm_1, name="nombrecurso",state=tk.DISABLED)
         self.nombreCurso.place(anchor="nw", width=240, x=230, y=180)
         
         #Label Horario
@@ -326,7 +284,7 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Horario')
         self.lblHorario.place(anchor="nw", x=490, y=160)
         #Entry Horario
-        self.horario = ttk.Entry(self.frm_1, name="horario")
+        self.horario = ttk.Entry(self.frm_1, name="horario",state=tk.DISABLED)
         self.horario.place(anchor="nw", width=180, x=490, y=180)
         
         #Fecha de Inscripción
@@ -335,16 +293,17 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Fecha Inscripción')
         self.lblFechaInscripcion.place(anchor="nw", x=686, y=160)
         #Entry Fecha de Inscripción
-        self.fechaInscripcion = ttk.Entry(self.frm_1, name="fechainscripcion")
+        self.fechaInscripcion = ttk.Entry(self.frm_1, name="fechainscripcion",state=tk.DISABLED)
         self.fechaInscripcion.place(anchor="nw", width=90, x=690, y=180)
         
 
         ''' Botones  de la Aplicación'''
         
         #Botón Consultar
-        self.btnConsultar = ttk.Button(self.frm_1, name="btnconsultar",command=self.consultar_ventana, cursor="hand2")
-        self.btnConsultar.configure(text='Consultar')
-        self.btnConsultar.place(anchor="nw", x=150, y=260)
+        self.icono_c = tk.PhotoImage(file= PATH + ICONO_CONSULTA)
+        self.btnConsultar = tk.Button(self.frm_1, name="btnconsultar",command=self.consultar_ventana, cursor="hand2",image=self.icono_c,compound=tk.LEFT)
+        self.btnConsultar.configure(text='  Consultar',font=('Arial', 12, 'bold'), width=110, height=30)
+        self.btnConsultar.place(anchor="nw", x=100, y=255)
         
         
         # @staticmethod
@@ -373,14 +332,17 @@ class Inscripciones_2:
         #         self.is_fields_enabled = True
         #     else:
         #         pass
-        self.btnEditar = ttk.Button(self.frm_1, name="btneditar", cursor="hand2")
-        self.btnEditar.configure(text='Editar')
-        self.btnEditar.place(anchor="nw", x=255, y=260,  width=80)
+        self.icono_e = tk.PhotoImage(file= PATH + ICONO_EDITAR)
+        self.btnEditar = tk.Button(self.frm_1, name="btneditar", cursor="hand2", image=self.icono_e, compound=tk.LEFT)
+        self.btnEditar.configure(text='  Editar',font=('Arial', 12, 'bold'), width=110, height=30)
+        self.btnEditar.place(anchor="nw", x=220, y=255)
         
         #Botón Eliminar
-        self.btnEliminar = ttk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.eliminar_data)
-        self.btnEliminar.configure(text='Eliminar')
-        self.btnEliminar.place(anchor="nw", x=360, y=260, width=80)
+        self.icono_d = tk.PhotoImage(file= PATH + ICONO_ELIMINAR)
+        self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.eliminar_data,
+                                     image=self.icono_d,compound=tk.LEFT)
+        self.btnEliminar.configure(text='   Eliminar',font=('Arial', 12, 'bold'), width=110, height=30)
+        self.btnEliminar.place(anchor="nw", x=340, y=255)
         
         #Botón Cancelar
         # def limpiar(self):
@@ -390,10 +352,11 @@ class Inscripciones_2:
         #                   self.horario]
         #     for i in self.entry:
         #         return i.delete(0, tk.END)
-
-        self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar", cursor="hand2", command=self.limpiar)
-        self.btnCancelar.configure(text='Cancelar')
-        self.btnCancelar.place(anchor="nw", x=465, y=260, width=80)
+        self.icono_n = tk.PhotoImage(file= PATH + ICONO_CANCELAR)
+        self.btnCancelar = tk.Button(self.frm_1, name="btncancelar", cursor="hand2", command=self.limpiar,
+                                     image=self.icono_n,compound=tk.LEFT)
+        self.btnCancelar.configure(text='   Cancelar',font=('Arial', 12, 'bold'), width=110, height=30)
+        self.btnCancelar.place(anchor="nw", x=460, y=255)
         # self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar", cursor="hand2", command=self.limpiar)
         # self.btnCancelar.configure(text='Cancelar')
         # self.btnCancelar.place(anchor="nw", x=465, y=260, width=80)
@@ -401,9 +364,11 @@ class Inscripciones_2:
         
     
         #Botón Grabar
-        self.btnGrabar = ttk.Button(self.frm_1, name="btngrabar", cursor="hand2")
-        self.btnGrabar.configure(text='Grabar')
-        self.btnGrabar.place(anchor="nw", x=570, y=260, width=80)
+        self.icono_g = tk.PhotoImage(file= PATH + ICONO_GUARDAR)
+        self.btnGrabar = tk.Button(self.frm_1, name="btngrabar", cursor="hand2",
+                                   image=self.icono_g,compound=tk.LEFT)
+        self.btnGrabar.configure(text='  Grabar',font=('Arial', 12, 'bold'), width=110, height=30)
+        self.btnGrabar.place(anchor="nw", x=580, y=255)
         #Separador
         separator1 = ttk.Separator(self.frm_1)
         separator1.configure(orient="horizontal")
@@ -412,7 +377,8 @@ class Inscripciones_2:
         ''' Treeview de la Aplicación'''
 
         #Treeview
-        self.tree_view()
+        self.argumentos = ('inicial', [''],[735])
+        self.tree_view_prueba(*self.argumentos)
 
         #Probar data, borrable
         # def insert_data():
@@ -461,7 +427,11 @@ class Inscripciones_2:
             i.config(state="normal")
             i.delete(0, tk.END)
         
-        self.tView.delete(*self.tView.get_children())
+        # self.tView.delete(*self.tView.get_children())
+        self.tViews.delete(*self.tViews.get_children())
+        
+        self.argumentos = ('inicial', [''],[735])
+        self.tree_view_prueba(*self.argumentos)
     
     def consultar_ventana(self):
         
@@ -524,136 +494,83 @@ class Inscripciones_2:
             self.int2.set(0)
             
     def click(self,event):
-        self.item = self.tView.selection()[0]
-        self.values = self.tView.item(self.item, 'values')
+        self.item = self.tViews.selection()[0]
+        self.values = self.tViews.item(self.item, 'values')
         return self.consultar(self.values[0])
     
-    def consultar_no_inscripción(self):
-        self.tView_c_inscripcion = ttk.Treeview(self.frm_1, name="tview",show='headings')
-        self.tView_c_inscripcion.configure(selectmode="extended")
-        self.tView_c_inscripcion.place(anchor="nw", height=250, width=740, x=30, y=300)
-        self.tView_cols_c1 = ['NoInscripción', 'Nombres','Apellidos', 'Fecha_Inscripción', 'Código_Curso' ]
-        self.tView_c_inscripcion.configure(columns=self.tView_cols_c1)
-        self.tView_c_inscripcion.column("#0", width=0)
-        self.tView_c_inscripcion.column("NoInscripción",anchor="w",stretch=False,width=100)
-        self.tView_c_inscripcion.column("Nombres",anchor="w",stretch=False,width=110)
-        self.tView_c_inscripcion.column("Apellidos",anchor="w",stretch=False,width=290)
-        self.tView_c_inscripcion.column("Fecha_Inscripción",anchor="w",stretch=False,width=224)
-        self.tView_c_inscripcion.column("Código_Curso",anchor="w",stretch=False,width=224)
+    def tree_view_prueba(self, *kargs):
+        def restrictor(Event):
+            # Reviso si una zona especifica alrededor del cursor toca el separador de columnas
+            # Esta zona la obtuve con prueba y error.
+            for x in range(-10, 10):
+                for y in range(1):
+                    #Si el separador de columnas está dentro de la zona, entonces doy por hecho que el usuario está intentando cambiar de tamaño la columna.
+                    if(self.tViews.identify_region(Event.x+x, Event.y+y) == "separator"):
+                        self.tViews.event_generate("<ButtonRelease-1>") # si esta en el rango, hace creer al equipo que solto el clic
+                        break        
+        self.tViews = ttk.Treeview(self.frm_1, name=kargs[0],show='headings')
+        self.tViews.configure(selectmode="extended")
+        self.tViews.place(anchor="nw", height=250, width=740, x=30, y=300)
+        self.tViews.configure(columns=kargs[1])
+        self.tViews.column("#0", width=0)
+        self.a = 0
+        for i in kargs[1]:
+            self.tViews.column(kargs[1][self.a],anchor="w",stretch=False,width=kargs[2][self.a])
+            self.a += 1
         #Cabeceras
-        self.tView_c_inscripcion.heading("NoInscripción",anchor="w", text='No.Inscripción')
-        self.tView_c_inscripcion.heading("Nombres",anchor="w", text='Nombre(s)')
-        self.tView_c_inscripcion.heading("Apellidos", anchor="w", text='Apellido(s)')
-        self.tView_c_inscripcion.heading("Fecha_Inscripción", anchor="w", text='Fecha de Inscripción')
-        self.tView_c_inscripcion.heading("Código_Curso", anchor="w", text='Código de Curso')
-        self.tView_c_inscripcion.place(anchor="nw", height=250, width=740, x=30, y=300)
+        self.b = 0
+        for i in kargs[1]:
+            self.tViews.heading(kargs[1][self.b],anchor="w", text=kargs[1][self.b])
+            self.b += 1
+        self.tViews.place(anchor="nw", height=250, width=740, x=30, y=300)
         #Scrollbars
-        self.scroll_H_c_inscripcion = ttk.Scrollbar(self.frm_1, name="scroll_h")
-        self.scroll_H_c_inscripcion.configure(orient="horizontal")
-        self.scroll_H_c_inscripcion.place(anchor="nw", height=15, width=724, x=31, y=534)
-        self.scroll_Y_c_inscripcion = ttk.Scrollbar(self.frm_1, name="scroll_y")
-        self.scroll_Y_c_inscripcion.configure(orient="vertical")
-        self.scroll_Y_c_inscripcion.place(anchor="nw", height=248, width=16, x=753, y=301)
-        self.scroll_H_c_inscripcion.configure(command=self.tView_c_inscripcion.xview)
-        self.scroll_Y_c_inscripcion.configure(command=self.tView_c_inscripcion.yview)   
-        self.tView_c_inscripcion.configure(xscrollcommand=self.scroll_H_c_inscripcion.set, yscrollcommand=self.scroll_Y_c_inscripcion.set)
+        self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
+        self.scroll_H.configure(orient="horizontal")
+        self.scroll_H.place(anchor="nw", height=15, width=724, x=31, y=534)
+        self.scroll_Y = ttk.Scrollbar(self.frm_1, name="scroll_y")
+        self.scroll_Y.configure(orient="vertical")
+        self.scroll_Y.place(anchor="nw", height=248, width=16, x=753, y=301)
+        self.scroll_H.configure(command=self.tViews.xview)
+        self.scroll_Y.configure(command=self.tViews.yview)
+        self.tViews.configure(xscrollcommand=self.scroll_H.set, yscrollcommand=self.scroll_Y.set)
         self.frm_1.pack(side="top")
         self.frm_1.pack_propagate(0)
-        
+        # Hago que mi función sea llamada cada vez que el usuario hace clic y mueve el cursor.
+        self.tViews.bind("<B1-Motion>", restrictor)
+    
+    def consultar_no_inscripción(self):
+        self.argumentos = ('c_inscripción',['No. Inscripción', 'Nombres', 'Apellidos', 'Fecha_Inscripción', 'Código_Curso'],[100,110,290,224,224])
+        self.tree_view_prueba(*self.argumentos)
         self.cursor.execute(''' SELECT Inscritos.No_Inscritos, Nombres, Apellidos, Inscritos.Fecha_de_Inscripción, Código_Curso FROM Inscritos
                             JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno
                             ''')
         self.datos = self.cursor.fetchall()
         for i in self.datos:
             # self.fecha = self.fecha_split(i[3])
-            self.tView_c_inscripcion.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4]))
+            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4]))
         
-        self.tView_c_inscripcion.bind("<Double-1>", self.click)
+        self.tViews.bind("<Double-1>", self.click)
         # print(self.tView_c_inscripcion.selection())
         
     def consultar_id_alumno(self):
-        self.tView_c_alumno = ttk.Treeview(self.frm_1, name="tview",show='headings')
-        self.tView_c_alumno.configure(selectmode="extended")
-        self.tView_c_alumno.place(anchor="nw", height=250, width=740, x=30, y=300)
-        self.tView_cols_c1 = ['Id_Alumno','Nombres','Apellidos','Id_Carrera','Fecha_de_Ingreso','Dirección','Ciudad','Departamento','Tel_Cel','Tel_Fijo']
-        self.tView_c_alumno.configure(columns=self.tView_cols_c1)
-        self.tView_c_alumno.column("#0", width=0)
-        self.tView_c_alumno.column("Id_Alumno",anchor="w",stretch=False,width=100)
-        self.tView_c_alumno.column("Nombres",anchor="w",stretch=False,width=110)
-        self.tView_c_alumno.column("Apellidos",anchor="w",stretch=False,width=200)
-        self.tView_c_alumno.column("Id_Carrera",anchor="w",stretch=False,width=204)
-        self.tView_c_alumno.column("Fecha_de_Ingreso",anchor="w",stretch=False,width=204)
-        self.tView_c_alumno.column("Dirección",anchor="w",stretch=False,width=204)
-        self.tView_c_alumno.column("Ciudad",anchor="w",stretch=False,width=204)
-        self.tView_c_alumno.column("Departamento",anchor="w",stretch=False,width=204)
-        self.tView_c_alumno.column("Tel_Cel",anchor="w",stretch=False,width=204)
-        self.tView_c_alumno.column("Tel_Fijo",anchor="w",stretch=False,width=204)
-        #Cabeceras
-        self.tView_c_alumno.heading("Id_Alumno",anchor="w", text='Id Alumno')
-        self.tView_c_alumno.heading("Nombres",anchor="w", text='Nombre(s)')
-        self.tView_c_alumno.heading("Apellidos", anchor="w", text='Apellido(s)')
-        self.tView_c_alumno.heading("Id_Carrera", anchor="w", text='Id Carrera')
-        self.tView_c_alumno.heading("Fecha_de_Ingreso", anchor="w", text='Fecha de Ingreso')
-        self.tView_c_alumno.heading("Dirección", anchor="w", text='Dirección')
-        self.tView_c_alumno.heading("Ciudad", anchor="w", text='Ciudad')
-        self.tView_c_alumno.heading("Departamento", anchor="w", text='Departamento')
-        self.tView_c_alumno.heading("Tel_Cel", anchor="w", text='Teléfono Celular')
-        self.tView_c_alumno.heading("Tel_Fijo", anchor="w", text='Teléfono Fijo')
-
-        self.tView_c_alumno.place(anchor="nw", height=250, width=740, x=30, y=300)
-        #Scrollbars
-        self.scroll_H_c_alumno = ttk.Scrollbar(self.frm_1, name="scroll_h")
-        self.scroll_H_c_alumno.configure(orient="horizontal")
-        self.scroll_H_c_alumno.place(anchor="nw", height=15, width=724, x=31, y=534)
-        self.scroll_Y_c_alumno = ttk.Scrollbar(self.frm_1, name="scroll_y")
-        self.scroll_Y_c_alumno.configure(orient="vertical")
-        self.scroll_Y_c_alumno.place(anchor="nw", height=248, width=16, x=753, y=301)
-        self.scroll_H_c_alumno.configure(command=self.tView_c_alumno.xview)
-        self.scroll_Y_c_alumno.configure(command=self.tView_c_alumno.yview)   
-        self.tView_c_alumno.configure(xscrollcommand=self.scroll_H_c_alumno.set, yscrollcommand=self.scroll_Y_c_alumno.set)
-        self.frm_1.pack(side="top")
-        self.frm_1.pack_propagate(0)
+        self.argumentos = ('c_alumnos',['Id Alumno', 'Nombres', 'Apellidos', 'Id Carrera', 'Fecha de Ingreso', 'Dirección', 'Ciudad', 'Telefono Celular', 'Telefono Fijo'],
+                           [100,110,200,204,204,204,204,204,204,204])
+        self.tree_view_prueba(*self.argumentos)
         
         self.cursor.execute(''' SELECT Id_alumno, Nombres, Apellidos, Id_Carrera, Fecha_Ingreso, Dirección, Ciudad, Departamento, Telef_Cel, Telef_Fijo FROM Alumnos''') 
         self.datos = self.cursor.fetchall()
         for i in self.datos:
-            self.tView_c_alumno.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
-        
-    
+            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
+
     def consultar_cursos(self):
-        self.tView_c_cursos = ttk.Treeview(self.frm_1, name="tview",show='headings')
-        self.tView_c_cursos.configure(selectmode="extended")
-        self.tView_c_cursos.place(anchor="nw", height=250, width=740, x=30, y=300)
-        self.tView_cols_c1 = ['Código_Curso','Descripción_Curso','Num_Horas']
-        self.tView_c_cursos.configure(columns=self.tView_cols_c1)
-        self.tView_c_cursos.column("#0", width=0)
-        self.tView_c_cursos.column("Código_Curso",anchor="w",stretch=False,width=100)
-        self.tView_c_cursos.column("Descripción_Curso",anchor="w",stretch=False,width=250)
-        self.tView_c_cursos.column("Num_Horas",anchor="w",stretch=False,width=250)
-        #Cabeceras
-        self.tView_c_cursos.heading("Código_Curso",anchor="w", text='Código Curso')
-        self.tView_c_cursos.heading("Descripción_Curso", anchor="w", text='Descripción Curso')
-        self.tView_c_cursos.heading("Num_Horas", anchor="w", text='Número de Horas')
-        self.tView_c_cursos.place(anchor="nw", height=250, width=740, x=30, y=300)
-        #Scrollbars
-        self.scroll_H_c_cursos = ttk.Scrollbar(self.frm_1, name="scroll_h")
-        self.scroll_H_c_cursos.configure(orient="horizontal")
-        self.scroll_H_c_cursos.place(anchor="nw", height=15, width=724, x=31, y=534)
-        self.scroll_Y_c_cursos = ttk.Scrollbar(self.frm_1, name="scroll_y")
-        self.scroll_Y_c_cursos.configure(orient="vertical")
-        self.scroll_Y_c_cursos.place(anchor="nw", height=248, width=16, x=753, y=301)
-        self.scroll_H_c_cursos.configure(command=self.tView_c_cursos.xview)
-        self.scroll_Y_c_cursos.configure(command=self.tView_c_cursos.yview)
-        self.tView_c_cursos.configure(xscrollcommand=self.scroll_H_c_cursos.set, yscrollcommand=self.scroll_Y_c_cursos.set)
-        self.frm_1.pack(side="top")
-        self.frm_1.pack_propagate(0)
+        self.argumentos = ('tView_c_cursos',['Código_Curso','Descripción_Curso','Num_Horas'],[110,300,300])
+        self.tree_view_prueba(*self.argumentos)
         
         self.cursor.execute(''' SELECT Código_Curso, Descripción_Curso, Num_Horas FROM Cursos''')
         self.datos = self.cursor.fetchall()
         for i in self.datos:
-            self.tView_c_cursos.insert("", tk.END, values=(i[0], i[1], i[2]))
-
-        
+            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
+   
     def consultar(self, event):
                 
         self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Fecha_Ingreso, No_Inscritos, Dirección, Ciudad, Departamento, 
@@ -688,8 +605,9 @@ class Inscripciones_2:
                 i.insert(0, self.lista[self.a])
                 i.config(state="readonly")
             self.a += 1
-                 
-        self.tree_view()
+        
+        self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario'],[110,110,290,224]) 
+        self.tree_view_prueba(*self.argumentos)
 
         self.cursor.execute(f'''SELECT * FROM Inscritos
                    JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso
@@ -699,7 +617,7 @@ class Inscripciones_2:
         for i in datos_materias:
             self.lista_materia = []
             self.lista_materia += i
-            self.tView.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[4], self.lista_materia[5], self.lista_materia[6]))
+            self.tViews.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[4], self.lista_materia[5], self.lista_materia[6]))
 
     #borrable
     # def eliminar_data (self):
