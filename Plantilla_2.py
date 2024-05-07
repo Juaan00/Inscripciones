@@ -27,9 +27,9 @@ class comunicacionBD():
     def __init__(self):
         self.conexion= sqlite3.connect(DB)
     
-    def agregar_datos(self, bd, pront, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
+    def agregar_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
         cursor = self.conexion.cursor()
-        query = '''INSERT INTO Inscripciones (No_Inscritos, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES ('{}','{}','{}','{}')'''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
+        query = '''INSERT INTO Inscritos (No_Inscritos, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES ('{}','{}','{}','{}')'''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
         cursor.execute(query)
         self.conexion.commit()
         cursor.close()
@@ -43,7 +43,7 @@ class comunicacionBD():
     
     def actualiza_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
         cursor = self.conexion.cursor()
-        query = ''' UPDATE Inscripciones SET No_Inscritos = '{}', Id_Alumno = '{}', Fecha_de_Inscripción = '{}', Código_Curso = '{}'  '''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
+        query = ''' UPDATE Inscritos SET No_Inscritos = '{}', Id_Alumno = '{}', Fecha_de_Inscripción = '{}', Código_Curso = '{}'  '''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
         cursor.execute(query)
         dato = cursor.rowcount
         self.conexion.commit()
@@ -82,11 +82,11 @@ class Inscripciones_2:
             
 
         self.DatosBD = comunicacionBD()
-        self.NoInscripcion = tk.StringVar()
+        self.tvNoInscripcion = tk.StringVar()
         self.tvNombres = tk.StringVar()
         self.tvApellidos = tk.StringVar()
-        self.FechaInscripcion = tk.StringVar()
-        self.CodigoCurso = tk.StringVar()
+        self.tvFechaInscripcion = tk.StringVar()
+        self.tvCodigoCurso = tk.StringVar()
 
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
@@ -366,7 +366,7 @@ class Inscripciones_2:
     
         #Botón Grabar
         self.icono_g = tk.PhotoImage(file= PATH + ICONO_GUARDAR)
-        self.btnGrabar = tk.Button(self.frm_1, name="btngrabar", cursor="hand2",
+        self.btnGrabar = tk.Button(self.frm_1, name="btngrabar", cursor="hand2",command= self.agregar_data,
                                    image=self.icono_g,compound=tk.LEFT)
         self.btnGrabar.configure(text='  Grabar',font=('Arial', 12, 'bold'), width=110, height=30)
         self.btnGrabar.place(anchor="nw", x=580, y=255)
@@ -645,18 +645,18 @@ class Inscripciones_2:
         if not item:
             return
         self.data = self.tViews.item(item)
-        self.NoInscripcion.set(self.data["values"][0])
+        self.tvNoInscripcion.set(self.data["values"][0])
         self.tvNombres.set(self.data['values'][1])
         self.tvApellidos.set(self.data['values'][2])
-        self.FechaInscripcion.set(self.data["values"][3])
-        self.CodigoCurso.set(self.data["values"][4])
+        self.tvFechaInscripcion.set(self.data["values"][3])
+        self.tvCodigoCurso.set(self.data["values"][4])
 
         #observador de funcion
-        print(str(self.NoInscripcion.get()))
+        print(str(self.tvNoInscripcion.get()))
         print(str(self.tvNombres.get()))
         print(str(self.tvApellidos.get()))
-        print(str(self.FechaInscripcion.get()))
-        print(str(self.CodigoCurso.get()))
+        print(str(self.tvFechaInscripcion.get()))
+        print(str(self.tvCodigoCurso.get()))
     
     def eliminar_data (self):
         self.limpiar_data()
@@ -666,15 +666,21 @@ class Inscripciones_2:
             self.tViews.delete(item)
             self.DatosBD.eliminar_datos(self.data['values'][4])
             messagebox.INFO("Eliminando datos", 'Datos eliminados con exito')
-        
 
-        # name = self.tView.item(self.tView.selection())['text']
-        # query = 'DELETE FROM product WHERE name = ?'
-        # self.run_query(query, (name,))
+    def agregar_data(self):
+        noInscripcion = self.noInscripcion
+        nombre = self.nombres.get()
+        apellido = self.apellidos.get()
+        fechaInscripcion = self.fechaInscripcion.get()
+        codigo = self.codigo_Curso.get()
+        if not fechaInscripcion:
+            fechaInscripcion = '{}-{}-{}'.format(datetime.date.year,datetime.date.month,
+            datetime.date.day)
+        datos = (noInscripcion, nombre, apellido, fechaInscripcion, codigo)
 
-        # self.cursor.execute(f"DELETE from inscpciones where ID=" + self)
-        # self.cursor.close()
-        # self.cursor.commit()
+        if (noInscripcion and nombre and apellido and fechaInscripcion and codigo) != '':
+            self.tViews.insert(values=datos)
+            self.DatosBD.agregar_datos(self.noInscripcion.get(), self.cmbx_Id_Alumno.get(), fechaInscripcion, self.codigo_Curso.get())
 
         
     # def get_data_idalumno(self):
