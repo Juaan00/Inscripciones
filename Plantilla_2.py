@@ -273,8 +273,9 @@ class Inscripciones_2:
         
         #Botón Consultar
         self.icono_c = tk.PhotoImage(file= PATH + ICONO_CONSULTA)
-        self.btnConsultar = tk.Button(self.frm_1, name="btnconsultar",command=self.consultar_ventana, cursor="hand2",
-                                      image=self.icono_c,compound=tk.LEFT,bd=0, relief="flat", bg="#f7f9fd")
+        self.btnConsultar = tk.Button(self.frm_1, name="btnconsultar",
+                                      command=lambda: self.consultar_ventana("Consultar Datos", "Seleccione una opción",3),
+                                      cursor="hand2", image=self.icono_c,compound=tk.LEFT,bd=0, relief="flat", bg="#f7f9fd")
         self.btnConsultar.configure(text='  Consultar',font=('Arial', 9, 'bold'), width=90, height=30)
         self.btnConsultar.place(anchor="nw", x=100, y=235)
         
@@ -422,6 +423,11 @@ class Inscripciones_2:
         self.fecha_n = f"{self.split[2]}/{self.split[1]}/{self.split[0]}"
         return self.fecha_n
     
+    def fecha_split_al_reves(self,fecha):
+        self.split = fecha.split("/")
+        self.fecha_n = f"{self.split[2]}-{self.split[1]}-{self.split[0]}"
+        return self.fecha_n
+    
     def limpiar(self):
         self.entry = [self.noInscripcion, self.cmbx_Id_Alumno, self.fecha, self.fechaInscripcion, 
                         self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.direccion, self.ciudad, 
@@ -437,15 +443,21 @@ class Inscripciones_2:
         self.argumentos = ('inicial', [''],[735])
         self.tree_view_prueba(*self.argumentos)
     
+    def abrir_ventana(self):
+        self.botones = [ self.btnEliminar, self.btnCancelar, self.btnGrabar, self.btnConsultar, self.btnEditar]
+        for i in self.botones:
+            i.config(state=tk.DISABLED)
         
-    def cerrar_consulta(self):
-        self.btnConsultar.config(state=tk.NORMAL)
+    def cerrar_ventana(self):
+        self.botones = [self.btnEliminar, self.btnCancelar, self.btnGrabar, self.btnConsultar, self.btnEditar]  
+        for i in self.botones:
+            i.config(state=tk.NORMAL)
         self.ventana_emergente.destroy()
     
-    def consultar_ventana(self):
-        self.btnConsultar.config(state=tk.DISABLED)
+    def consultar_ventana(self, *args):
+        self.abrir_ventana()
         self.ventana_emergente = tk.Toplevel(self.win)
-        self.ventana_emergente.title("Consulta de Datos")
+        self.ventana_emergente.title(args[0])
         self.icon_consulta = tk.PhotoImage(file= PATH + ICONO)
         self.ventana_emergente.iconphoto(False, self.icon_consulta)
          
@@ -460,29 +472,37 @@ class Inscripciones_2:
         
         self.lblOpciones = ttk.Label(self.frm_consulta, name="lblOpciones")
         self.lblOpciones.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
-                                state="normal", takefocus=False,text="Para realizar la consulta escoja una de las siguientes opciones: ")
+                                state="normal", takefocus=False,text=args[1])
         self.lblOpciones.place(anchor="nw", x=20, y=20)
         
-        self.int = tk.IntVar()
-        self.int.set(0)
-        self.int1 = tk.IntVar()
-        self.int1.set(0)
-        self.int2 = tk.IntVar()
-        self.int2.set(0)
-          
-        self.checkNoInscripcion = ttk.Checkbutton(self.frm_consulta, name="checkNoInscripcion", variable=self.int, onvalue=1, offvalue=0)
+        for i in range(args[2]):
+            i = tk.IntVar()
+            
+                
+            
+        # self.int = tk.IntVar()
+        # self.int1 = tk.IntVar()
+        # self.int2 = tk.IntVar()
+            
+        
+        self.checkNoInscripcion = ttk.Checkbutton(self.frm_consulta, name="checkNoInscripcion", variable=self.i[0], onvalue=1, offvalue=0)
         self.checkNoInscripcion.configure(text="No. Inscripción")
         self.checkNoInscripcion.place(anchor="nw", x=40, y=50)
+        
         self.checkIdAlumno = ttk.Checkbutton(self.frm_consulta, name="checkIdAlumno")
-        self.checkIdAlumno.configure(text="Id Alumno", variable=self.int1, onvalue=1, offvalue=0)
+        self.checkIdAlumno.configure(text="Id Alumno", variable=self.i[1], onvalue=1, offvalue=0)
         self.checkIdAlumno.place(anchor="nw", x=40, y=80)
+        
         self.checkCursos = ttk.Checkbutton(self.frm_consulta, name="checkCursos")
-        self.checkCursos.configure(text="Cursos", variable=self.int2, onvalue=1, offvalue=0)
+        self.checkCursos.configure(text="Cursos", variable=self.i[2], onvalue=1, offvalue=0)
         self.checkCursos.place(anchor="nw", x=40, y=110)
+        
         self.btnEscoger = ttk.Button(self.frm_consulta, name="btnEscoger", cursor="hand2", command=self.boton_escoger)
         self.btnEscoger.configure(text="Consultar Datos")
-        self.btnEscoger.place(anchor="nw", x=135, y=140)
-        self.ventana_emergente.protocol("WM_DELETE_WINDOW", self.cerrar_consulta)
+        self.btnEscoger.place(anchor="nw", x=153, y=140)
+        
+        
+        self.ventana_emergente.protocol("WM_DELETE_WINDOW", self.cerrar_ventana)
         self.ventana_emergente.mainloop()
         
     def ventana_eliminar(self):
@@ -520,20 +540,20 @@ class Inscripciones_2:
         self.combx_no_incripcion()
         self.combx_codigo_curso()
         if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0:
-            self.cerrar_consulta()
+            self.cerrar_ventana()
             return self.consultar_no_inscripción()
         elif self.int1.get() == 1 and self.int.get() == 0 and self.int2.get() == 0:
-            self.cerrar_consulta()
+            self.cerrar_ventana()
             return self.consultar_id_alumno()
         elif self.int2.get() == 1 and self.int.get() == 0 and self.int1.get() == 0:
-            self.cerrar_consulta()
+            self.cerrar_ventana()
             return self.consultar_cursos()
         else:
             messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
             self.int.set(0)
             self.int1.set(0)
             self.int2.set(0)
-            self.cerrar_consulta()
+            self.cerrar_ventana()
             
     def click(self,event):
         self.item = self.tViews.selection()[0]
@@ -581,6 +601,7 @@ class Inscripciones_2:
         self.tViews.bind("<<TreeviewSelect>>", self.obtener_fila)
     
     def consultar_no_inscripción(self):
+        self.limpiar()
         if self.cursor:
             self.cursor = self.conn.cursor()
         self.argumentos = ('c_inscripción',['No. Inscripción', 'Nombres', 'Apellidos', 'Fecha_Inscripción', 'Código_Curso'],[100,110,290,224,224])
@@ -597,8 +618,9 @@ class Inscripciones_2:
         # print(self.tView_c_inscripcion.selection())
         
     def consultar_id_alumno(self):
-        self.argumentos = ('c_alumnos',['Id Alumno', 'Nombres', 'Apellidos', 'Id Carrera', 'Fecha de Ingreso', 'Dirección', 'Ciudad', 'Telefono Celular', 'Telefono Fijo'],
-                           [100,110,200,204,204,204,204,204,204,204])
+        self.limpiar()
+        self.argumentos = ('c_alumnos',['Id Alumno', 'Nombres', 'Apellidos', 'Id Carrera', 'Fecha de Ingreso', 'Dirección', 'Ciudad', 'Departamento', 'Telefono Celular', 'Telefono Fijo'],
+                           [100,200,200,100,120,200,200,200,100,100])
         self.tree_view_prueba(*self.argumentos)
         
         self.cursor.execute(''' SELECT Id_alumno, Nombres, Apellidos, Id_Carrera, Fecha_Ingreso, Dirección, Ciudad, Departamento, Telef_Cel, Telef_Fijo FROM Alumnos''') 
@@ -607,7 +629,8 @@ class Inscripciones_2:
             self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
 
     def consultar_cursos(self):
-        self.argumentos = ('tView_c_cursos',['Código_Curso','Descripción_Curso','Num_Horas'],[110,300,300])
+        self.limpiar()
+        self.argumentos = ('tView_c_cursos',['Código_Curso','Descripción_Curso','Num_Horas'],[110,320,300])
         self.tree_view_prueba(*self.argumentos)
         
         self.cursor.execute(''' SELECT Código_Curso, Descripción_Curso, Num_Horas FROM Cursos''')
@@ -769,6 +792,21 @@ class Inscripciones_2:
     #     self.lista_alumnos = []
     #     for i in self.data:
     #         self.lista_alumnos.append(i)
+    
+    def agregar_estudiantes(self):
+        self.entry_datos = [self.cmbx_Id_Alumno, self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.fecha, self.direccion, 
+                            self.telCel, self.telFijo, self.ciudad, self.departamento]
+        self.datos_ingresados = []
+        for i in self.entry_datos:
+            if i == self.fecha:
+                self.datos_ingresados.append(self.fecha_split_al_reves(i.get()))
+            else:
+                self.datos_ingresados.append(i.get())
+        self.limpiar()
+        self.cursor.execute('''INSERT INTO Alumnos (Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento)   
+                            VALUES (?,?,?,?,?,?,?,?,?,?)''', tuple(self.datos_ingresados))
+        self.conn.commit()
+        return messagebox.showinfo("Ingreso de Datos", "Datos ingresados correctamente")
         
     def close_sqlite(self):
         self.conn.commit()
@@ -788,17 +826,4 @@ if __name__ == "__main__":
     # app.get_data_cursos()
     signal.signal(signal.SIGINT, signal.SIG_IGN) # Ignorar la señal de interrupción versión mejorada
     app.run()
-    # while True: # Para evitar que el viejo cacreco nos cierre la aplicación con la terminal
-    #     try:
-    #         app.run()
-    #         if app.win.quit:
-    #             break
-    #         else:
-    #             continue
-    #     except KeyboardInterrupt:
-    #         if not handling_interrupt:
-    #             print("Para finalizar el programa oprima el botón 'Salir' o el comando Alt+F4")
-    #             handling_interrupt = True
-    #         else:
-    #             continue
     app.close_sqlite()
