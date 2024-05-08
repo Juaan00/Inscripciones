@@ -64,42 +64,42 @@ class Inscripciones_2:
 
         #Label id_Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
-        self.lblIdAlumno.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblIdAlumno.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Id Alumno')
-        self.lblIdAlumno.place(anchor="nw", x=20, y=40)
+        self.lblIdAlumno.place(anchor="nw", x=20, y=20)
         #Combobox id_Alumno
         self.cmbx_Id_Alumno = ttk.Entry(self.frm_1, name="cmbx_id_alumno",state=tk.DISABLED)
 
-        self.cmbx_Id_Alumno.place(anchor="nw", width=110, x=20, y=60)
+        self.cmbx_Id_Alumno.place(anchor="nw", width=110, x=20, y=40)
         
         #Label Nombres
         self.lblNombres = ttk.Label(self.frm_1, name="lblnombres")
-        self.lblNombres.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblNombres.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Nombre(s)')
-        self.lblNombres.place(anchor="nw", x=150, y=40)
+        self.lblNombres.place(anchor="nw", x=150, y=20)
         #Entry Nombres
         self.nombres = ttk.Entry(self.frm_1, name="nombres",state=tk.DISABLED)
-        self.nombres.place(anchor="nw", width=190, x=150, y=60)
+        self.nombres.place(anchor="nw", width=190, x=150, y=40)
 
         #Label Apellidos
         self.lblApellidos = ttk.Label(self.frm_1, name="lblapellidos")
-        self.lblApellidos.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblApellidos.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Apellido(s)')
-        self.lblApellidos.place(anchor="nw", x=360, y=40)
+        self.lblApellidos.place(anchor="nw", x=360, y=20)
         #Entry Apellidos
         self.apellidos = ttk.Entry(self.frm_1, name="apellidos",state=tk.DISABLED)
-        self.apellidos.place(anchor="nw", width=190, x=360, y=60)
+        self.apellidos.place(anchor="nw", width=190, x=360, y=40)
         self.apellidos.insert(0,"")
         
         #Label Fecha
         self.lblFecha = ttk.Label(self.frm_1, name="lblfecha")
-        self.lblFecha.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblFecha.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Fecha Ingreso')
-        self.lblFecha.place(anchor="nw", x=570, y=40)
+        self.lblFecha.place(anchor="nw", x=570, y=20)
 
         self.fecha = tk.Entry(self.frm_1, name="fechas",state=tk.DISABLED)
         self.fecha.configure(justify="right")
-        self.fecha.place(anchor="nw", width=90, x=570, y=60)
+        self.fecha.place(anchor="nw", width=90, x=570, y=40)
             
         self.act_date = False
 
@@ -168,113 +168,114 @@ class Inscripciones_2:
         
         #Label No. Inscripción
         self.lblNoInscripcion = ttk.Label(self.frm_1, name="lblnoinscripcion")
-        self.lblNoInscripcion.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblNoInscripcion.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                         state="normal",text='No.Inscripción')
-        self.lblNoInscripcion.place(anchor="nw", x=680, y=40)
+        self.lblNoInscripcion.place(anchor="nw", x=680, y=20)
         #Conmbox No. Inscripción
         self.noInscripcion = ttk.Entry(self.frm_1, name="noInscripcion",state=tk.DISABLED)
-        self.noInscripcion.place(anchor="nw", width=100, x=680, y=60)
+        self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
         
         #Label Direccion
         self.lblDireccion = ttk.Label(self.frm_1, name="lbldireccion")
-        self.lblDireccion.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblDireccion.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Dirección')
-        self.lblDireccion.place(anchor="nw", x=20, y=100)
+        self.lblDireccion.place(anchor="nw", x=20, y=80)
         #Entry Direccion
         self.direccion = ttk.Entry(self.frm_1, name="direccion",state=tk.DISABLED)
-        self.direccion.place(anchor="nw", width=200, x=20, y=120)
+        self.direccion.place(anchor="nw", width=200, x=20, y=100)
 
         #Label Ciudad
         self.lblCiudad = ttk.Label(self.frm_1, name="lblciudad")
-        self.lblCiudad.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblCiudad.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Ciudad')
-        self.lblCiudad.place(anchor="nw", x=240, y=100)
+        self.lblCiudad.place(anchor="nw", x=240, y=80)
         #Entry Ciudad
         self.ciudad = ttk.Entry(self.frm_1, name="ciudad",state=tk.DISABLED)
-        self.ciudad.place(anchor="nw", width=130, x=240, y=120)
+        self.ciudad.place(anchor="nw", width=130, x=240, y=100)
         
         #Label Departamento
         self.lblDepartamento = ttk.Label(self.frm_1, name="lbldepartamento")
-        self.lblDepartamento.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblDepartamento.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                         state="normal", takefocus=False,text='Departamento')
-        self.lblDepartamento.place(anchor="nw", x=390, y=100)
+        self.lblDepartamento.place(anchor="nw", x=390, y=80)
         #Entry Departamento
         self.departamento = ttk.Entry(self.frm_1, name="departamento",state=tk.DISABLED)
-        self.departamento.place(anchor="nw", width=130, x=390, y=120)
+        self.departamento.place(anchor="nw", width=130, x=390, y=100)
         
 
         #Label Telefono Celular
         self.lblTelCel = ttk.Label(self.frm_1, name="lbltelcel")
-        self.lblTelCel.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblTelCel.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                         state="normal", takefocus=False,text='Teléfono Celular')
-        self.lblTelCel.place(anchor="nw", x=540, y=100)
+        self.lblTelCel.place(anchor="nw", x=540, y=80)
         #Entry Telefono Celular
         self.telCel = ttk.Entry(self.frm_1, name="telcel",state=tk.DISABLED)
-        self.telCel.place(anchor="nw", width=110, x=540, y=120)
+        self.telCel.place(anchor="nw", width=110, x=540, y=100)
 
         #Label Telefono Fijo
         self.lblTelFijo = ttk.Label(self.frm_1, name="lbltelfijo")
-        self.lblTelFijo.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblTelFijo.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                         state="normal", takefocus=False,text='Teléfono Fijo')
-        self.lblTelFijo.place(anchor="nw", x=670, y=100)
+        self.lblTelFijo.place(anchor="nw", x=670, y=80)
         #Entry Telefono Fijo
         self.telFijo = ttk.Entry(self.frm_1, name="telfijo",state=tk.DISABLED)
-        self.telFijo.place(anchor="nw", width=110, x=670, y=120)
+        self.telFijo.place(anchor="nw", width=110, x=670, y=100)
     
         #Label id_carrera
         self.lblIdCarrera = ttk.Label(self.frm_1, name="lblidcarrera")
-        self.lblIdCarrera.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblIdCarrera.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Id Carrera')
-        self.lblIdCarrera.place(anchor="nw", x=20, y=160)
+        self.lblIdCarrera.place(anchor="nw", x=20, y=140)
         #Combobox id_carrera
         self.cmbx_Id_Carrera = ttk.Entry(self.frm_1, name="cmbx_id_carrera",state=tk.DISABLED)
-        self.cmbx_Id_Carrera.place(anchor="nw", width=60, x=20, y=180)
+        self.cmbx_Id_Carrera.place(anchor="nw", width=60, x=20, y=160)
 
         #Label Codigo del Curso
         self.lblDscCurso = ttk.Label(self.frm_1, name="lbldsccurso")
-        self.lblDscCurso.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblDscCurso.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                         state="normal", takefocus=False,text='Código del Curso')
-        self.lblDscCurso.place(anchor="nw", x=100, y=160)
+        self.lblDscCurso.place(anchor="nw", x=100, y=140)
         #Entry Codigo del Curso 
         self.codigo_Curso = ttk.Entry(self.frm_1, name="descripc_curso",state=tk.DISABLED)
         self.codigo_Curso.configure(justify="left", width=166)
-        self.codigo_Curso.place(anchor="nw", width=110, x=100, y=180)
+        self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
         
         #Label Nombre de Curso
         self.lblNombreCurso = ttk.Label(self.frm_1, name="lblnombrecurso")
-        self.lblNombreCurso.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblNombreCurso.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                         state="normal", takefocus=False,text='Nombre del Curso')
-        self.lblNombreCurso.place(anchor="nw", x=230, y=160)
+        self.lblNombreCurso.place(anchor="nw", x=230, y=140)
         #Entry Nombre de Curso
         self.nombreCurso = ttk.Entry(self.frm_1, name="nombrecurso",state=tk.DISABLED)
-        self.nombreCurso.place(anchor="nw", width=240, x=230, y=180)
+        self.nombreCurso.place(anchor="nw", width=240, x=230, y=160)
         
         #Label Horario
         self.lblHorario = ttk.Label(self.frm_1, name="lblhorario")
-        self.lblHorario.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblHorario.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                         state="normal", takefocus=False,text='Horario')
-        self.lblHorario.place(anchor="nw", x=490, y=160)
+        self.lblHorario.place(anchor="nw", x=490, y=140)
         #Entry Horario
         self.horario = ttk.Entry(self.frm_1, name="horario",state=tk.DISABLED)
-        self.horario.place(anchor="nw", width=180, x=490, y=180)
+        self.horario.place(anchor="nw", width=180, x=490, y=160)
         
         #Fecha de Inscripción
         self.lblFechaInscripcion = ttk.Label(self.frm_1, name="lblfechainscripcion")
-        self.lblFechaInscripcion.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblFechaInscripcion.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                         state="normal", takefocus=False,text='Fecha Inscripción')
-        self.lblFechaInscripcion.place(anchor="nw", x=686, y=160)
+        self.lblFechaInscripcion.place(anchor="nw", x=686, y=140)
         #Entry Fecha de Inscripción
         self.fechaInscripcion = ttk.Entry(self.frm_1, name="fechainscripcion",state=tk.DISABLED)
-        self.fechaInscripcion.place(anchor="nw", width=90, x=690, y=180)
+        self.fechaInscripcion.place(anchor="nw", width=90, x=690, y=160)
         
 
         ''' Botones  de la Aplicación'''
         
         #Botón Consultar
         self.icono_c = tk.PhotoImage(file= PATH + ICONO_CONSULTA)
-        self.btnConsultar = tk.Button(self.frm_1, name="btnconsultar",command=self.consultar_ventana, cursor="hand2",image=self.icono_c,compound=tk.LEFT)
-        self.btnConsultar.configure(text='  Consultar',font=('Arial', 12, 'bold'), width=110, height=30)
-        self.btnConsultar.place(anchor="nw", x=100, y=255)
+        self.btnConsultar = tk.Button(self.frm_1, name="btnconsultar",command=self.consultar_ventana, cursor="hand2",
+                                      image=self.icono_c,compound=tk.LEFT,bd=0, relief="flat", bg="#f7f9fd")
+        self.btnConsultar.configure(text='  Consultar',font=('Arial', 9, 'bold'), width=90, height=30)
+        self.btnConsultar.place(anchor="nw", x=100, y=235)
         
         
         # @staticmethod
@@ -304,30 +305,30 @@ class Inscripciones_2:
         #     else:
         #         pass
         self.icono_e = tk.PhotoImage(file= PATH + ICONO_EDITAR)
-        self.btnEditar = tk.Button(self.frm_1, name="btneditar", cursor="hand2", image=self.icono_e, compound=tk.LEFT)
-        self.btnEditar.configure(text='  Editar',font=('Arial', 12, 'bold'), width=110, height=30)
-        self.btnEditar.place(anchor="nw", x=220, y=255)
+        self.btnEditar = tk.Button(self.frm_1, name="btneditar", cursor="hand2", image=self.icono_e, compound=tk.LEFT,bd=0)
+        self.btnEditar.configure(text='  Editar',font=('Arial', 9, 'bold'), width=90, height=30, bg="#f7f9fd")
+        self.btnEditar.place(anchor="nw", x=220, y=235)
         
         #Botón Eliminar
         self.icono_d = tk.PhotoImage(file= PATH + ICONO_ELIMINAR)
+<<<<<<< HEAD
         self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.ventana_eliminar,
                                      image=self.icono_d,compound=tk.LEFT)
         self.btnEliminar.configure(text='   Eliminar',font=('Arial', 12, 'bold'), width=110, height=30)
         self.btnEliminar.place(anchor="nw", x=340, y=255)
+=======
+        self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.eliminar_data,
+                                     image=self.icono_d,compound=tk.LEFT,bd=0, bg="#f7f9fd")
+        self.btnEliminar.configure(text='  Eliminar',font=('Arial', 9, 'bold'), width=90, height=30)
+        self.btnEliminar.place(anchor="nw", x=340, y=235)
+>>>>>>> 0766e98e2105d442b712dd01b550dd55e56f07c5
         
         #Botón Cancelar
-        # def limpiar(self):
-        #     self.entry = [self.noInscripcion, self.cmbx_Id_Alumno, self.fecha, self.fechaInscripcion, 
-        #                   self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.direccion, self.ciudad, 
-        #                   self.departamento, self.telCel, self.telFijo, self.codigo_Curso, self.nombreCurso, 
-        #                   self.horario]
-        #     for i in self.entry:
-        #         return i.delete(0, tk.END)
         self.icono_n = tk.PhotoImage(file= PATH + ICONO_CANCELAR)
         self.btnCancelar = tk.Button(self.frm_1, name="btncancelar", cursor="hand2", command=self.limpiar,
-                                     image=self.icono_n,compound=tk.LEFT)
-        self.btnCancelar.configure(text='   Cancelar',font=('Arial', 12, 'bold'), width=110, height=30)
-        self.btnCancelar.place(anchor="nw", x=460, y=255)
+                                     image=self.icono_n,compound=tk.LEFT,bd=0, bg="#f7f9fd")
+        self.btnCancelar.configure(text='  Cancelar',font=('Arial', 9, 'bold'), width=90, height=30 )
+        self.btnCancelar.place(anchor="nw", x=460, y=235)
         # self.btnCancelar = ttk.Button(self.frm_1, name="btncancelar", cursor="hand2", command=self.limpiar)
         # self.btnCancelar.configure(text='Cancelar')
         # self.btnCancelar.place(anchor="nw", x=465, y=260, width=80)
@@ -337,13 +338,14 @@ class Inscripciones_2:
         #Botón Grabar
         self.icono_g = tk.PhotoImage(file= PATH + ICONO_GUARDAR)
         self.btnGrabar = tk.Button(self.frm_1, name="btngrabar", cursor="hand2",command= self.agregar_data,
-                                   image=self.icono_g,compound=tk.LEFT)
-        self.btnGrabar.configure(text='  Grabar',font=('Arial', 12, 'bold'), width=110, height=30)
-        self.btnGrabar.place(anchor="nw", x=580, y=255)
+                                   image=self.icono_g,compound=tk.LEFT, bd=0, bg="#f7f9fd")
+        self.btnGrabar.configure(text='  Grabar',font=('Arial', 9, 'bold'), width=90, height=30)
+        self.btnGrabar.place(anchor="nw", x=580, y=235)
+        
         #Separador
         separator1 = ttk.Separator(self.frm_1)
         separator1.configure(orient="horizontal")
-        separator1.place(anchor="nw", width=796, x=2, y=245)
+        separator1.place(anchor="nw", width=796, x=2, y=215)
 
         ''' Treeview de la Aplicación'''
 
@@ -430,8 +432,13 @@ class Inscripciones_2:
         self.argumentos = ('inicial', [''],[735])
         self.tree_view_prueba(*self.argumentos)
     
-    def consultar_ventana(self):
         
+    def cerrar_consulta(self):
+        self.btnConsultar.config(state=tk.NORMAL)
+        self.ventana_emergente.destroy()
+    
+    def consultar_ventana(self):
+        self.btnConsultar.config(state=tk.DISABLED)
         self.ventana_emergente = tk.Toplevel(self.win)
         self.ventana_emergente.title("Consulta de Datos")
         self.icon_consulta = tk.PhotoImage(file= PATH + ICONO)
@@ -447,7 +454,7 @@ class Inscripciones_2:
         self.frm_consulta.pack(fill='both', expand=True)
         
         self.lblOpciones = ttk.Label(self.frm_consulta, name="lblOpciones")
-        self.lblOpciones.configure(background="#f7f9fd",font="{Arial} 9 {bold}", justify="left",
+        self.lblOpciones.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                 state="normal", takefocus=False,text="Para realizar la consulta escoja una de las siguientes opciones: ")
         self.lblOpciones.place(anchor="nw", x=20, y=20)
         
@@ -469,7 +476,9 @@ class Inscripciones_2:
         self.checkCursos.place(anchor="nw", x=40, y=110)
         self.btnEscoger = ttk.Button(self.frm_consulta, name="btnEscoger", cursor="hand2", command=self.boton_escoger)
         self.btnEscoger.configure(text="Consultar Datos")
-        self.btnEscoger.place(anchor="nw", x=135, y=160)
+        self.btnEscoger.place(anchor="nw", x=135, y=140)
+        self.ventana_emergente.protocol("WM_DELETE_WINDOW", self.cerrar_consulta)
+        self.ventana_emergente.mainloop()
         
     def ventana_eliminar(self):
         ALTO = 100
@@ -506,21 +515,20 @@ class Inscripciones_2:
             self.cursor = self.conn.cursor()
 
         if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0:
-            self.ventana_emergente.destroy()
-            self.consultar_no_inscripción()
+            self.cerrar_consulta()
+            return self.consultar_no_inscripción()
         elif self.int1.get() == 1 and self.int.get() == 0 and self.int2.get() == 0:
-            print("Escoger Id Alumno")
-            self.ventana_emergente.destroy()
-            self.consultar_id_alumno()
+            self.cerrar_consulta()
+            return self.consultar_id_alumno()
         elif self.int2.get() == 1 and self.int.get() == 0 and self.int1.get() == 0:
-            self.ventana_emergente.destroy()
-            self.consultar_cursos()
-
+            self.cerrar_consulta()
+            return self.consultar_cursos()
         else:
             messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
             self.int.set(0)
             self.int1.set(0)
             self.int2.set(0)
+            self.cerrar_consulta()
             
     def click(self,event):
         self.item = self.tViews.selection()[0]
@@ -539,7 +547,7 @@ class Inscripciones_2:
                         break        
         self.tViews = ttk.Treeview(self.frm_1, name=kargs[0],show='headings')
         self.tViews.configure(selectmode="extended")
-        self.tViews.place(anchor="nw", height=250, width=740, x=30, y=300)
+        self.tViews.place(anchor="nw", height=264, width=730, x=30, y=281)
         self.tViews.configure(columns=kargs[1])
         self.tViews.column("#0", width=0)
         self.a = 0
@@ -551,14 +559,13 @@ class Inscripciones_2:
         for i in kargs[1]:
             self.tViews.heading(kargs[1][self.b],anchor="w", text=kargs[1][self.b])
             self.b += 1
-        self.tViews.place(anchor="nw", height=250, width=740, x=30, y=300)
         #Scrollbars
         self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
         self.scroll_H.configure(orient="horizontal")
-        self.scroll_H.place(anchor="nw", height=15, width=724, x=31, y=534)
+        self.scroll_H.place(anchor="nw", height=15, width=725, x=30, y=534)
         self.scroll_Y = ttk.Scrollbar(self.frm_1, name="scroll_y")
         self.scroll_Y.configure(orient="vertical")
-        self.scroll_Y.place(anchor="nw", height=248, width=16, x=753, y=301)
+        self.scroll_Y.place(anchor="nw", height=268, width=16, x=754, y=281)
         self.scroll_H.configure(command=self.tViews.xview)
         self.scroll_Y.configure(command=self.tViews.yview)
         self.tViews.configure(xscrollcommand=self.scroll_H.set, yscrollcommand=self.scroll_Y.set)
