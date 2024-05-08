@@ -9,6 +9,7 @@ import datetime
 from pathlib import Path
 from subprocess import run
 from platform import system
+import signal
 
 if system() == "Windows":
     from ctypes import windll
@@ -781,21 +782,23 @@ class Inscripciones_2:
 if __name__ == "__main__":
     app = Inscripciones_2()
     app.run_sqlite()
-    handling_interrupt = False
+    # handling_interrupt = False
     # app.get_data_idalumno()
     # app.get_data_complete()
     # app.get_data_cursos()
-    while True: # Para evitar que el viejo cacreco nos cierre la aplicación con la terminal
-        try:
-            app.run()
-            if app.win.quit:
-                break
-            else:
-                continue
-        except KeyboardInterrupt:
-            if not handling_interrupt:
-                print("Para finalizar el programa oprima el botón 'Salir' o el comando Alt+F4")
-                handling_interrupt = True
-            else:
-                continue
+    signal.signal(signal.SIGINT, signal.SIG_IGN) # Ignorar la señal de interrupción versión mejorada
+    app.run()
+    # while True: # Para evitar que el viejo cacreco nos cierre la aplicación con la terminal
+    #     try:
+    #         app.run()
+    #         if app.win.quit:
+    #             break
+    #         else:
+    #             continue
+    #     except KeyboardInterrupt:
+    #         if not handling_interrupt:
+    #             print("Para finalizar el programa oprima el botón 'Salir' o el comando Alt+F4")
+    #             handling_interrupt = True
+    #         else:
+    #             continue
     app.close_sqlite()
