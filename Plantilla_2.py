@@ -68,7 +68,7 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text='Id Alumno')
         self.lblIdAlumno.place(anchor="nw", x=20, y=20)
         #Combobox id_Alumno
-        self.cmbx_Id_Alumno = ttk.Entry(self.frm_1, name="cmbx_id_alumno",state=tk.DISABLED)
+        self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno",state=tk.DISABLED)
 
         self.cmbx_Id_Alumno.place(anchor="nw", width=110, x=20, y=40)
         
@@ -172,7 +172,7 @@ class Inscripciones_2:
                                         state="normal",text='No.Inscripción')
         self.lblNoInscripcion.place(anchor="nw", x=680, y=20)
         #Conmbox No. Inscripción
-        self.noInscripcion = ttk.Entry(self.frm_1, name="noInscripcion",state=tk.DISABLED)
+        self.noInscripcion = ttk.Combobox(self.frm_1, name="noInscripcion",state=tk.DISABLED)
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
         
         #Label Direccion
@@ -236,7 +236,7 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Código del Curso')
         self.lblDscCurso.place(anchor="nw", x=100, y=140)
         #Entry Codigo del Curso 
-        self.codigo_Curso = ttk.Entry(self.frm_1, name="descripc_curso",state=tk.DISABLED)
+        self.codigo_Curso = ttk.Combobox(self.frm_1, name="descripc_curso",state=tk.DISABLED)
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
         
@@ -311,17 +311,10 @@ class Inscripciones_2:
         
         #Botón Eliminar
         self.icono_d = tk.PhotoImage(file= PATH + ICONO_ELIMINAR)
-<<<<<<< HEAD
         self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.ventana_eliminar,
                                      image=self.icono_d,compound=tk.LEFT)
-        self.btnEliminar.configure(text='   Eliminar',font=('Arial', 12, 'bold'), width=110, height=30)
-        self.btnEliminar.place(anchor="nw", x=340, y=255)
-=======
-        self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.eliminar_data,
-                                     image=self.icono_d,compound=tk.LEFT,bd=0, bg="#f7f9fd")
-        self.btnEliminar.configure(text='  Eliminar',font=('Arial', 9, 'bold'), width=90, height=30)
+        self.btnEliminar.configure(text='   Eliminar',font=('Arial', 9, 'bold'), width=90, height=30, bg = "#f7f9fd", bd =0)
         self.btnEliminar.place(anchor="nw", x=340, y=235)
->>>>>>> 0766e98e2105d442b712dd01b550dd55e56f07c5
         
         #Botón Cancelar
         self.icono_n = tk.PhotoImage(file= PATH + ICONO_CANCELAR)
@@ -403,14 +396,25 @@ class Inscripciones_2:
         return dato
 
     def combx_id_alumno(self):
+        self.cmbx_Id_Alumno.config(state="normal")
         self.cursor.execute(f" SELECT Id_Alumno FROM Alumnos")
         self.dato_id = self.cursor.fetchall()
         self.cmbx_Id_Alumno['values'] = self.dato_id
+        self.cmbx_Id_Alumno.config(state="readonly")
 
     def combx_no_incripcion(self):
+        self.noInscripcion.config(state="normal")
         self.cursor.execute(f" SELECT No_Inscritos FROM Inscritos")
         self.dato_no_inscripcion = self.cursor.fetchall()
         self.noInscripcion['values'] = self.dato_no_inscripcion
+        self.noInscripcion.config(state="readonly")
+        
+    def combx_codigo_curso(self):
+        self.codigo_Curso.config(state="normal")
+        self.cursor.execute(f" SELECT Código_Curso FROM Cursos")
+        self.dato_codigo_curso = self.cursor.fetchall()
+        self.codigo_Curso['values'] = self.dato_codigo_curso
+        self.codigo_Curso.config(state="readonly")
         
     def fecha_split(self,fecha):
         self.split = fecha.split("-")
@@ -511,9 +515,9 @@ class Inscripciones_2:
         botonVemerEliminiar.place(anchor="nw", x=60, y=60)
 
     def boton_escoger(self):
-        if self.cursor:
-            self.cursor = self.conn.cursor()
-
+        self.combx_id_alumno()
+        self.combx_no_incripcion()
+        self.combx_codigo_curso()
         if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0:
             self.cerrar_consulta()
             return self.consultar_no_inscripción()
@@ -611,7 +615,6 @@ class Inscripciones_2:
             self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
    
     def consultar(self, event):
-                
         self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Fecha_Ingreso, No_Inscritos, Dirección, Ciudad, Departamento, 
                             Telef_Cel, Telef_Fijo, Id_Carrera, Inscritos.Código_Curso, Descripción_Curso, Num_Horas, Fecha_de_Inscripción  FROM Inscritos 
                     JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
@@ -742,6 +745,7 @@ class Inscripciones_2:
 
         
     # def get_data_idalumno(self):
+    #     self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno", state="normal")
     #     self.cursor.execute("SELECT Id_Alumno FROM Alumnos")
     #     self.data = self.cursor.fetchall()
     #     self.lista_idalumnos = []
@@ -749,6 +753,7 @@ class Inscripciones_2:
     #         str(i[0])
     #         self.lista_idalumnos.append(i[0])
     #     self.cmbx_Id_Alumno['values'] = self.lista_idalumnos
+    #     self.cmbx_Id_Alumno.config(state="readonly")
     
     # def get_data_cursos(self):
     #     self.cursor.execute("SELECT * FROM Cursos")
@@ -771,13 +776,26 @@ class Inscripciones_2:
             run("cls", shell=True)
         elif system() == "Linux" or system() == "Darwin":
             run("clear", shell=True) 
-        print('Conexión cerrada')
+        print('Conexión SQL cerrada, programa finalizado')
 
 if __name__ == "__main__":
     app = Inscripciones_2()
     app.run_sqlite()
+    handling_interrupt = False
     # app.get_data_idalumno()
     # app.get_data_complete()
     # app.get_data_cursos()
-    app.run()
+    while True: # Para evitar que el viejo cacreco nos cierre la aplicación con la terminal
+        try:
+            app.run()
+            if app.win.quit:
+                break
+            else:
+                continue
+        except KeyboardInterrupt:
+            if not handling_interrupt:
+                print("Para finalizar el programa oprima el botón 'Salir' o el comando Alt+F4")
+                handling_interrupt = True
+            else:
+                continue
     app.close_sqlite()
