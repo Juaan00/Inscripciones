@@ -22,34 +22,6 @@ ICONO_CANCELAR = r"/img/escoba.png"
 ICONO_GUARDAR = r"/img/disco.png"
 DB = r"db/Inscripciones.db"
 
-
-class comunicacionBD():
-    def __init__(self):
-        self.conexion= sqlite3.connect(DB)
-    
-    def agregar_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
-        cursor = self.conexion.cursor()
-        query = '''INSERT INTO Inscritos (No_Inscritos, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES ('{}','{}','{}','{}')'''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
-        cursor.execute(query)
-        self.conexion.commit()
-        cursor.close()
-
-    def eliminar_datos(self, codigo):
-        cursor = self.conexion.cursor()
-        query = '''DELETE FROM Inscritos WHERE Código_Curso = '{}' '''.format(codigo)
-        cursor.execute(query)
-        self.conexion.commit()
-        cursor.close()
-    
-    def actualiza_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
-        cursor = self.conexion.cursor()
-        query = ''' UPDATE Inscritos SET No_Inscritos = '{}', Id_Alumno = '{}', Fecha_de_Inscripción = '{}', Código_Curso = '{}'  '''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
-        cursor.execute(query)
-        dato = cursor.rowcount
-        self.conexion.commit()
-        cursor.close()
-        return dato
-
 class Inscripciones_2:    
     def centrar(self, win, ancho, alto):
              self.altura_pantalla = win.winfo_screenheight()
@@ -80,8 +52,6 @@ class Inscripciones_2:
             self.icon = tk.PhotoImage(file= PATH + ICONO)
             self.win.iconphoto(True, self.icon)
             
-
-        self.DatosBD = comunicacionBD()
         self.tvNoInscripcion = tk.StringVar()
         self.tvNombres = tk.StringVar()
         self.tvApellidos = tk.StringVar()
@@ -340,7 +310,7 @@ class Inscripciones_2:
         
         #Botón Eliminar
         self.icono_d = tk.PhotoImage(file= PATH + ICONO_ELIMINAR)
-        self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.eliminar_data,
+        self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.ventana_eliminar,
                                      image=self.icono_d,compound=tk.LEFT)
         self.btnEliminar.configure(text='   Eliminar',font=('Arial', 12, 'bold'), width=110, height=30)
         self.btnEliminar.place(anchor="nw", x=340, y=255)
@@ -403,7 +373,33 @@ class Inscripciones_2:
         self.conn = sqlite3.connect(DB)
         self.conn.execute("PRAGMA foreign_keys = 1")
         self.cursor = self.conn.cursor()
-        
+
+    def agregar_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
+        if not self.cursor:
+            self.cursor = self.conn.cursor()
+        query = '''INSERT INTO Inscritos (No_Inscritos, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES ('{}','{}','{}','{}')'''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
+        self.cursor.execute(query)
+        self.conn.commit()
+        self.cursor.close()
+
+    def eliminar_datos(self, codigo):
+        if not self.cursor:
+            self.cursor = self.conn.cursor()
+        query = '''DELETE FROM Inscritos WHERE Código_Curso = '{}' '''.format(codigo)
+        self.cursor.execute(query)
+        self.conn.commit()
+        self.cursor.close()
+    
+    def actualiza_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
+        if not self.cursor:
+            self.cursor = self.conn.cursor()
+        query = ''' UPDATE Inscritos SET No_Inscritos = '{}', Id_Alumno = '{}', Fecha_de_Inscripción = '{}', Código_Curso = '{}'  '''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
+        self.cursor.execute(query)
+        dato = self.cursor.rowcount
+        self.conn.commit()
+        self.cursor.close()
+        return dato
+
     def combx_id_alumno(self):
         self.cursor.execute(f" SELECT Id_Alumno FROM Alumnos")
         self.dato_id = self.cursor.fetchall()
@@ -475,8 +471,40 @@ class Inscripciones_2:
         self.btnEscoger.configure(text="Consultar Datos")
         self.btnEscoger.place(anchor="nw", x=135, y=160)
         
- 
+    def ventana_eliminar(self):
+        ALTO = 100
+        ANCHO = 240
+        self.winEmerDelete = tk.Toplevel(self.win)
+        self.winEmerDelete.grab_set()
+        self.winEmerDelete.title("Borrar Datos")
+        self.winEmerDelete.iconphoto(False, self.icon_consulta)
+        self.winEmerDelete.resizable(False, False)
+        self.winEmerDelete.geometry("{}x{}".format(ANCHO, ALTO))
+        self.centrar(self.winEmerDelete, ANCHO, ALTO)
+        self.winEmerDelete.geometry(f"+{self.x}+{self.y}")
+        
+        self.frm_EmerDelete = tk.Frame(self.winEmerDelete, name="frm_borrar")
+        self.frm_EmerDelete.configure(background= "#f7f9fd", height=200, width=400)
+        self.frm_EmerDelete.pack(fill='both', expand=True)
+
+        def respuesta():
+            self.eliminar_data(self.var.get())
+                
+        self.var = tk.IntVar()
+
+        self.radio1 = tk.Radiobutton(self.frm_EmerDelete, text="Eliminar un curso", variable=self.var, value=1,background= "#f7f9fd" )
+        self.radio1.place(anchor="nw", x=40, y=0)
+
+        radioAll = tk.Radiobutton(self.frm_EmerDelete, text="Eliminar todos los cursos", variable=self.var, value=2, background= "#f7f9fd")
+        radioAll.place(anchor="nw", x=40, y=30)
+        
+        botonVemerEliminiar = tk.Button(self.frm_EmerDelete, text="Mostrar selección", command= respuesta)
+        botonVemerEliminiar.place(anchor="nw", x=60, y=60)
+
     def boton_escoger(self):
+        if self.cursor:
+            self.cursor = self.conn.cursor()
+
         if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0:
             self.ventana_emergente.destroy()
             self.consultar_no_inscripción()
@@ -541,6 +569,8 @@ class Inscripciones_2:
         self.tViews.bind("<<TreeviewSelect>>", self.obtener_fila)
     
     def consultar_no_inscripción(self):
+        if self.cursor:
+            self.cursor = self.conn.cursor()
         self.argumentos = ('c_inscripción',['No. Inscripción', 'Nombres', 'Apellidos', 'Fecha_Inscripción', 'Código_Curso'],[100,110,290,224,224])
         self.tree_view_prueba(*self.argumentos)
         self.cursor.execute(''' SELECT Inscritos.No_Inscritos, Nombres, Apellidos, Inscritos.Fecha_de_Inscripción, Código_Curso FROM Inscritos
@@ -634,9 +664,9 @@ class Inscripciones_2:
     #         return
         
     def limpiar_data(self):
-        self.NoInscripcion.set('')
-        self.CodigoCurso.set('')
-        self.FechaInscripcion.set('')
+        self.tvNoInscripcion.set('')
+        self.tvCodigoCurso.set('')
+        self.tvFechaInscripcion.set('')
         self.tvNombres.set('')
         self.tvApellidos.set('')
 
@@ -658,14 +688,35 @@ class Inscripciones_2:
         print(str(self.tvFechaInscripcion.get()))
         print(str(self.tvCodigoCurso.get()))
     
-    def eliminar_data (self):
+    def eliminar_data (self,seleccion):
         self.limpiar_data()
-        item = self.tViews.selection()[0]
-        alert = messagebox.askquestion('Eliminando datos', 'Desea eliminar este valor?')
-        if alert == 'yes':            
-            self.tViews.delete(item)
-            self.DatosBD.eliminar_datos(self.data['values'][4])
-            messagebox.INFO("Eliminando datos", 'Datos eliminados con exito')
+        try:
+            item = self.tViews.selection()
+            if not item: raise TypeError
+            print(seleccion)
+
+            if seleccion == 1:
+                self.winEmerDelete.destroy()
+                alert = messagebox.askquestion('Eliminando datos', 'Desea eliminar este valor?')
+                if alert == 'yes':            
+                    self.tViews.delete(item)
+                    self.eliminar_datos(self.data['values'][4])
+
+            elif seleccion == 2:
+                self.winEmerDelete.destroy()
+                alert = messagebox.askquestion('Eliminando datos', 'Desea eliminar todos los cursos?')
+                if alert == 'yes':            
+                    self.tViews.delete(item)
+                    self.eliminar_datos(self.data['values'][0])
+            else: 
+                raise Exception("No se escogio una opcion")
+
+        except TypeError:
+            messagebox.showerror("Error", str('Debe seleccionar primero un valor a eliminar en el cuadro de abajo'))
+            pass
+        except Exception:
+            messagebox.showerror("Error", str('no se selecciono ninguna opcion'))
+            pass
 
     def agregar_data(self):
         noInscripcion = self.noInscripcion
@@ -680,7 +731,7 @@ class Inscripciones_2:
 
         if (noInscripcion and nombre and apellido and fechaInscripcion and codigo) != '':
             self.tViews.insert(values=datos)
-            self.DatosBD.agregar_datos(self.noInscripcion.get(), self.cmbx_Id_Alumno.get(), fechaInscripcion, self.codigo_Curso.get())
+            self.agregar_datos(self.noInscripcion.get(), self.cmbx_Id_Alumno.get(), fechaInscripcion, self.codigo_Curso.get())
 
         
     # def get_data_idalumno(self):
