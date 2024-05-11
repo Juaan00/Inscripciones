@@ -6,11 +6,11 @@ import sqlite3
 #from tkcalendar import DateEntry
 from tkinter import StringVar, messagebox
 import datetime
+import calendar
 from pathlib import Path
 from subprocess import run
 from platform import system
 import signal
-import re
 
 if system() == "Windows":
     from ctypes import windll
@@ -64,6 +64,26 @@ class Inscripciones_2:
         self.frm_1 = tk.Frame(self.win, name="frm_1")
         self.frm_1.configure(background="#f7f9fd", height=600, width=800)
 
+        def habilitar_caracteres_entry(entrada, caracter):
+
+            def verificarNumeros(char):        
+                return char.isdigit()
+            
+            def verificarLetras(char):        
+                return char.isalpha()
+            
+            def convertir_mayusculas(*args):
+                contenido = entrada.get()
+                entrada.delete(0, tk.END)
+                entrada.insert(0, contenido.upper())
+
+            if caracter == 'N':
+                entrada.validate_cmd = self.frm_1.register(verificarNumeros)
+                entrada.config(validate="key", validatecommand=(entrada.validate_cmd,"%S"))
+            elif caracter == 'L':
+                entrada.config(validate="key", validatecommand=(entrada.register(verificarLetras), "%S"))
+                entrada.bind('<KeyRelease>', convertir_mayusculas)
+
         #Label id_Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
         self.lblIdAlumno.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -71,7 +91,6 @@ class Inscripciones_2:
         self.lblIdAlumno.place(anchor="nw", x=20, y=20)
         #Combobox id_Alumno
         self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno",state=tk.DISABLED)
-
         self.cmbx_Id_Alumno.place(anchor="nw", width=110, x=20, y=40)
         
         #Label Nombres
@@ -82,6 +101,7 @@ class Inscripciones_2:
         #Entry Nombres
         self.nombres = ttk.Entry(self.frm_1, name="nombres",state=tk.DISABLED)
         self.nombres.place(anchor="nw", width=190, x=150, y=40)
+        habilitar_caracteres_entry(self.nombres, 'L')
 
         #Label Apellidos
         self.lblApellidos = ttk.Label(self.frm_1, name="lblapellidos")
@@ -106,7 +126,7 @@ class Inscripciones_2:
         self.act_date = False
 
         def cuandoEscriba(event):
-            #global act_date
+            #coloca los / al escribir
             if event.char.isdigit() or event.char =='/':
                 fechaRef = self.fecha.get()
                 if len(fechaRef) == 2 or len(fechaRef) ==5:
@@ -121,8 +141,8 @@ class Inscripciones_2:
                 self.act_date=True
 
         def limite(event):
+            #Evita el exceso de numeros
             fechaRef = self.fecha.get()
-            #print (fecha)
             try:
                 if len(fechaRef) > 10:
                     raise ValueError("digite maximo 8 numeros")
@@ -131,8 +151,7 @@ class Inscripciones_2:
                 self.fecha.delete(10, tk.END)
 
         def verificarNumeros(char):
-            #global act_date
-
+            #permite borrar los /
             if self.act_date:
                 self.act_date = False 
                 return char.isdigit() or char == '/'
@@ -160,7 +179,7 @@ class Inscripciones_2:
 
         self.fecha.bind("<Return>", validarFecha)
         self.fecha.bind("<Tab>", validarFecha)
-        #self.fecha.bind("<FocusOut>", validarFecha)#no borrar
+        self.fecha.bind("<FocusOut>", validarFecha)#no borrar
 
         ############################################################
         self.fecha.bind("<Key>", cuandoEscriba)
@@ -210,9 +229,11 @@ class Inscripciones_2:
         self.lblTelCel.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                         state="normal", takefocus=False,text='Teléfono Celular')
         self.lblTelCel.place(anchor="nw", x=540, y=80)
+        
         #Entry Telefono Celular
         self.telCel = ttk.Entry(self.frm_1, name="telcel",state=tk.DISABLED)
         self.telCel.place(anchor="nw", width=110, x=540, y=100)
+        habilitar_caracteres_entry(self.telCel, 'N')
 
         #Label Telefono Fijo
         self.lblTelFijo = ttk.Label(self.frm_1, name="lbltelfijo")
@@ -275,7 +296,7 @@ class Inscripciones_2:
         #Botón Consultar
         self.icono_c = tk.PhotoImage(file= PATH + ICONO_CONSULTA)
         self.btnConsultar = tk.Button(self.frm_1, name="btnconsultar",
-                                      command=lambda: self.consultar_ventana("Consultar Datos", "Seleccione una opción", ["No. Inscripción", "Id Alumno", "Cursos","Carrera"], "Consultar",self.boton_escoger_consulta),
+                                      command=lambda: self.consultar_ventana("Consultar Datos", "Seleccione una opción",3),
                                       cursor="hand2", image=self.icono_c,compound=tk.LEFT,bd=0, relief="flat", bg="#f7f9fd")
         self.btnConsultar.configure(text='  Consultar',font=('Arial', 9, 'bold'), width=90, height=30)
         self.btnConsultar.place(anchor="nw", x=100, y=235)
@@ -330,8 +351,8 @@ class Inscripciones_2:
         # self.btnCancelar.place(anchor="nw", x=465, y=260, width=80)
         # self.btnCancelar.bind()
         
-        
-        #Botón Grabar self.agregar_data
+    
+        #Botón Grabar
         self.icono_g = tk.PhotoImage(file= PATH + ICONO_GUARDAR)
         self.btnGrabar = tk.Button(self.frm_1, name="btngrabar", cursor="hand2",command= self.agregar_data,
                                    image=self.icono_g,compound=tk.LEFT, bd=0, bg="#f7f9fd")
@@ -367,10 +388,10 @@ class Inscripciones_2:
     ''' A partir de este punto se deben incluir las funciones
      para el manejo de la base de datos '''
     
-    def run_sqlite(self): # Conexión a la base de datos SQLite, recomendación cada vez que creen una función que tenga que ver con base de datos usen self.conn.commit() para guardar los cambios en tiempo de ejecución
+    def run_sqlite(self):
         self.conn = sqlite3.connect(DB)
-        self.conn.execute("PRAGMA foreign_keys = 1") # Habilita la integridad referencial
-        self.cursor = self.conn.cursor() # Cursor para la base de datos
+        self.conn.execute("PRAGMA foreign_keys = 1")
+        self.cursor = self.conn.cursor()
 
     def agregar_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
         if not self.cursor:
@@ -398,38 +419,38 @@ class Inscripciones_2:
         self.cursor.close()
         return dato
 
-    def combx_id_alumno(self): # Habilita el combobox de Id_Alumno con los id de los alumnos registrados en la base de datos
+    def combx_id_alumno(self):
         self.cmbx_Id_Alumno.config(state="normal")
         self.cursor.execute(f" SELECT Id_Alumno FROM Alumnos")
         self.dato_id = self.cursor.fetchall()
         self.cmbx_Id_Alumno['values'] = self.dato_id
         self.cmbx_Id_Alumno.config(state="readonly")
 
-    def combx_no_incripcion(self): # Habilita el combobox de No_Inscripción con los números de inscripción registrados en la base de datos
+    def combx_no_incripcion(self):
         self.noInscripcion.config(state="normal")
         self.cursor.execute(f" SELECT No_Inscritos FROM Inscritos")
         self.dato_no_inscripcion = self.cursor.fetchall()
         self.noInscripcion['values'] = self.dato_no_inscripcion
         self.noInscripcion.config(state="readonly")
         
-    def combx_codigo_curso(self): # Habilita el combobox de Código_Curso con los códigos de los cursos registrados en la base de datos
+    def combx_codigo_curso(self):
         self.codigo_Curso.config(state="normal")
         self.cursor.execute(f" SELECT Código_Curso FROM Cursos")
         self.dato_codigo_curso = self.cursor.fetchall()
         self.codigo_Curso['values'] = self.dato_codigo_curso
         self.codigo_Curso.config(state="readonly")
         
-    def fecha_split(self,fecha): # Convierte la fecha de formato 'dd/mm/yyyy' a 'yyyy-mm-dd'
+    def fecha_split(self,fecha):
         self.split = fecha.split("-")
         self.fecha_n = f"{self.split[2]}/{self.split[1]}/{self.split[0]}"
         return self.fecha_n
     
-    def fecha_split_al_reves(self,fecha): # Convierte la fecha de formato 'yyyy-mm-dd' a 'dd/mm/yyyy'
+    def fecha_split_al_reves(self,fecha):
         self.split = fecha.split("/")
         self.fecha_n = f"{self.split[2]}-{self.split[1]}-{self.split[0]}"
         return self.fecha_n
     
-    def limpiar(self): # Limpia los campos de la ventana
+    def limpiar(self):
         self.entry = [self.noInscripcion, self.cmbx_Id_Alumno, self.fecha, self.fechaInscripcion, 
                         self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.direccion, self.ciudad, 
                         self.departamento, self.telCel, self.telFijo, self.codigo_Curso, self.nombreCurso, 
@@ -437,24 +458,25 @@ class Inscripciones_2:
         for i in self.entry:
             i.config(state="normal")
             i.delete(0, tk.END)
-
-        self.tViews.delete(*self.tViews.get_children())        
+        
+        # self.tView.delete(*self.tView.get_children())
+        self.tViews.delete(*self.tViews.get_children())
+        
         self.argumentos = ('inicial', [''],[735])
         self.tree_view_prueba(*self.argumentos)
     
-    def abrir_ventana(self): # Deshabilita los botones de la ventana principal así evitar que se corran funciones no deseadas
+    def abrir_ventana(self):
         self.botones = [ self.btnEliminar, self.btnCancelar, self.btnGrabar, self.btnConsultar, self.btnEditar]
         for i in self.botones:
             i.config(state=tk.DISABLED)
         
-    def cerrar_ventana(self): # Habilita los botones de la ventana principal
+    def cerrar_ventana(self):
         self.botones = [self.btnEliminar, self.btnCancelar, self.btnGrabar, self.btnConsultar, self.btnEditar]  
         for i in self.botones:
             i.config(state=tk.NORMAL)
         self.ventana_emergente.destroy()
     
-    def consultar_ventana(self, *args): #ventana emergente, permite máximo 4 opciones para escoger, los parametros son: Titulo, Texto, Opciones, Botón y Función de botón
-        self.limpiar()
+    def consultar_ventana(self, *args):
         self.abrir_ventana()
         self.ventana_emergente = tk.Toplevel(self.win)
         self.ventana_emergente.title(args[0])
@@ -462,10 +484,11 @@ class Inscripciones_2:
         self.ventana_emergente.iconphoto(False, self.icon_consulta)
          
         self.ventana_emergente.resizable(False, False)
-        self.centrar(self.ventana_emergente, 400, 110 + 30*len(args[2]))
-        self.ventana_emergente.geometry(f"400x{110 + 30*len(args[2])}+{self.x}+{self.y}")
+        self.ventana_emergente.geometry("400x200")
+        self.centrar(self.ventana_emergente, 400, 200)
+        self.ventana_emergente.geometry(f"+{self.x}+{self.y}")
         
-        self.frm_consulta = tk.Frame(self.ventana_emergente, name=f"frm_{args[0]}")
+        self.frm_consulta = tk.Frame(self.ventana_emergente, name="frm_consulta")
         self.frm_consulta.configure(background= "#f7f9fd", height=200, width=400)
         self.frm_consulta.pack(fill='both', expand=True)
         
@@ -474,29 +497,36 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text=args[1])
         self.lblOpciones.place(anchor="nw", x=20, y=20)
         
-        self.int = tk.IntVar()
-        self.int1 = tk.IntVar()
-        self.int2 = tk.IntVar()
-        self.int3 = tk.IntVar()
-        self.int.set(0), self.int1.set(0), self.int2.set(0), self.int3.set(0)
+        for i in range(args[2]):
+            int = tk.IntVar()
+            
+        # self.int = tk.IntVar()
+        # self.int1 = tk.IntVar()
+        # self.int2 = tk.IntVar()
+            
         
-        self.ints = [self.int, self.int1, self.int2, self.int3]
+        self.checkNoInscripcion = ttk.Checkbutton(self.frm_consulta, name="checkNoInscripcion", variable=int[0], onvalue=1, offvalue=0)
+        self.checkNoInscripcion.configure(text="No. Inscripción")
+        self.checkNoInscripcion.place(anchor="nw", x=40, y=50)
         
-        self.c = 0
-        for i in range(len(args[2])):
-            self.check = ttk.Checkbutton(self.frm_consulta, name=f"check{i}", variable=self.ints[self.c], onvalue=1, offvalue=0)
-            self.check.configure(text=args[2][i])
-            self.check.place(anchor="nw", x=40, y=50 + 30*i)
-            self.c += 1
+        self.checkIdAlumno = ttk.Checkbutton(self.frm_consulta, name="checkIdAlumno")
+        self.checkIdAlumno.configure(text="Id Alumno", variable=int[1], onvalue=1, offvalue=0)
+        self.checkIdAlumno.place(anchor="nw", x=40, y=80)
         
-        self.btnEscoger = ttk.Button(self.frm_consulta, name="btnEscoger", cursor="hand2", command=args[4])
-        self.btnEscoger.configure(text=args[3])
-        self.btnEscoger.place(anchor="nw", x=153, y=50 + 30*len(args[2]))
+        self.checkCursos = ttk.Checkbutton(self.frm_consulta, name="checkCursos")
+        self.checkCursos.configure(text="Cursos", variable=int[2], onvalue=1, offvalue=0)
+        self.checkCursos.place(anchor="nw", x=40, y=110)
+        
+        self.btnEscoger = ttk.Button(self.frm_consulta, name="btnEscoger", cursor="hand2", command=self.boton_escoger)
+        self.btnEscoger.configure(text="Consultar Datos")
+        self.btnEscoger.place(anchor="nw", x=153, y=140)
+        
         
         self.ventana_emergente.protocol("WM_DELETE_WINDOW", self.cerrar_ventana)
         self.ventana_emergente.mainloop()
         
-    def ventana_eliminar(self):
+    def ventana_eliminar(self): # no modificar
+        #crea la ventana
         ALTO = 100
         ANCHO = 240
         self.winEmerDelete = tk.Toplevel(self.win)
@@ -507,69 +537,52 @@ class Inscripciones_2:
         self.winEmerDelete.geometry("{}x{}".format(ANCHO, ALTO))
         self.centrar(self.winEmerDelete, ANCHO, ALTO)
         self.winEmerDelete.geometry(f"+{self.x}+{self.y}")
-        
+        #crea el Frame
         self.frm_EmerDelete = tk.Frame(self.winEmerDelete, name="frm_borrar")
         self.frm_EmerDelete.configure(background= "#f7f9fd", height=200, width=400)
         self.frm_EmerDelete.pack(fill='both', expand=True)
 
-            
         def respuesta():
             self.eliminar_data(self.var.get())
-                
-        self.var = tk.IntVar()
+        
+        self.var = tk.IntVar() #variable de respuesta
 
+        #crea los option
         self.radio1 = tk.Radiobutton(self.frm_EmerDelete, text="Eliminar un curso", variable=self.var, value=1,background= "#f7f9fd" )
         self.radio1.place(anchor="nw", x=40, y=0)
 
         radioAll = tk.Radiobutton(self.frm_EmerDelete, text="Eliminar todos los cursos", variable=self.var, value=2, background= "#f7f9fd")
         radioAll.place(anchor="nw", x=40, y=30)
-        
-        botonVemerEliminiar = tk.Button(self.frm_EmerDelete, text="Mostrar selección", command= respuesta)
+        #crea el boton
+        botonVemerEliminiar = tk.Button(self.frm_EmerDelete, text="Seleccionar", command= respuesta)
         botonVemerEliminiar.place(anchor="nw", x=60, y=60)
 
-    def boton_escoger_consulta(self): # Función que se ejecuta al presionar el botón de la ventana emergente cuando se está consultando
-        # self.limpiar()
+    def boton_escoger(self):
         self.combx_id_alumno()
         self.combx_no_incripcion()
         self.combx_codigo_curso()
-        if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0 and self.int3.get() == 0:
+        if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0:
             self.cerrar_ventana()
             return self.consultar_no_inscripción()
-        elif self.int1.get() == 1 and self.int.get() == 0 and self.int2.get() == 0 and self.int3.get() == 0:
+        elif self.int1.get() == 1 and self.int.get() == 0 and self.int2.get() == 0:
             self.cerrar_ventana()
             return self.consultar_id_alumno()
-        elif self.int2.get() == 1 and self.int.get() == 0 and self.int1.get() == 0 and self.int3.get() == 0:
+        elif self.int2.get() == 1 and self.int.get() == 0 and self.int1.get() == 0:
             self.cerrar_ventana()
             return self.consultar_cursos()
-        elif self.int3.get() == 1 and self.int.get() == 0 and self.int1.get() == 0 and self.int2.get() == 0:
-            self.cerrar_ventana()
-            return self.consultar_carreras()
         else:
             messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
             self.int.set(0)
             self.int1.set(0)
             self.int2.set(0)
             self.cerrar_ventana()
-    
-    def boton_escoger_grabar(self): # Función que se ejecuta al presionar el botón de la ventana emergente cuando se está grabando (está desactiva en preparación)
-        if self.int.get() == 1 and self.int1.get() == 0:
-            self.cerrar_ventana()
-            # return self.agregar_data()
-        elif self.int1.get() == 1 and self.int.get() == 0:
-            self.cerrar_ventana()
-            # return self.agregar_alumno()
-        else:
-            messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
-            self.int.set(0)
-            self.int1.set(0)
-            self.cerrar_ventana()
             
-    def click(self,event): # Función que se ejecuta al hacer doble clic en una fila del Treeview
+    def click(self,event):
         self.item = self.tViews.selection()[0]
         self.values = self.tViews.item(self.item, 'values')
         return self.consultar(self.values[0])
     
-    def tree_view_prueba(self, *kargs): # Función que crea un Treeview con sus respectivas columnas y scrollbars, los parametros son el nombre del Treeview, las columnas y el ancho de las columnas
+    def tree_view_prueba(self, *kargs):
         def restrictor(Event):
             # Reviso si una zona especifica alrededor del cursor toca el separador de columnas
             # Esta zona la obtuve con prueba y error.
@@ -609,7 +622,7 @@ class Inscripciones_2:
         self.tViews.bind("<B1-Motion>", restrictor)
         self.tViews.bind("<<TreeviewSelect>>", self.obtener_fila)
     
-    def consultar_no_inscripción(self): # Consulta los datos de la base de datos según el número de inscripción
+    def consultar_no_inscripción(self):
         self.limpiar()
         if self.cursor:
             self.cursor = self.conn.cursor()
@@ -626,7 +639,7 @@ class Inscripciones_2:
         self.tViews.bind("<Double-1>", self.click)
         # print(self.tView_c_inscripcion.selection())
         
-    def consultar_id_alumno(self): # Consulta los datos de la base de datos según el id del alumno
+    def consultar_id_alumno(self):
         self.limpiar()
         self.argumentos = ('c_alumnos',['Id Alumno', 'Nombres', 'Apellidos', 'Id Carrera', 'Fecha de Ingreso', 'Dirección', 'Ciudad', 'Departamento', 'Telefono Celular', 'Telefono Fijo'],
                            [100,200,200,100,120,200,200,200,100,100])
@@ -637,22 +650,12 @@ class Inscripciones_2:
         for i in self.datos:
             self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
 
-    def consultar_cursos(self): # Consulta los datos de la base de datos según el código del curso
+    def consultar_cursos(self):
         self.limpiar()
         self.argumentos = ('tView_c_cursos',['Código_Curso','Descripción_Curso','Num_Horas'],[110,320,300])
         self.tree_view_prueba(*self.argumentos)
         
         self.cursor.execute(''' SELECT Código_Curso, Descripción_Curso, Num_Horas FROM Cursos''')
-        self.datos = self.cursor.fetchall()
-        for i in self.datos:
-            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
-            
-    def consultar_carreras(self): # Consulta los datos de la base de datos según el código de la carrera
-        self.limpiar()
-        self.argumentos = ('tView_c_carreras',['Código_Carrera','Descripción_Carrera', 'No Semestres'],[120,320,120])
-        self.tree_view_prueba(*self.argumentos)
-        
-        self.cursor.execute(''' SELECT * FROM Carreras''')
         self.datos = self.cursor.fetchall()
         for i in self.datos:
             self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
@@ -812,8 +815,7 @@ class Inscripciones_2:
     #     for i in self.data:
     #         self.lista_alumnos.append(i)
     
-    def agregar_estudiantes(self): # Agrega los datos de los estudiantes a la base de datos, aun está desconectada porque está en proceso de construcción
-        self.código_re = "^[0-9]{1,10}$"
+    def agregar_estudiantes(self):
         self.entry_datos = [self.cmbx_Id_Alumno, self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.fecha, self.direccion, 
                             self.telCel, self.telFijo, self.ciudad, self.departamento]
         self.datos_ingresados = []
@@ -826,7 +828,7 @@ class Inscripciones_2:
         self.cursor.execute('''INSERT INTO Alumnos (Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento)   
                             VALUES (?,?,?,?,?,?,?,?,?,?)''', tuple(self.datos_ingresados))
         self.conn.commit()
-        return messagebox.showinfo("Información", "Datos ingresados correctamente")
+        return messagebox.showinfo("Ingreso de Datos", "Datos ingresados correctamente")
         
     def close_sqlite(self):
         self.conn.commit()
