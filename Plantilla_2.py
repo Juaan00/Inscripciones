@@ -11,6 +11,7 @@ from pathlib import Path
 from subprocess import run
 from platform import system
 import signal
+import re
 
 if system() == "Windows":
     from ctypes import windll
@@ -64,33 +65,15 @@ class Inscripciones_2:
         self.frm_1 = tk.Frame(self.win, name="frm_1")
         self.frm_1.configure(background="#f7f9fd", height=600, width=800)
 
-        def habilitar_caracteres_entry(entrada, caracter):
-
-            def verificarNumeros(char):        
-                return char.isdigit()
-            
-            def verificarLetras(char):        
-                return char.isalpha()
-            
-            def convertir_mayusculas(*args):
-                contenido = entrada.get()
-                entrada.delete(0, tk.END)
-                entrada.insert(0, contenido.upper())
-
-            if caracter == 'N':
-                entrada.validate_cmd = self.frm_1.register(verificarNumeros)
-                entrada.config(validate="key", validatecommand=(entrada.validate_cmd,"%S"))
-            elif caracter == 'L':
-                entrada.config(validate="key", validatecommand=(entrada.register(verificarLetras), "%S"))
-                entrada.bind('<KeyRelease>', convertir_mayusculas)
-
         #Label id_Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
         self.lblIdAlumno.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Id Alumno')
         self.lblIdAlumno.place(anchor="nw", x=20, y=20)
         #Combobox id_Alumno
-        self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno",state=tk.DISABLED)
+        vcmd = (self.frm_1.register(self.onValidate),'%P' ,'%S')
+        self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno",postcommand=self.combx_id_alumno, state="readonly",
+                                           validate="key", validatecommand=vcmd)
         self.cmbx_Id_Alumno.place(anchor="nw", width=110, x=20, y=40)
         
         #Label Nombres
@@ -101,7 +84,7 @@ class Inscripciones_2:
         #Entry Nombres
         self.nombres = ttk.Entry(self.frm_1, name="nombres",state=tk.DISABLED)
         self.nombres.place(anchor="nw", width=190, x=150, y=40)
-        habilitar_caracteres_entry(self.nombres, 'L')
+        # habilitar_caracteres_entry(self.nombres, 'L')
 
         #Label Apellidos
         self.lblApellidos = ttk.Label(self.frm_1, name="lblapellidos")
@@ -193,7 +176,7 @@ class Inscripciones_2:
                                         state="normal",text='No.Inscripción')
         self.lblNoInscripcion.place(anchor="nw", x=680, y=20)
         #Conmbox No. Inscripción
-        self.noInscripcion = ttk.Combobox(self.frm_1, name="noInscripcion",state=tk.DISABLED)
+        self.noInscripcion = ttk.Combobox(self.frm_1, name="noInscripcion",state="readonly", postcommand=self.combx_no_incripcion)
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
         
         #Label Direccion
@@ -233,7 +216,7 @@ class Inscripciones_2:
         #Entry Telefono Celular
         self.telCel = ttk.Entry(self.frm_1, name="telcel",state=tk.DISABLED)
         self.telCel.place(anchor="nw", width=110, x=540, y=100)
-        habilitar_caracteres_entry(self.telCel, 'N')
+        self.habilitar_caracteres_entry(self.telCel, 'N')
 
         #Label Telefono Fijo
         self.lblTelFijo = ttk.Label(self.frm_1, name="lbltelfijo")
@@ -243,6 +226,7 @@ class Inscripciones_2:
         #Entry Telefono Fijo
         self.telFijo = ttk.Entry(self.frm_1, name="telfijo",state=tk.DISABLED)
         self.telFijo.place(anchor="nw", width=110, x=670, y=100)
+
     
         #Label id_carrera
         self.lblIdCarrera = ttk.Label(self.frm_1, name="lblidcarrera")
@@ -259,7 +243,7 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Código del Curso')
         self.lblDscCurso.place(anchor="nw", x=100, y=140)
         #Entry Codigo del Curso 
-        self.codigo_Curso = ttk.Combobox(self.frm_1, name="descripc_curso",state=tk.DISABLED)
+        self.codigo_Curso = ttk.Combobox(self.frm_1, name="descripc_curso",state="readonly", postcommand=self.combx_codigo_curso)
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
         
@@ -296,7 +280,7 @@ class Inscripciones_2:
         #Botón Consultar
         self.icono_c = tk.PhotoImage(file= PATH + ICONO_CONSULTA)
         self.btnConsultar = tk.Button(self.frm_1, name="btnconsultar",
-                                      command=lambda: self.consultar_ventana("Consultar Datos", "Seleccione una opción",3),
+                                      command=lambda: self.consultar_ventana("Consultar Datos", "Seleccione una opción", ["No. Inscripción", "Id Alumno", "Cursos","Carrera"], "Consultar",self.boton_escoger_consulta),
                                       cursor="hand2", image=self.icono_c,compound=tk.LEFT,bd=0, relief="flat", bg="#f7f9fd")
         self.btnConsultar.configure(text='  Consultar',font=('Arial', 9, 'bold'), width=90, height=30)
         self.btnConsultar.place(anchor="nw", x=100, y=235)
@@ -387,6 +371,36 @@ class Inscripciones_2:
 
     ''' A partir de este punto se deben incluir las funciones
      para el manejo de la base de datos '''
+     
+    def habilitar_caracteres_entry(self,entrada, caracter):
+
+        def verificarNumeros(char):        
+            return char.isdigit()
+        
+        def verificarLetras(char):        
+            return char.isalpha()
+        
+        def convertir_mayusculas(*args):
+            contenido = entrada.get()
+            entrada.delete(0, tk.END)
+            entrada.insert(0, contenido.upper())
+
+        if caracter == 'N':
+            entrada.validate_cmd = self.frm_1.register(verificarNumeros)
+            entrada.config(validate="key", validatecommand=(entrada.validate_cmd,"%S"))
+        elif caracter == 'L':
+            entrada.config(validate="key", validatecommand=(entrada.register(verificarLetras), "%S"))
+            entrada.bind('<KeyRelease>', convertir_mayusculas)    
+    
+    def onValidate(self,P, S):
+        self.numeros = re.compile('^[0-9]*$')
+        self.largo = re.compile("^[0-9]{0,10}$")
+        if re.match(self.numeros, S) and re.match(self.largo, P):
+            return True
+        else:
+            self.frm_1.bell()
+            messagebox.showwarning("Error", "Por favor, digite un código no mayor a 10 dígitos sin letras o símbolos")
+            return False    
     
     def run_sqlite(self):
         self.conn = sqlite3.connect(DB)
@@ -476,7 +490,8 @@ class Inscripciones_2:
             i.config(state=tk.NORMAL)
         self.ventana_emergente.destroy()
     
-    def consultar_ventana(self, *args):
+    def consultar_ventana(self, *args): #ventana emergente, permite máximo 4 opciones para escoger, los parametros son: Titulo, Texto, Opciones, Botón y Función de botón
+        self.limpiar()
         self.abrir_ventana()
         self.ventana_emergente = tk.Toplevel(self.win)
         self.ventana_emergente.title(args[0])
@@ -484,11 +499,10 @@ class Inscripciones_2:
         self.ventana_emergente.iconphoto(False, self.icon_consulta)
          
         self.ventana_emergente.resizable(False, False)
-        self.ventana_emergente.geometry("400x200")
-        self.centrar(self.ventana_emergente, 400, 200)
-        self.ventana_emergente.geometry(f"+{self.x}+{self.y}")
+        self.centrar(self.ventana_emergente, 400, 110 + 30*len(args[2]))
+        self.ventana_emergente.geometry(f"400x{110 + 30*len(args[2])}+{self.x}+{self.y}")
         
-        self.frm_consulta = tk.Frame(self.ventana_emergente, name="frm_consulta")
+        self.frm_consulta = tk.Frame(self.ventana_emergente, name=f"frm_{args[0]}")
         self.frm_consulta.configure(background= "#f7f9fd", height=200, width=400)
         self.frm_consulta.pack(fill='both', expand=True)
         
@@ -497,30 +511,24 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text=args[1])
         self.lblOpciones.place(anchor="nw", x=20, y=20)
         
-        for i in range(args[2]):
-            int = tk.IntVar()
-            
-        # self.int = tk.IntVar()
-        # self.int1 = tk.IntVar()
-        # self.int2 = tk.IntVar()
-            
+        self.int = tk.IntVar()
+        self.int1 = tk.IntVar()
+        self.int2 = tk.IntVar()
+        self.int3 = tk.IntVar()
+        self.int.set(0), self.int1.set(0), self.int2.set(0), self.int3.set(0)
         
-        self.checkNoInscripcion = ttk.Checkbutton(self.frm_consulta, name="checkNoInscripcion", variable=int[0], onvalue=1, offvalue=0)
-        self.checkNoInscripcion.configure(text="No. Inscripción")
-        self.checkNoInscripcion.place(anchor="nw", x=40, y=50)
+        self.ints = [self.int, self.int1, self.int2, self.int3]
         
-        self.checkIdAlumno = ttk.Checkbutton(self.frm_consulta, name="checkIdAlumno")
-        self.checkIdAlumno.configure(text="Id Alumno", variable=int[1], onvalue=1, offvalue=0)
-        self.checkIdAlumno.place(anchor="nw", x=40, y=80)
+        self.c = 0
+        for i in range(len(args[2])):
+            self.check = ttk.Checkbutton(self.frm_consulta, name=f"check{i}", variable=self.ints[self.c], onvalue=1, offvalue=0)
+            self.check.configure(text=args[2][i])
+            self.check.place(anchor="nw", x=40, y=50 + 30*i)
+            self.c += 1
         
-        self.checkCursos = ttk.Checkbutton(self.frm_consulta, name="checkCursos")
-        self.checkCursos.configure(text="Cursos", variable=int[2], onvalue=1, offvalue=0)
-        self.checkCursos.place(anchor="nw", x=40, y=110)
-        
-        self.btnEscoger = ttk.Button(self.frm_consulta, name="btnEscoger", cursor="hand2", command=self.boton_escoger)
-        self.btnEscoger.configure(text="Consultar Datos")
-        self.btnEscoger.place(anchor="nw", x=153, y=140)
-        
+        self.btnEscoger = ttk.Button(self.frm_consulta, name="btnEscoger", cursor="hand2", command=args[4])
+        self.btnEscoger.configure(text=args[3])
+        self.btnEscoger.place(anchor="nw", x=153, y=50 + 30*len(args[2]))
         
         self.ventana_emergente.protocol("WM_DELETE_WINDOW", self.cerrar_ventana)
         self.ventana_emergente.mainloop()
@@ -557,25 +565,30 @@ class Inscripciones_2:
         botonVemerEliminiar = tk.Button(self.frm_EmerDelete, text="Seleccionar", command= respuesta)
         botonVemerEliminiar.place(anchor="nw", x=60, y=60)
 
-    def boton_escoger(self):
-        self.combx_id_alumno()
-        self.combx_no_incripcion()
-        self.combx_codigo_curso()
-        if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0:
+    def boton_escoger_consulta(self): # Función que se ejecuta al presionar el botón de la ventana emergente cuando se está consultando
+        # self.limpiar()
+        # self.combx_id_alumno()
+        # self.combx_no_incripcion()
+        # self.combx_codigo_curso()
+        if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0 and self.int3.get() == 0:
             self.cerrar_ventana()
             return self.consultar_no_inscripción()
-        elif self.int1.get() == 1 and self.int.get() == 0 and self.int2.get() == 0:
+        elif self.int1.get() == 1 and self.int.get() == 0 and self.int2.get() == 0 and self.int3.get() == 0:
             self.cerrar_ventana()
             return self.consultar_id_alumno()
-        elif self.int2.get() == 1 and self.int.get() == 0 and self.int1.get() == 0:
+        elif self.int2.get() == 1 and self.int.get() == 0 and self.int1.get() == 0 and self.int3.get() == 0:
             self.cerrar_ventana()
             return self.consultar_cursos()
+        elif self.int3.get() == 1 and self.int.get() == 0 and self.int1.get() == 0 and self.int2.get() == 0:
+            self.cerrar_ventana()
+            return self.consultar_carreras()
         else:
             messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
             self.int.set(0)
             self.int1.set(0)
             self.int2.set(0)
             self.cerrar_ventana()
+    
             
     def click(self,event):
         self.item = self.tViews.selection()[0]
@@ -656,6 +669,16 @@ class Inscripciones_2:
         self.tree_view_prueba(*self.argumentos)
         
         self.cursor.execute(''' SELECT Código_Curso, Descripción_Curso, Num_Horas FROM Cursos''')
+        self.datos = self.cursor.fetchall()
+        for i in self.datos:
+            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
+    
+    def consultar_carreras(self): # Consulta los datos de la base de datos según el código de la carrera
+        self.limpiar()
+        self.argumentos = ('tView_c_carreras',['Código_Carrera','Descripción_Carrera', 'No Semestres'],[120,320,120])
+        self.tree_view_prueba(*self.argumentos)
+        
+        self.cursor.execute(''' SELECT * FROM Carreras''')
         self.datos = self.cursor.fetchall()
         for i in self.datos:
             self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
