@@ -70,7 +70,9 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text='Id Alumno')
         self.lblIdAlumno.place(anchor="nw", x=20, y=20)
         #Combobox id_Alumno
-        self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno",state=tk.DISABLED)
+        vcmd = (self.frm_1.register(self.onValidate),'%P' ,'%S')
+        self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno",postcommand=self.combx_id_alumno, state="readonly",
+                                           validate="key", validatecommand=vcmd)
 
         self.cmbx_Id_Alumno.place(anchor="nw", width=110, x=20, y=40)
         
@@ -174,7 +176,7 @@ class Inscripciones_2:
                                         state="normal",text='No.Inscripción')
         self.lblNoInscripcion.place(anchor="nw", x=680, y=20)
         #Conmbox No. Inscripción
-        self.noInscripcion = ttk.Combobox(self.frm_1, name="noInscripcion",state=tk.DISABLED)
+        self.noInscripcion = ttk.Combobox(self.frm_1, name="noInscripcion",postcommand=self.combx_no_incripcion, state="readonly")
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
         
         #Label Direccion
@@ -238,7 +240,7 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Código del Curso')
         self.lblDscCurso.place(anchor="nw", x=100, y=140)
         #Entry Codigo del Curso 
-        self.codigo_Curso = ttk.Combobox(self.frm_1, name="descripc_curso",state=tk.DISABLED)
+        self.codigo_Curso = ttk.Combobox(self.frm_1, name="descripc_curso",postcommand=self.combx_codigo_curso, state="readonly")
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
         
@@ -359,6 +361,7 @@ class Inscripciones_2:
 
         # Main widget
         self.mainwindow = self.win
+        
 
     def run(self):
         self.mainwindow.mainloop()
@@ -366,6 +369,16 @@ class Inscripciones_2:
 
     ''' A partir de este punto se deben incluir las funciones
      para el manejo de la base de datos '''
+
+    def onValidate(self,P, S):
+        self.numeros = re.compile('^[0-9]*$')
+        self.largo = re.compile("^[0-9]{0,10}$")
+        if re.match(self.numeros, S) and re.match(self.largo, P):
+            return True
+        else:
+            self.frm_1.bell()
+            messagebox.showwarning("Error", "Por favor, digite un código no mayor a 10 dígitos sin letras o símbolos")
+            return False
     
     def run_sqlite(self): # Conexión a la base de datos SQLite, recomendación cada vez que creen una función que tenga que ver con base de datos usen self.conn.commit() para guardar los cambios en tiempo de ejecución
         self.conn = sqlite3.connect(DB)
@@ -529,9 +542,9 @@ class Inscripciones_2:
 
     def boton_escoger_consulta(self): # Función que se ejecuta al presionar el botón de la ventana emergente cuando se está consultando
         # self.limpiar()
-        self.combx_id_alumno()
-        self.combx_no_incripcion()
-        self.combx_codigo_curso()
+        # self.combx_id_alumno()
+        # self.combx_no_incripcion()
+        # self.combx_codigo_curso()
         if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0 and self.int3.get() == 0:
             self.cerrar_ventana()
             return self.consultar_no_inscripción()
@@ -568,6 +581,9 @@ class Inscripciones_2:
         self.item = self.tViews.selection()[0]
         self.values = self.tViews.item(self.item, 'values')
         return self.consultar(self.values[0])
+    
+    def validar_entry(self):
+        self.register
     
     def tree_view_prueba(self, *kargs): # Función que crea un Treeview con sus respectivas columnas y scrollbars, los parametros son el nombre del Treeview, las columnas y el ancho de las columnas
         def restrictor(Event):
@@ -837,13 +853,14 @@ class Inscripciones_2:
             run("clear", shell=True) 
         print('Conexión SQL cerrada, programa finalizado')
 
+
 if __name__ == "__main__":
     app = Inscripciones_2()
-    app.run_sqlite()
-    # handling_interrupt = False
     # app.get_data_idalumno()
     # app.get_data_complete()
     # app.get_data_cursos()
-    signal.signal(signal.SIGINT, signal.SIG_IGN) # Ignorar la señal de interrupción versión mejorada
+    app.run_sqlite()
+    # app.cmbx()
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
     app.run()
     app.close_sqlite()
