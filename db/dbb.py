@@ -33,7 +33,7 @@ cursor = conn.cursor()
 # )''')
 
 # cursor.execute('''CREATE TABLE IF NOT EXISTS  [Alumnos](
-#     [Id_Alumno] VARCHAR(20) NOT NULL PRIMARY KEY,
+#     Id_Alumno VARCHAR(20) NOT NULL PRIMARY KEY,
 #     Id_Carrera VARCHAR(15) NOT NULL,
 #     Nombres VARCHAR(50),
 #     Apellidos VARCHAR(50),
@@ -75,30 +75,36 @@ cursos =[
 # cursor.executemany("INSERT INTO Cursos(Código_Curso, Descripción_Curso, Horario_Curso, Num_Horas) VALUES(?,?,?,?)", cursos)
 
 estudiantes = [
-    ('8876295089', '2789', 'Juan', 'Pérez', '2019-01-15', 'Calle 1 # 2-3', '300-1234567', '300-1234567', 'Bogotá', 'Cundinamarca'),
-    ('5269436393', '2789', 'Juan Camilo', 'Pérez Soza', '2024-11-15', 'Calle 65 # 20-3', '300-1234567', '300-1234', 'Bogotá', 'Cundinamarca'),
-    ('8114559050', '2789', 'Pedro Pedro', 'Torres Castillo', '2024-03-16', 'Calle 72B # 23-30', '300-1234567', '300-1234', 'Bogotá', 'Cundinamarca'),
-    ('7270566584', '2789', 'María Camila', 'González López', '2024-04-27', 'Calle 10 # 5-6', '310-9876543', '310-9876', 'Medellín', 'Antioquia'),
+    ('8876295089', '2880', 'Juan','Perez' , '2019-01-15', 'Calle 1 # 2-3', '300-1234567', '300-1234567', 'Bogotá', 'Cundinamarca'),
+    ('5269436393', '2880', 'Juan Camilo', 'Pérez Soza', '2024-11-15', 'Calle 65 # 20-3', '300-1234567', '300-1234', 'Bogotá', 'Cundinamarca'),
+    ('8114559050', '2880', 'Pedro Pedro', 'Torres Castillo', '2024-03-16', 'Calle 72B # 23-30', '300-1234567', '300-1234', 'Bogotá', 'Cundinamarca'),
+    ('7270566584', '2880', 'María Camila', 'González López', '2024-04-27', 'Calle 10 # 5-6', '310-9876543', '310-9876', 'Medellín', 'Antioquia'),
     ('7894756003', '2544', 'Andrés David', 'Martínez Rodríguez', '2024-04-28', 'Carrera 20 # 15-30', '320-7654321', '320-7654', 'Cali', 'Valle del Cauca'),
     ('8562305458', '2544', 'Laura Camila', 'Ramírez Pérez', '2024-04-29', 'Avenida 5 # 8-12', '315-5432109', '315-5432', 'Barranquilla', 'Atlántico'),
     ('6045534334', '2544', 'Carlos Felipe', 'López Gómez', '2024-04-30', 'Calle 7 # 12-15', '317-8765432', '317-8765', 'Bogotá', 'Cundinamarca'),
     ('2764144293', '2544', 'Ana Maria', 'Hernández Martínez', '2024-05-01', 'Carrera 15 # 25-18', '314-6543210', '314-6543', 'Medellín', 'Antioquia'),
-    ('7511200463', '2544', 'Diego Alejandro', 'García Ramírez', '2024-05-02', 'Avenida 8 # 10-5', '312-9876543', '312-9876', 'Cali', 'Valle del Cauca'),
+    ('7511200463', '2880', 'Diego Alejandro', 'García Ramírez', '2024-05-02', 'Avenida 8 # 10-5', '312-9876543', '312-9876', 'Cali', 'Valle del Cauca'),
     ('9030779197', '2545', 'Sara Sofía', 'Pérez Martínez', '2024-05-03', 'Calle 12 # 20-7', '319-7654321', '319-7654', 'Barranquilla', 'Atlántico'),
     ('8605132377', '2545', 'Javier', 'López Ramírez', '2024-05-04', 'Carrera 18 # 22-10', '316-5433433', '320-5421', 'Valledupar', 'Cesar'),
     ('2550301257', '2545', 'Carla Valentina', 'Sánchez Pérez', '2024-05-05', 'Avenida 3 # 6-9', '313-8765432', '313-8765', 'Bogotá', 'Cundinamarca'),
     ('9997493368', '2545', 'Gabriel', 'Gómez Ramírez', '2024-05-06', 'Calle 5 # 8-11', '311-6543210', '311-6543', 'Medellín', 'Antioquia'),
     ('6514506224', '2546', 'Isabella', 'Martínez López', '2024-05-07', 'Carrera 12 # 18-25', '319-7654321', '319-7654', 'Cali', 'Valle del Cauca'),
     ('6223175366', '2546', 'Mateo', 'Hernández Ramírez', '2024-05-08', 'Avenida 7 # 10-14', '316-5432109', '316-5432', 'Barranquilla', 'Atlántico'),
-    ('8221071329', '2546', 'Carlos Valentín', 'López Martínez', '2024-05-09', 'Calle 15 # 22-17', '314-9876543', '314-9876', 'Bogotá', 'Cundinamarca'),
+    ('8221071329', '2880', 'Carlos Valentín', 'López Martínez', '2024-05-09', 'Calle 15 # 22-17', '314-9876543', '314-9876', 'Bogotá', 'Cundinamarca'),
     ('8782642282', '2548', 'Camila', 'García Ramírez', '2024-05-10', 'Carrera 25 # 30-22', '317-7654321', '317-7654', 'Medellín', 'Antioquia'),
     ('5301173864', '2548', 'Lucas Alejandro', 'Pérez Martínez', '2024-05-11', 'Avenida 10 # 12-19', '312-8765432', '312-8765', 'Cali', 'Valle del Cauca'),
     ('1008146001', '2548', 'Valentino', 'Ramírez Gómez', '2024-05-12', 'Calle 18 # 22-14', '318-7654321', '318-7654', 'Barranquilla', 'Atlántico'),
     ('2778948484', '2549', 'Isabel Maria', 'López Martínez', '2024-05-13', 'Avenida 12 # 15-20', '314-9876543', '314-9876', 'Bogotá', 'Cundinamarca'),
-    ('9557617951', '2549', 'Sara Lucía', 'García Ramírez', '2024-05-14', 'Carrera 22 # 30-18', '317-7654321', '317-7654', 'Medellín', 'Antioquia'),
+    ('9557617951', '2880', 'Sara Lucía', 'García Ramírez', '2024-05-14', 'Carrera 22 # 30-18', '317-7654321', '317-7654', 'Medellín', 'Antioquia'),
     ('1322078372', '2549', 'Damian Matías', 'Pérez Martínez', '2024-05-15', 'Avenida 15 # 18-22', '312-8765432', '312-8765', 'Cali', 'Valle del Cauca'),
-    ('5547157920', '2549', 'Valeria', 'Hernández Ramírez', '2024-05-16', 'Calle 20 # 25-19', '319-6543210', '319-6543', 'Barranquilla', 'Atlántico')
+    ('5547157920', '2880', 'Valeria', 'Hernández Ramírez', '2024-05-16', 'Calle 20 # 25-19', '319-6543210', '319-6543', 'Barranquilla', 'Atlántico')
 ]
+# estudiantes_1 =[
+# ('1322078372', '2549', 'Damian Matías', 'Pérez Martínez', '2024-05-15', 'Avenida 15 # 18-22', '312-8765432', '312-8765', 'Cali', 'Valle del Cauca'),
+# ('5547157920', '2880', 'Valeria', 'Hernández Ramírez', '2024-05-16', 'Calle 20 # 25-19', '319-6543210', '319-6543', 'Barranquilla', 'Atlántico')
+
+# ]
+
 
 # cursor.executemany("INSERT INTO Alumnos(Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento) VALUES(?,?,?,?,?,?,?,?,?,?)", estudiantes)
 
@@ -108,8 +114,9 @@ carreras = [
     ('2546','Ingeniería Industrial','10'),
     ('2548','Ingeniería Mecatrónica','10'),
     ('2549','Ingeniería Química','10'),
-    ('2879','Ingeniería de Sistemas','10')
+    ('2880','Ingeniería de Sistemas','10')
 ]
+# executemany = cursor.executemany("INSERT INTO Carreras(Código_Carrera, Descripción, Num_Semestres) VALUES(?,?,?)", carreras)
 
 # import random
 
@@ -133,7 +140,7 @@ carreras = [
 #     inscripcion = (estudiante, fecha_inscripcion, curso)
 #     inscripciones.append(inscripcion)
     
-# print(inscripciones)
+# print(inscripciones)8114559050
 
 inscritos_1 = [
     (9, '8605132377', '2024-07-06', '2017228'), 
@@ -170,10 +177,36 @@ inscritos_1 = [
     (11, '8221071329', '2024-04-20', '1000019'), (18, '6514506224', '2024-03-10', '2015734'), 
     (14, '5269436393', '2024-04-20', '1000026'), (13, '2764144293', '2024-05-31', '1000005')]
 
-inscritos_2 = [(1, '8782642282', '2024-09-18', '2016509')]
+# cursor.executemany("INSERT INTO Cursos(Código_Curso, Descripción_Curso, Horario_Curso, Num_Horas) VALUES(?,?,?,?)", cursos)
+# cursor.executemany('''INSERT INTO Carreras(Código_Carrera, Descripción, Num_Semestres) VALUES(?,?,?)''', carreras)
+# cursor.executemany("INSERT INTO Alumnos(Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento) VALUES(?,?,?,?,?,?,?,?,?,?)", estudiantes)
+cursor.executemany("INSERT INTO Inscritos(No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES(?,?,?,?)", inscritos_1)
+
+
+# inscritos_2 = [(3, '8114559050', '2024-07-06', '2015734'),
+            
+
 # toma los datos de alumno, carrera y curso y crea 40 inscritos de manera aleatoria pero que sea lo mas variado en cuanto a los cursos inscritos
 
-cursor.executemany("INSERT INTO Inscritos(No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES(?,?,?,?)", inscritos_1)
+# i = 3
+
+# cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Alumnos.Fecha_Ingreso, No_Inscripción, Dirección, Ciudad, Departamento, 
+#                     Telef_Cel, Telef_Fijo, Id_Carrera, Inscritos.Código_Curso, Descripción_Curso, Num_Horas, Fecha_de_Inscripción  FROM Inscritos 
+#             JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
+#             JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso 
+#             JOIN Carreras ON Alumnos.Id_Carrera = Carreras.Código_Carrera 
+#             WHERE Inscritos.No_Inscripción = {i}''')
+
+# cursor.execute('''DELETE FROM Inscritos''')
+# cursor.execute('''DELETE FROM Cursos''')
+# cursor.execute('''DELETE FROM Alumnos''')
+# cursor.execute('''DELETE FROM Carreras''')
+
+# datos = cursor.fetchall()
+# print(datos)
+
+
+# cursor.executemany("INSERT INTO Inscritos(No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES(?,?,?,?)", inscritos_2)
 
 # cursor.executemany("INSERT INTO Carreras(Código_Carrera, Descripción, Num_Semestres) VALUES(?,?,?)", carreras)
 
