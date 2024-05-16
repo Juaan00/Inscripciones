@@ -277,57 +277,60 @@ class Inscripciones_2:
         self.codigo_Curso.bind("<<ComboboxSelected>>",cmbx_codigo_curso )
 
         def editar():
-            # editar_validacion()
+            # # editar_validacion()
             
-            id_alumno=self.add_editar(self.cmbx_Id_Alumno)
-            nombres=self.add_editar(self.nombres)
-            apellidos=self.add_editar(self.apellidos)
-            fecha=self.add_editar(self.fecha)
-            direccion=self.add_editar(self.direccion)
-            telCel=self.add_editar(self.telCel)
-            telFijo=self.add_editar(self.telFijo)
-            ciudad=self.add_editar(self.ciudad)
-            departamento=self.add_editar(self.departamento)
-            no_inscripcion=self.add_editar(self.noInscripcion)
-            codigo_curso=self.add_editar(self.codigo_Curso)
-            if nombres==self.nombre_actual and apellidos==self.apellido_actual and fecha==self.fecha_actual and direccion==self.direccion_actual and telCel==self.telcel_actual and telFijo==self.telfijo_actual and ciudad==self.ciudad_actual and departamento==self.departamento_actual and codigo_curso==self.id_curso_actual:
-                messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
-                return
-            else:
-                string=''
-                if nombres!=self.nombre_actual:
-                    string+='Nombre, '
-                if apellidos!=self.apellido_actual:
-                    string+='Apellido, '
-                if fecha!=self.fecha_actual:
-                    string+='Fecha, '
-                if direccion!=self.direccion_actual:
-                    string+='Dirección, '
-                if telCel!=self.telcel_actual:
-                    string+='Teléfono Celular, '
-                if telFijo!=self.telfijo_actual:
-                    string+='Teléfono Fijo, '
-                if ciudad!=self.ciudad_actual:
-                    string+='Ciudad, '
-                if departamento!=self.departamento_actual:
-                    string+='Departamento, '
-                self.cursor.execute("UPDATE Alumnos SET Nombres = ?, Apellidos = ?, Fecha_Ingreso = ?, Dirección = ?, Telef_Cel = ?, Telef_Fijo = ?, Ciudad = ?, Departamento = ? WHERE Id_Alumno = ?", (self.add_editar(self.nombres), self.add_editar(self.apellidos), self.add_editar(self.fecha), self.add_editar(self.direccion), self.add_editar(self.telCel), self.add_editar(self.telFijo), self.add_editar(self.ciudad), self.add_editar(self.departamento), self.cmbx_Id_Alumno.get()))
-                self.conn.commit()
-                if self.noInscripcion.get() == '':
+            # id_alumno=self.add_editar(self.cmbx_Id_Alumno)
+            # nombres=self.add_editar(self.nombres)
+            # apellidos=self.add_editar(self.apellidos)
+            # fecha=self.add_editar(self.fecha)
+            # direccion=self.add_editar(self.direccion)
+            # telCel=self.add_editar(self.telCel)
+            # telFijo=self.add_editar(self.telFijo)
+            # ciudad=self.add_editar(self.ciudad)
+            # departamento=self.add_editar(self.departamento)
+            # no_inscripcion=self.add_editar(self.noInscripcion)
+            # codigo_curso=self.add_editar(self.codigo_Curso)
+            # if nombres==self.nombre_actual and apellidos==self.apellido_actual and fecha==self.fecha_actual and direccion==self.direccion_actual and telCel==self.telcel_actual and telFijo==self.telfijo_actual and ciudad==self.ciudad_actual and departamento==self.departamento_actual and codigo_curso==self.id_curso_actual:
+            #     messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
+            #     return
+            # else:
+            #     string=''
+            #     if nombres!=self.nombre_actual:
+            #         string+='Nombre, '
+            #     if apellidos!=self.apellido_actual:
+            #         string+='Apellido, '
+            #     if fecha!=self.fecha_actual:
+            #         string+='Fecha, '
+            #     if direccion!=self.direccion_actual:
+            #         string+='Dirección, '
+            #     if telCel!=self.telcel_actual:
+            #         string+='Teléfono Celular, '
+            #     if telFijo!=self.telfijo_actual:
+            #         string+='Teléfono Fijo, '
+            #     if ciudad!=self.ciudad_actual:
+            #         string+='Ciudad, '
+            #     if departamento!=self.departamento_actual:
+            #         string+='Departamento, '
+            #     self.cursor.execute("UPDATE Alumnos SET Nombres = ?, Apellidos = ?, Fecha_Ingreso = ?, Dirección = ?, Telef_Cel = ?, Telef_Fijo = ?, Ciudad = ?, Departamento = ? WHERE Id_Alumno = ?", (self.add_editar(self.nombres), self.add_editar(self.apellidos), self.add_editar(self.fecha), self.add_editar(self.direccion), self.add_editar(self.telCel), self.add_editar(self.telFijo), self.add_editar(self.ciudad), self.add_editar(self.departamento), self.cmbx_Id_Alumno.get()))
+            #     self.conn.commit()
+            string=''
+            no_inscripcion=self.noInscripcion.get()
+            id_alumno=self.cmbx_Id_Alumno.get()
+            if self.noInscripcion.get() == '':
                     pass
-                else:
-                    string+=f'No. Inscripción {no_inscripcion}, '
-                    numero_inscripcion=''
-                    nuevo_curso=self.codigo_Curso.get()
-                    self.lista_inscripciones=self.get_data_inscricpiones_complete(id_alumno)
-                    for i in self.lista_inscripciones: 
-                        if i[0] == numero_inscripcion:
-                            self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE No_Registro = ?", (nuevo_curso, numero_inscripcion))
-                            self.conn.commit()
-                string= string.rstrip(', ')
-                messagebox.showinfo(f"Edición Exitosa, estudiante {id_alumno}", f"Se realizaron cambios en:\n{string}")
-                self.limpiar()
-                return
+            else:
+                string+=f'No. Inscripción {no_inscripcion}, '
+                numero_inscripcion=''
+                nuevo_curso=self.codigo_Curso.get()
+                self.lista_inscripciones=self.get_data_inscricpiones_complete(id_alumno)
+                for i in self.lista_inscripciones: 
+                    if i[0] == numero_inscripcion:
+                        self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE No_Registro = ?", (nuevo_curso, numero_inscripcion))
+                        self.conn.commit()
+            string= string.rstrip(', ')
+            messagebox.showinfo(f"Edición Exitosa, estudiante {id_alumno}", f"Se realizaron cambios en:\n{string}")
+            self.limpiar()
+            return
         
         self.icono_e = tk.PhotoImage(file= PATH + ICONO_EDITAR)
         self.btnEditar = tk.Button(self.frm_1, name="btneditar", cursor="hand2", image=self.icono_e, compound=tk.LEFT,bd=0, command=editar)
@@ -644,6 +647,7 @@ class Inscripciones_2:
         try:
             self.item = self.tViews.selection()[0]
             self.values = self.tViews.item(self.item, 'values')
+            print(self.values[0])
             return self.consultar(self.values[0])
         except IndexError:
             pass
@@ -767,6 +771,8 @@ class Inscripciones_2:
    
     def consultar(self, event):
         self.get_data_entrys()
+
+
         self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Alumnos.Fecha_Ingreso, No_Inscripción, Dirección, Ciudad, Departamento, 
                             Telef_Cel, Telef_Fijo, Id_Carrera, Inscritos.Código_Curso, Descripción_Curso, Num_Horas, Fecha_de_Inscripción  FROM Inscritos 
                     JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
@@ -803,7 +809,7 @@ class Inscripciones_2:
         self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[110,110,290,224,130]) 
         self.tree_view_prueba(*self.argumentos)
 
-        self.cursor.execute(f'''SELECT Inscritos.No_Inscripción, Inscritos.Código_Curso, Cursos.Descripción_Curso, Cursos.Horario_Curso, Inscritos.Fecha_de_Inscripción FROM Inscritos
+        self.cursor.execute(f'''SELECT Inscritos.No_Inscripción, Inscritos.Código_Curso, Cursos.Descripción_Curso, Inscritos.Horario_Curso, Inscritos.Fecha_de_Inscripción FROM Inscritos
                    JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso
                    WHERE Inscritos.Id_Alumno = {self.lista_consulta_i[0]}
                    ''')
@@ -828,6 +834,7 @@ class Inscripciones_2:
         self.tvEntry0.set(self.data["values"][0])
         self.tvEntry1.set(self.data["values"][1])
         self.tvEntry2.set(self.data["values"][2])
+        print(self.tvEntry0.get())
         print(self.data["values"][0], self.data["values"][1], self.data["values"][2])
         if len(self.data["values"]) > 3:
             self.tvEntry3.set(self.data["values"][3])
