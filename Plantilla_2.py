@@ -583,7 +583,6 @@ class Inscripciones_2:
         self.btnEscoger.configure(text=args[3])
         self.btnEscoger.place(anchor="nw", x=153, y=50 + 30*len(args[2]))
         
-        self.ventana_emergente.protocol("WM_DELETE_WINDOW", self.cerrar_ventana)
         self.ventana_emergente.mainloop()
         
     def ventana_eliminar(self): # no modificar
