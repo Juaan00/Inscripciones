@@ -9,8 +9,10 @@ import datetime
 from pathlib import Path
 from subprocess import run
 from platform import system
-import signal
+from signal import signal, SIGINT, SIG_IGN
 import re
+from functools import partial
+from operator import itemgetter
 
 if system() == "Windows":
     from ctypes import windll
@@ -102,73 +104,30 @@ class Inscripciones_2:
                                 state="normal", takefocus=False,text='Fecha Ingreso')
         self.lblFecha.place(anchor="nw", x=570, y=20)
 
-        self.fecha = tk.Entry(self.frm_1, name="fechas",state=tk.DISABLED)
+        self.fecha = ttk.Entry(self.frm_1, name="fechas",state=tk.DISABLED, validate="key", validatecommand=(self.frm_1.register(self.onValidate), '%P', '%S'))
         self.fecha.configure(justify="right")
         self.fecha.place(anchor="nw", width=90, x=570, y=40)
-            
         self.act_date = False
+        self.fecha.bind("<Key>", lambda event, entry=self.fecha: self.cuandoEscriba(event, entry))
+        self.fecha.bind("<FocusOut>", lambda event, entry=self.fecha: self.validarFecha(entry))
+        self.fecha.bind("<Return>", lambda event, entry=self.fecha: self.validarFecha(entry))   
 
-        def cuandoEscriba(event):
-            #coloca los / al escribir
-            if event.char.isdigit() or event.char =='/':
-                fechaRef = self.fecha.get()
-                if len(fechaRef) == 2 or len(fechaRef) ==5:
-                    self.act_date = True
 
-                if len(fechaRef) == 2:
-                    self.fecha.insert(2,"/")
-                    
-                if len(fechaRef) == 5:
-                    self.fecha.insert(5,"/")
-            if event.char.isdigit() or event.char =='\x08' or event.char =='': # \x08 = Backspace, '' = Delete
-                self.act_date=True
+        # #cuando oprima una tecla cualquiera, ejecuta
+        # self.fecha.bind("<Key>", cuandoEscriba) 
+        # ##############################################################
+        # #evita que valide el borrar como digito
+        # #self.fecha.bind("<BackSpace>", lambda _:self.fecha.delete(tk.END)) 
 
-        def limite(event):
-            #Evita el exceso de numeros
-            fechaRef = self.fecha.get()
-            try:
-                if len(fechaRef) > 10:
-                    raise ValueError("digite maximo 8 numeros")
-            except ValueError as problem:
-                messagebox.showerror("Error", str(problem))
-                self.fecha.delete(10, tk.END)
+        # self.fecha.bind("<Return>", validarFecha)
+        # self.fecha.bind("<Tab>", validarFecha)
+        # self.fecha.bind("<FocusOut>", validarFecha)#no borrar
 
-        def verificarNumeros(char):
-            #permite borrar los /
-            if self.act_date:
-                self.act_date = False 
-                return char.isdigit() or char == '/'
-            else:
-                if char == '/' and self.act_date:
-                    return char.isdigit() or char == '/'
-                else:
-                    return char.isdigit()
-
-        def validarFecha(event):
-            try:
-                self.vFecha = self.fecha.get()
-                #compara el formato del texto con el formato y las fechas de libreria
-                self.vFecha = datetime.datetime.strptime(self.vFecha,'%d/%m/%Y') 
-                print ('fecha valida')
-            except ValueError:
-                messagebox.showerror("Error", 'Digite un formato de fecha valida')
-                #print ('Error: Digite una fecha valida')
-
-        #cuando oprima una tecla cualquiera, ejecuta
-        self.fecha.bind("<Key>", cuandoEscriba) 
-        ##############################################################
-        #evita que valide el borrar como digito
-        #self.fecha.bind("<BackSpace>", lambda _:self.fecha.delete(tk.END)) 
-
-        self.fecha.bind("<Return>", validarFecha)
-        self.fecha.bind("<Tab>", validarFecha)
-        self.fecha.bind("<FocusOut>", validarFecha)#no borrar
-
-        ############################################################
-        self.fecha.bind("<Key>", cuandoEscriba)
-        self.fecha.validate_cmd = self.frm_1.register(verificarNumeros)
-        self.fecha.config(validate="key", validatecommand=(self.fecha.validate_cmd,"%S"))
-        self.fecha.bind("<KeyRelease>", limite)
+        # ############################################################
+        # self.fecha.bind("<Key>", cuandoEscriba)
+        # self.fecha.validate_cmd = self.frm_1.register(verificarNumeros)
+        # self.fecha.config(validate="key", validatecommand=(self.fecha.validate_cmd,"%S"))
+        # self.fecha.bind("<KeyRelease>", limite)
         
         #Label No. Inscripción
         self.lblNoInscripcion = ttk.Label(self.frm_1, name="lblnoinscripcion")
@@ -180,8 +139,10 @@ class Inscripciones_2:
         self.noInscripcion = ttk.Combobox(self.frm_1, name="noInscripcion",state="readonly", postcommand=self.combx_no_incripcion,
                                           validate="key", validatecommand=vcmd)
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
+        self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
         self.noInscripcion.bind("<<ComboboxSelected>>", lambda _: self.consultar(self.noInscripcion.get()))
-        self.noInscripcion.bind("<Return>", lambda _: self.consultar(self.noInscripcion.get()))  
+        self.noInscripcion.bind("<Return>", self.enter)  
+        self.noInscripcion.bind("<FocusIn>", self.noInscripcion.config(state="normal"))   
         
         #Label Direccion
         self.lblDireccion = ttk.Label(self.frm_1, name="lbldireccion")
@@ -220,7 +181,7 @@ class Inscripciones_2:
         #Entry Telefono Celular
         self.telCel = ttk.Entry(self.frm_1, name="telcel",state=tk.DISABLED)
         self.telCel.place(anchor="nw", width=110, x=540, y=100)
-        self.habilitar_caracteres_entry(self.telCel, 'N')
+        # self.habilitar_caracteres_entry(self.telCel, 'N')
 
         #Label Telefono Fijo
         self.lblTelFijo = ttk.Label(self.frm_1, name="lbltelfijo")
@@ -276,9 +237,13 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Fecha Inscripción')
         self.lblFechaInscripcion.place(anchor="nw", x=686, y=140)
         #Entry Fecha de Inscripción
-        self.fechaInscripcion = ttk.Entry(self.frm_1, name="fechainscripcion",state=tk.DISABLED)
+        self.fechaInscripcion = ttk.Entry(self.frm_1, name="fechainscripcion",state=tk.DISABLED,
+                                          validate="key", validatecommand=(self.frm_1.register(self.onValidate), '%P', '%S'))
         self.fechaInscripcion.place(anchor="nw", width=90, x=690, y=160)
-        
+        self.fechaInscripcion.bind("<FocusOut>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
+        self.fechaInscripcion.bind("<Key>", lambda event, entry=self.fechaInscripcion: self.cuandoEscriba(event, entry))
+        self.fechaInscripcion.bind("<Return>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
+
 
         ''' Botones  de la Aplicación'''
         
@@ -289,34 +254,7 @@ class Inscripciones_2:
                                       cursor="hand2", image=self.icono_c,compound=tk.LEFT,bd=0, relief="flat", bg="#f7f9fd")
         self.btnConsultar.configure(text='  Consultar',font=('Arial', 9, 'bold'), width=90, height=30)
         self.btnConsultar.place(anchor="nw", x=100, y=235)
-        
-        
-        # @staticmethod
-        # def activar_boton_grabar():
-        #     self.btnGrabar.config(state="normal")
-        #Botón Guardar
-        # self.btnConsultar = ttk.Button(self.frm_1, name="btnconsultar", cursor="hand2")
-        # self.btnConsultar.configure(text='Consultar')
-        # self.btnConsultar.place(anchor="nw", x=150, y=260, width=80)
-        
-        #Botón Editar
-        # def editar():
-        #     activar_boton_grabar()
-        #     if not self.is_fields_enabled:
-        #         self.nombres.config(state="normal")
-        #         self.apellidos.config(state="normal")
-        #         self.descripc_Curso.config(state="readonly")
-        #         self.fecha.config(state="normal")
-        #         self.cmbx_Id_Alumno.config(state="disabled")
-        #         self.cmbx_Id_Carrera.config(state="normal")
-        #         self.ciudad.config(state="normal")
-        #         self.departamento.config(state="normal")
-        #         self.direccion.config(state="normal")
-        #         self.telCel.config(state="normal")
-        #         self.telFijo.config(state="normal")
-        #         self.is_fields_enabled = True
-        #     else:
-        #         pass
+ 
         def cmbx_codigo_curso(event):
 
             selected_item = self.codigo_Curso.get()
@@ -429,14 +367,6 @@ class Inscripciones_2:
         self.argumentos = ('inicial', [''],[735])
         self.tree_view_prueba(*self.argumentos)
 
-        #Probar data, borrable
-        # def insert_data():
-        #     valornombre=self.nombres.get()
-        #     valorapellido=self.apellidos.get()
-        #     nombre = valornombre+" "+valorapellido
-        #     print(nombre)
-        #     self.tView.insert("", "end", values=(nombre, "1", "2015734", "Programación de Computadores", "12"))
-
         # Main widget
         self.mainwindow = self.win
 
@@ -446,6 +376,7 @@ class Inscripciones_2:
 
     ''' A partir de este punto se deben incluir las funciones
      para el manejo de la base de datos '''
+     
     def get_data_inscricpiones_complete(self, id_alumno):
         self.cursor.execute("SELECT * FROM Inscritos WHERE Id_Alumno = ?", (id_alumno,))
         self.data = self.cursor.fetchall()
@@ -454,6 +385,54 @@ class Inscripciones_2:
             self.lista_inscripciones.append(i)
         return self.lista_inscripciones
      
+     
+    def cuandoEscriba(self,event, entry):
+        #coloca los / al escribir
+        if event.char.isdigit() or event.char =='/':
+            fechaRef = entry.get()
+            if len(fechaRef) == 2 or len(fechaRef) ==5:
+                self.act_date = True
+
+            if len(fechaRef) == 2:
+                entry.insert(2,"/")
+                
+            if len(fechaRef) == 5:
+                entry.insert(5,"/")
+        if event.char.isdigit() or event.char =='\x08' or event.char =='': # \x08 = Backspace, '' = Delete
+            self.act_date=True
+
+    def limite(self,event):
+        #Evita el exceso de numeros
+        fechaRef = self.fecha.get()
+        try:
+            if len(fechaRef) > 10:
+                raise ValueError("digite maximo 8 numeros")
+        except ValueError as problem:
+            messagebox.showerror("Error", str(problem))
+            self.fecha.delete(10, tk.END)
+
+    def verificarNumeros(self,char):
+        #permite borrar los /
+        if self.act_date:
+            self.act_date = False 
+            return char.isdigit() or char == '/'
+        else:
+            if char == '/' and self.act_date:
+                return char.isdigit() or char == '/'
+            else:
+                return char.isdigit()
+
+    def validarFecha(self,entry):
+        try:
+            self.vFecha = entry.get()
+            #compara el formato del texto con el formato y las fechas de libreria
+            self.vFecha = datetime.datetime.strptime(self.vFecha,'%d/%m/%Y') 
+        except ValueError:
+            messagebox.showerror("Error", 'Digite un formato de fecha valida')
+            self.fecha_insert = datetime.datetime.now().strftime('%d/%m/%Y')
+            entry.delete(0, tk.END)
+            entry.insert(0,self.fecha_insert)    
+
     def habilitar_caracteres_entry(self,entrada, caracter):
 
         def verificarNumeros(char):        
@@ -477,12 +456,13 @@ class Inscripciones_2:
     def onValidate(self,P, S):
         self.numeros = re.compile('^[0-9]*$')
         self.largo = re.compile("^[0-9]{0,10}$")
+        self.largo_fecha = re.compile("^[0-9/]{0,10}$")
         if re.match(self.numeros, S) and re.match(self.largo, P):
-
+            return True
+        elif re.match(self.largo_fecha, P) and re.match(self.largo_fecha, S):
             return True
         else:
             self.frm_1.bell()
-            messagebox.showwarning("Error", "Por favor, digite un número de registro válido")
             return False
     
     def run_sqlite(self):
@@ -501,7 +481,8 @@ class Inscripciones_2:
     def eliminar_datos(self, codigo, pront):
         if not self.cursor:
             self.cursor = self.conn.cursor()
-        query = '''DELETE FROM Inscritos WHERE ''' + pront + ''' = '{}' '''.format(codigo)
+        query = f"DELETE FROM Inscritos WHERE {pront} = '{codigo}' " #es más fácil este en terminos de sintaxis pero dejo el otro igual comentado
+        # query = '''DELETE FROM Inscritos WHERE ''' + pront + ''' = '{}' '''.format(codigo) 
         self.cursor.execute(query)
         self.conn.commit()
         # self.cursor.close()
@@ -567,20 +548,9 @@ class Inscripciones_2:
         self.argumentos = ('inicial', [''],[735])
         self.tree_view_prueba(*self.argumentos)
     
-    def abrir_ventana(self):
-        self.botones = [ self.btnEliminar, self.btnCancelar, self.btnGrabar, self.btnConsultar, self.btnEditar]
-        for i in self.botones:
-            i.config(state=tk.DISABLED)
-        
-    def cerrar_ventana(self):
-        self.botones = [self.btnEliminar, self.btnCancelar, self.btnGrabar, self.btnConsultar, self.btnEditar]  
-        for i in self.botones:
-            i.config(state=tk.NORMAL)
-        self.ventana_emergente.destroy()
     
     def consultar_ventana(self, *args): #ventana emergente, permite máximo 4 opciones para escoger, los parametros son: Titulo, Texto, Opciones, Botón y Función de botón
-        #self.limpiar()
-        self.abrir_ventana()
+        self.limpiar()
         self.ventana_emergente = tk.Toplevel(self.win)
         self.ventana_emergente.title(args[0])
         self.icon_consulta = tk.PhotoImage(file= PATH + ICONO)
@@ -589,7 +559,7 @@ class Inscripciones_2:
         self.ventana_emergente.resizable(False, False)
         self.centrar(self.ventana_emergente, 400, 110 + 30*len(args[2]))
         self.ventana_emergente.geometry(f"400x{110 + 30*len(args[2])}+{self.x}+{self.y}")
-        
+        self.ventana_emergente.grab_set()
         self.frm_consulta = tk.Frame(self.ventana_emergente, name=f"frm_{args[0]}")
         self.frm_consulta.configure(background= "#f7f9fd", height=200, width=400)
         self.frm_consulta.pack(fill='both', expand=True)
@@ -600,27 +570,15 @@ class Inscripciones_2:
         self.lblOpciones.place(anchor="nw", x=20, y=20)
         
         self.int = tk.IntVar()
-
+        self.int.set(0)
+        
+        self.c = 1
         for i in range(len(args[2])):
-            self.optionBotton = tk.Radiobutton(self.frm_consulta, name=f"check{i}", variable = self.int, value=i,background= "#f7f9fd" )
-            self.optionBotton.configure(text=args[2][i])
-            self.optionBotton.place(anchor="nw", x=40, y=50 + 30*i)
-
-
-        # self.int1 = tk.IntVar()
-        # self.int2 = tk.IntVar()
-        # self.int3 = tk.IntVar()
-        # self.int.set(0), self.int1.set(0), self.int2.set(0), self.int3.set(0)
-        
-        # self.ints = [self.int, self.int1, self.int2, self.int3]
-        
-        # self.c = 0
-        # for i in range(len(args[2])):
-        #     self.check = ttk.Checkbutton(self.frm_consulta, name=f"check{i}", variable=self.ints[self.c], onvalue=1, offvalue=0)
-        #     self.check.configure(text=args[2][i])
-        #     self.check.place(anchor="nw", x=40, y=50 + 30*i)
-        #     self.c += 1
-        
+            self.check = ttk.Radiobutton(self.frm_consulta, name=f"check{i}", variable=self.int, value=self.c)
+            self.check.configure(text=args[2][i])
+            self.check.place(anchor="nw", x=40, y=50 + 30*i)
+            self.c += 1
+    
         self.btnEscoger = ttk.Button(self.frm_consulta, name="btnEscoger", cursor="hand2", command=args[4])
         self.btnEscoger.configure(text=args[3])
         self.btnEscoger.place(anchor="nw", x=153, y=50 + 30*len(args[2]))
@@ -662,47 +620,40 @@ class Inscripciones_2:
         botonVemerEliminiar.place(anchor="nw", x=60, y=60)
 
     def boton_escoger_consulta(self): # Función que se ejecuta al presionar el botón de la ventana emergente cuando se está consultando
-        self.combx_id_alumno()
-        self.combx_no_incripcion()
-        self.combx_codigo_curso()
-        # if self.int.get() == 1 and self.int1.get() == 0 and self.int2.get() == 0 and self.int3.get() == 0:
-        #     self.cerrar_ventana()
-        #     return self.consultar_no_inscripción()
-        # elif self.int1.get() == 1 and self.int.get() == 0 and self.int2.get() == 0 and self.int3.get() == 0:
-        #     self.cerrar_ventana()
-        #     return self.consultar_id_alumno()
-        # elif self.int2.get() == 1 and self.int.get() == 0 and self.int1.get() == 0 and self.int3.get() == 0:
-        #     self.cerrar_ventana()
-        #     return self.consultar_cursos()
-        # elif self.int3.get() == 1 and self.int.get() == 0 and self.int1.get() == 0 and self.int2.get() == 0:
-        #     self.cerrar_ventana()
-        #     return self.consultar_carreras()
-        #print(self.int.get())
-        if self.int.get() == 0: 
-            self.limpiar()
-            self.cerrar_ventana()
+        if self.int.get() == 1: 
+            self.ventana_emergente.destroy()
             return self.consultar_no_inscripción()
-        elif self.int.get() == 1:
-            self.limpiar()
-            self.cerrar_ventana()
-            return self.consultar_id_alumno()
         elif self.int.get() == 2:
-            self.limpiar()
-            self.cerrar_ventana()
-            return self.consultar_cursos()
+            self.ventana_emergente.destroy()
+            return self.consultar_id_alumno()
         elif self.int.get() == 3:
-            self.limpiar()
-            self.cerrar_ventana()
+            self.ventana_emergente.destroy()
+            return self.consultar_cursos()
+        elif self.int.get() == 4:
+            self.ventana_emergente.destroy()
             return self.consultar_carreras()
         else:
             messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
             self.int.set(0)
-            self.cerrar_ventana()
             
     def click(self,event):
-        self.item = self.tViews.selection()[0]
-        self.values = self.tViews.item(self.item, 'values')
-        return self.consultar(self.values[0])
+        try:
+            self.item = self.tViews.selection()[0]
+            self.values = self.tViews.item(self.item, 'values')
+            return self.consultar(self.values[0])
+        except IndexError:
+            pass
+
+    def enter(self,event):
+        self.combx_no_incripcion()
+        self.enter_accion = []
+        for i in self.noInscripcion['values']:
+            self.enter_accion.append(str(i[0]))
+        if str(self.noInscripcion.get()) in self.enter_accion:
+            self.consultar(self.noInscripcion.get())
+        else:
+            messagebox.showinfo("Consulta Inscripción","No se encontraron datos con ese número de inscripción")
+
     
     def tree_view_prueba(self, *kargs):
         def restrictor(Event):
@@ -726,7 +677,7 @@ class Inscripciones_2:
         #Cabeceras
         self.b = 0
         for i in kargs[1]:
-            self.tViews.heading(kargs[1][self.b],anchor="w", text=kargs[1][self.b])
+            self.tViews.heading(kargs[1][self.b],anchor="w", text=kargs[1][self.b], command=lambda c=i: self.sort_by_column(c, False))
             self.b += 1
         #Scrollbars
         self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
@@ -743,6 +694,23 @@ class Inscripciones_2:
         # Hago que mi función sea llamada cada vez que el usuario hace clic y mueve el cursor.
         self.tViews.bind("<B1-Motion>", restrictor)
         self.tViews.bind("<<TreeviewSelect>>", self.obtener_fila)
+
+    def sort_by_column(self, column_name, reverse=False):
+        column_index = self.tViews["columns"].index(column_name)
+        sorted_items = sorted(
+            ((self.tViews.item(item)["values"][column_index], item)
+             for item in self.tViews.get_children()),
+            key=itemgetter(0), reverse=reverse)
+
+        for index, (_, item) in enumerate(sorted_items):
+            self.tViews.move(item, '', index)
+
+        self.tViews.heading(
+            column_name,
+            command=partial(
+                self.sort_by_column, column_name, not reverse
+                )
+            )
     
     def consultar_no_inscripción(self):
         self.limpiar()
@@ -913,12 +881,12 @@ class Inscripciones_2:
             pass
 
     def boton_escoger_guardar(self):
-        if self.int.get() == 0:
+        if self.int.get() == 1:
             self.guardado = True
             self.cerrar_ventana()
             self.verificar_agregar_data()
 
-        elif self.int.get() == 1:
+        elif self.int.get() == 2:
             self.guardado = True
             self.cerrar_ventana()
         else: #tal vez se puede omitir este else
@@ -1064,6 +1032,7 @@ class Inscripciones_2:
             entry.config(state="normal")
             entry.delete(0, 'end')
             entry.insert(0, value)
+            
     def close_sqlite(self):
         self.conn.commit()
         self.conn.close()
@@ -1076,6 +1045,6 @@ class Inscripciones_2:
 if __name__ == "__main__":
     app = Inscripciones_2()
     app.run_sqlite()
-    signal.signal(signal.SIGINT, signal.SIG_IGN) # Ignorar la señal de interrupción versión mejorada
+    signal(SIGINT, SIG_IGN) # Ignorar la señal de interrupción versión mejorada
     app.run()
     app.close_sqlite()
