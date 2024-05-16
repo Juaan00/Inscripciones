@@ -56,11 +56,16 @@ class Inscripciones_2:
             self.icon = tk.PhotoImage(file= PATH + ICONO)
             self.win.iconphoto(True, self.icon)
             
-        self.tvNoInscripcion = tk.StringVar()
-        self.tvNombreCurso = tk.StringVar()
-        self.tvHorarios = tk.StringVar()
-        self.tvFechaInscripcion = tk.StringVar()
-        self.tvCodigoCurso = tk.StringVar()
+        self.tvEntry0= tk.StringVar()
+        self.tvEntry1= tk.StringVar()
+        self.tvEntry2= tk.StringVar()
+        self.tvEntry3= tk.StringVar()
+        self.tvEntry4= tk.StringVar()
+        # self.tvNoInscripcion = tk.StringVar()
+        # self.tvNombreCurso = tk.StringVar()
+        # self.tvHorarios = tk.StringVar()
+        # self.tvFechaInscripcion = tk.StringVar()
+        # self.tvCodigoCurso = tk.StringVar()
 
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
@@ -312,12 +317,12 @@ class Inscripciones_2:
                     pass
                 else:
                     string+=f'No. Inscripción {no_inscripcion}, '
-                    numero_inscripcion=int(self.add_editar(self.noInscripcion))
+                    numero_inscripcion=''
                     nuevo_curso=self.codigo_Curso.get()
                     self.lista_inscripciones=self.get_data_inscricpiones_complete(id_alumno)
                     for i in self.lista_inscripciones: 
                         if i[0] == numero_inscripcion:
-                            self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE No_Inscripción = ?", (nuevo_curso, numero_inscripcion))
+                            self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE No_Registro = ?", (nuevo_curso, numero_inscripcion))
                             self.conn.commit()
                 string= string.rstrip(', ')
                 messagebox.showinfo(f"Edición Exitosa, estudiante {id_alumno}", f"Se realizaron cambios en:\n{string}")
@@ -761,6 +766,7 @@ class Inscripciones_2:
             self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
    
     def consultar(self, event):
+        self.get_data_entrys()
         self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Alumnos.Fecha_Ingreso, No_Inscripción, Dirección, Ciudad, Departamento, 
                             Telef_Cel, Telef_Fijo, Id_Carrera, Inscritos.Código_Curso, Descripción_Curso, Num_Horas, Fecha_de_Inscripción  FROM Inscritos 
                     JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
@@ -818,12 +824,23 @@ class Inscripciones_2:
         item = self.tViews.focus()
         if not item:
             return
-        self.data = self.tViews.item(item)
-        self.tvNoInscripcion.set(self.data["values"][0])
-        self.tvCodigoCurso.set(self.data["values"][1])
-        self.tvNombreCurso.set(self.data['values'][2])
-        self.tvHorarios.set(self.data['values'][3])
-        self.tvFechaInscripcion.set(self.data["values"][4])
+        self.data= self.tViews.item(item)
+        self.tvEntry0.set(self.data["values"][0])
+        self.tvEntry1.set(self.data["values"][1])
+        self.tvEntry2.set(self.data["values"][2])
+        print(self.data["values"][0], self.data["values"][1], self.data["values"][2])
+        if len(self.data["values"]) > 3:
+            self.tvEntry3.set(self.data["values"][3])
+            print(self.data["values"][3])
+            if len(self.data["values"]) > 4:
+                self.tvEntry4.set(self.data["values"][4])
+                print(self.data["values"][4])
+        # self.data = self.tViews.item(item)
+        # self.tvNoInscripcion.set(self.data["values"][0])
+        # self.tvCodigoCurso.set(self.data["values"][1])
+        # self.tvNombreCurso.set(self.data['values'][2])
+        # self.tvHorarios.set(self.data['values'][3])
+        # self.tvFechaInscripcion.set(self.data["values"][4])
         
         #observador de funcion, borrable
         # print(str(self.tvNoInscripcion.get()))
