@@ -772,14 +772,21 @@ class Inscripciones_2:
    
     def consultar(self, event):
         self.get_data_entrys()
+        self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[90,90,270,150,130]) 
+        self.tree_view_prueba(*self.argumentos)
         self.cursor.execute(f'''SELECT * FROM Inscritos WHERE No_Inscripción = {event}''')
 
         self.data = self.cursor.fetchall()
+
+        #para no_inscripciones
         if self.data!=[]:
             id_alumno=self.data[0][1]
             self.cursor.execute(f'''SELECT * FROM Alumnos WHERE Id_Alumno = {id_alumno}''')
             self.data_alumno = self.cursor.fetchall()
             self.add_consultar(self.fecha, self.data_alumno[0][4])
+
+        #para id_alumno
+
         else:
             self.cursor.execute(f'''SELECT * FROM Alumnos WHERE Id_Alumno = {event}''')
             self.data_alumno = self.cursor.fetchall()
@@ -787,7 +794,6 @@ class Inscripciones_2:
             print(self.fecha_ing)
             
             self.add_consultar(self.fecha, self.fecha_ing)
-        print(self.data_alumno)
         self.add_consultar(self.cmbx_Id_Alumno, self.data_alumno[0][0])
         self.add_consultar(self.cmbx_Id_Carrera, self.data_alumno[0][1])
         self.add_consultar(self.nombres, self.data_alumno[0][2])
@@ -798,6 +804,13 @@ class Inscripciones_2:
         self.add_consultar(self.telCel, self.data_alumno[0][6])
         self.add_consultar(self.telFijo, self.data_alumno[0][7])
 
+        self.cursor.execute(f'''SELECT * FROM Inscritos WHERE Id_Alumno = {self.data_alumno[0][0]}''')
+        self.datos = self.cursor.fetchall()
+        for i in self.datos:
+            self.cursor.execute(f'''SELECT * FROM Cursos WHERE Código_Curso = {i[3]}''')
+            self.data_cursos = self.cursor.fetchall()
+            print(self.data_cursos)
+            self.tViews.insert("", tk.END, values=(i[0], i[3], self.data_cursos[0][1], i[4], i[2]))
         
 
         # self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Alumnos.Fecha_Ingreso, No_Inscripción, Dirección, Ciudad, Departamento, 
@@ -832,9 +845,6 @@ class Inscripciones_2:
         #         i.insert(0, self.lista_consulta_i[self.a])
         #         i.config(state="readonly")
         #     self.a += 1
-        
-        self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[110,110,290,224,130]) 
-        self.tree_view_prueba(*self.argumentos)
 
         print(self.argumentos)
         # self.cursor.execute(f'''SELECT Inscritos.No_Inscripción, Inscritos.Código_Curso, Cursos.Descripción_Curso, Inscritos.Horario_Curso, Inscritos.Fecha_de_Inscripción FROM Inscritos
