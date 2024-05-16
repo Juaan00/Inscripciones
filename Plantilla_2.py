@@ -752,13 +752,13 @@ class Inscripciones_2:
 
     def consultar_cursos(self):
         self.limpiar()
-        self.argumentos = ('tView_c_cursos',['Código_Curso','Descripción_Curso','Horario','Num_Horas'],[110,320,270,110])
+        self.argumentos = ('tView_c_cursos',['Código_Curso','Descripción_Curso','Num_Horas'],[110,270,110])
         self.tree_view_prueba(*self.argumentos)
         
-        self.cursor.execute(''' SELECT Código_Curso, Descripción_Curso, Horario_Curso, Num_Horas FROM Cursos''')
+        self.cursor.execute(''' SELECT Código_Curso, Descripción_Curso, Num_Horas FROM Cursos''')
         self.datos = self.cursor.fetchall()
         for i in self.datos:
-            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2],i[3]))
+            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
     
     def consultar_carreras(self): # Consulta los datos de la base de datos según el código de la carrera
         self.limpiar()
@@ -779,21 +779,25 @@ class Inscripciones_2:
             id_alumno=self.data[0][1]
             self.cursor.execute(f'''SELECT * FROM Alumnos WHERE Id_Alumno = {id_alumno}''')
             self.data_alumno = self.cursor.fetchall()
+            self.add_consultar(self.fecha, self.data_alumno[0][4])
         else:
             self.cursor.execute(f'''SELECT * FROM Alumnos WHERE Id_Alumno = {event}''')
             self.data_alumno = self.cursor.fetchall()
-
+            self.fecha_ing = self.fecha_split(self.data_alumno[0][4])
+            print(self.fecha_ing)
+            
+            self.add_consultar(self.fecha, self.fecha_ing)
+        print(self.data_alumno)
         self.add_consultar(self.cmbx_Id_Alumno, self.data_alumno[0][0])
         self.add_consultar(self.cmbx_Id_Carrera, self.data_alumno[0][1])
         self.add_consultar(self.nombres, self.data_alumno[0][2])
         self.add_consultar(self.apellidos, self.data_alumno[0][3])    
-        print(self.data_alumno[0][4])
-        self.add_consultar(self.fecha, self.data_alumno[0][4])
         self.add_consultar(self.direccion, self.data_alumno[0][5])
         self.add_consultar(self.ciudad, self.data_alumno[0][8])
         self.add_consultar(self.departamento, self.data_alumno[0][9])
         self.add_consultar(self.telCel, self.data_alumno[0][6])
         self.add_consultar(self.telFijo, self.data_alumno[0][7])
+
         
 
         # self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Alumnos.Fecha_Ingreso, No_Inscripción, Dirección, Ciudad, Departamento, 
@@ -829,9 +833,10 @@ class Inscripciones_2:
         #         i.config(state="readonly")
         #     self.a += 1
         
-        # self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[110,110,290,224,130]) 
-        # self.tree_view_prueba(*self.argumentos)
+        self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[110,110,290,224,130]) 
+        self.tree_view_prueba(*self.argumentos)
 
+        print(self.argumentos)
         # self.cursor.execute(f'''SELECT Inscritos.No_Inscripción, Inscritos.Código_Curso, Cursos.Descripción_Curso, Inscritos.Horario_Curso, Inscritos.Fecha_de_Inscripción FROM Inscritos
         #            JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso
         #            WHERE Inscritos.Id_Alumno = {self.lista_consulta_i[0]}
@@ -861,7 +866,7 @@ class Inscripciones_2:
             self.tvEntry3.set(self.data["values"][3])
             if len(self.data["values"]) > 4:
                 self.tvEntry4.set(self.data["values"][4])
-                
+
     def eliminar_data (self,seleccion):
         self.limpiar_data()
         if seleccion == 1:
