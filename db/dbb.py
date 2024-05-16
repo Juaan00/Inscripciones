@@ -10,11 +10,12 @@ cursor = conn.cursor()
 
 
 # cursor.execute('''CREATE TABLE IF NOT EXISTS  Inscritos(
-#     No_Registro INTEGER PRIMARY KEY NOT NULL,
 #     No_Inscripción INTEGER NOT NULL,
 #     Id_Alumno VARCHAR (20) NOT NULL,
 #     Fecha_de_Inscripción DATE NOT NULL,
 #     Código_Curso VARCHAR(20) NOT NULL,
+#     Horario_Curso VARCHAR(60),
+#     PRIMARY KEY (No_Inscripción, Id_Alumno, Código_Curso),
 #     FOREIGN KEY (Código_Curso) REFERENCES Cursos(Código_Curso),
 #     FOREIGN KEY (Id_Alumno) REFERENCES Alumnos(Id_Alumno)
 # )''')
@@ -22,7 +23,6 @@ cursor = conn.cursor()
 # cursor.execute('''CREATE TABLE IF NOT EXISTS  Cursos(
 #     Código_Curso VARCHAR(20) NOT NULL PRIMARY KEY,
 #     Descripción_Curso VARCHAR(60),
-#     Horario_Curso VARCHAR(60),
 #     Num_Horas SMALLINT(2)
 # )''')
 
@@ -55,24 +55,41 @@ cursor = conn.cursor()
 # cursor.execute('''INSERT INTO Inscritos(Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES('2019-001', '2020-01-15', 'PYT-001')
 #                ''')
 
+# cursos =[
+#     ('2015734', 'Programación de Computadores', 'Lun,Mie 11:00am - 1:00pm',40),
+#     ('2015711','Dibujo Básico', 'Mie, Vie 11:00am - 1:00pm',30),
+#     ('2016375', 'Programación Orientada a Objetos', 'Mar,Jue 2:00pm - 4:00pm',20),
+#     ('2016509', 'Taller de Electrónica', 'Mie,Vie 2:00pm - 4:00pm',40),
+#     ('2016703', 'Pensamiento Sistémico', 'Mar, Jue 11:00am - 1:00pm',30),
+#     ('2017228', 'Tecnología Mecánica Básica', 'Mar, Jue 7:00am - 9:00am',20),
+#     ('1000004', 'Cálculo Diferencial', 'Lun,Mie 7:00am - 9:00am',40),
+#     ('1000005', 'Cálculo Integral','Lun,Mie 9:00am - 11:00am',30),
+#     ('1000006', 'Cálculo en Varia Variables', 'Mie,Vie 11:00am - 1:00pm',20),
+#     ('1000003', 'Algebra Lineal', 'Lun,Mier 2:00pm - 4:00pm',40),
+#     ('1000017', 'Fundamentos de Electromagnetismo', 'Lun, Mie 4:00pm - 6:00pm',30),
+#     ('1000019', 'Fundamentos de Mecánica', 'Mar,Mier,Jue 7:00am - 9:00am',20),
+#     ('1000025', 'Laboratorio de Técnicas Básicas en Química', 'Mie,Vie 7:00am - 9:00am',40),
+#     ('1000026','Principio de Análisis Químico', 'Lun,Mar 4:00pm - 6:00pm',30)
+# ]
 cursos =[
-    ('2015734', 'Programación de Computadores', 'Lun,Mie 11:00am - 1:00pm',40),
-    ('2015711','Dibujo Básico', 'Mie, Vie 11:00am - 1:00pm',30),
-    ('2016375', 'Programación Orientada a Objetos', 'Mar,Jue 2:00pm - 4:00pm',20),
-    ('2016509', 'Taller de Electrónica', 'Mie,Vie 2:00pm - 4:00pm',40),
-    ('2016703', 'Pensamiento Sistémico', 'Mar, Jue 11:00am - 1:00pm',30),
-    ('2017228', 'Tecnología Mecánica Básica', 'Mar, Jue 7:00am - 9:00am',20),
-    ('1000004', 'Cálculo Diferencial', 'Lun,Mie 7:00am - 9:00am',40),
-    ('1000005', 'Cálculo Integral','Lun,Mie 9:00am - 11:00am',30),
-    ('1000006', 'Cálculo en Varia Variables', 'Mie,Vie 11:00am - 1:00pm',20),
-    ('1000003', 'Algebra Lineal', 'Lun,Mier 2:00pm - 4:00pm',40),
-    ('1000017', 'Fundamentos de Electromagnetismo', 'Lun, Mie 4:00pm - 6:00pm',30),
-    ('1000019', 'Fundamentos de Mecánica', 'Mar,Mier,Jue 7:00am - 9:00am',20),
-    ('1000025', 'Laboratorio de Técnicas Básicas en Química', 'Mie,Vie 7:00am - 9:00am',40),
-    ('1000026','Principio de Análisis Químico', 'Lun,Mar 4:00pm - 6:00pm',30)
+    ('2015734', 'Programación de Computadores',40),
+    ('2015711','Dibujo Básico',30),
+    ('2016375', 'Programación Orientada a Objetos',20),
+    ('2016509', 'Taller de Electrónica',40),
+    ('2016703', 'Pensamiento Sistémico',30),
+    ('2017228', 'Tecnología Mecánica Básica',20),
+    ('1000004', 'Cálculo Diferencial',40),
+    ('1000005', 'Cálculo Integral',30),
+    ('1000006', 'Cálculo en Varia Variables',20),
+    ('1000003', 'Algebra Lineal',40),
+    ('1000017', 'Fundamentos de Electromagnetismo',30),
+    ('1000019', 'Fundamentos de Mecánica',20),
+    ('1000025', 'Laboratorio de Técnicas Básicas en Química',40),
+    ('1000026','Principio de Análisis Químico',30)
 ]
 
-# cursor.executemany("INSERT INTO Cursos(Código_Curso, Descripción_Curso, Horario_Curso, Num_Horas) VALUES(?,?,?,?)", cursos)
+
+# cursor.executemany("INSERT INTO Cursos(Código_Curso, Descripción_Curso, Num_Horas) VALUES(?,?,?)", cursos)
 
 estudiantes = [
     ('8876295089', '2880', 'Juan','Perez' , '2019-01-15', 'Calle 1 # 2-3', '300-1234567', '300-1234567', 'Bogotá', 'Cundinamarca'),
@@ -142,7 +159,20 @@ carreras = [
     
 # print(inscripciones)8114559050
 
+inscritos_4 = [
+    # (1, '8605132377', '2024-07-06', '2017228','Lun,Mar 4:00pm - 6:00pm'),
+    # (1, '8605132377', '2024-09-18', '2016375','Lun,Mar 4:00pm - 6:00pm'),
+    # (1, '8605132377', '2024-04-14', '1000025','Lun,Mar 4:00pm - 6:00pm'),
+    # (1, '8605132377', '2024-07-06', '2016703','Lun,Mar 4:00pm - 6:00pm'),
+    (1, '8605132377', '2024-08-16', '1000004','Lun,Mar 4:00pm - 6:00pm'),
+    (1, '8605132377', '2024-01-10', '2016509','Lun,Mar 4:00pm - 6:00pm')
+]
+
+cursor.executemany("INSERT INTO Inscritos(No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso, Horario_Curso) VALUES(?,?,?,?,?)", inscritos_4)
+
 inscritos_1 = [
+    
+    
     (9, '8605132377', '2024-07-06', '2017228'), 
     (2, '8782642282', '2024-04-14', '1000025'), (12, '5547157920', '2024-04-14', '2016375'), 
     (3, '8114559050', '2024-05-01', '2015734'), (11, '8221071329', '2024-07-07', '2016703'), 
@@ -180,7 +210,7 @@ inscritos_1 = [
 # cursor.executemany("INSERT INTO Cursos(Código_Curso, Descripción_Curso, Horario_Curso, Num_Horas) VALUES(?,?,?,?)", cursos)
 # cursor.executemany('''INSERT INTO Carreras(Código_Carrera, Descripción, Num_Semestres) VALUES(?,?,?)''', carreras)
 # cursor.executemany("INSERT INTO Alumnos(Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento) VALUES(?,?,?,?,?,?,?,?,?,?)", estudiantes)
-cursor.executemany("INSERT INTO Inscritos(No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES(?,?,?,?)", inscritos_1)
+# cursor.executemany("INSERT INTO Inscritos(No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES(?,?,?,?)", inscritos_1)
 
 
 # inscritos_2 = [(3, '8114559050', '2024-07-06', '2015734'),
@@ -201,6 +231,11 @@ cursor.executemany("INSERT INTO Inscritos(No_Inscripción, Id_Alumno, Fecha_de_I
 # cursor.execute('''DELETE FROM Cursos''')
 # cursor.execute('''DELETE FROM Alumnos''')
 # cursor.execute('''DELETE FROM Carreras''')
+
+# cursor.execute("DROP TABLE IF EXISTS Inscritos")
+# cursor.execute("DROP TABLE IF EXISTS Cursos")
+# cursor.execute("DROP TABLE IF EXISTS Alumnos")
+# cursor.execute("DROP TABLE IF EXISTS Carreras")
 
 # datos = cursor.fetchall()
 # print(datos)
