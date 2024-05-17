@@ -192,7 +192,7 @@ class Inscripciones_2:
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
         self.codigo_Curso.bind("<<ComboboxSelected>>", lambda _: self.consultar_cursos_cmbx(self.codigo_Curso.get()))
-        self.codigo_Curso.bind("<<ComboboxSelected>>", self.cmbx_codigo_curso)
+        self.codigo_Curso.bind("<<ComboboxSelected>>", self.self.cmbx_codigo_curso)
         
         #Label Nombre de Curso
         self.lblNombreCurso = ttk.Label(self.frm_1, name="lblnombrecurso")
@@ -302,7 +302,7 @@ class Inscripciones_2:
             self.add_consultar(self.horario, i[2])
             self.horario.config(state="disabled")
             self.add_consultar(self.fechaInscripcion, datetime.date.today().strftime("%d/%m/%Y"))
-            self.fechaInscripcion.config(state="disabled")
+            self.fechaInscripcion.config(state="enabled")
 
     def editar(self):
         string=''
@@ -717,8 +717,9 @@ class Inscripciones_2:
             self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
    
     def consultar(self, event):
+
         self.get_data_entrys()
-        self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[90,90,270,180,130]) 
+        self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[90,90,270,150,130]) 
         self.tree_view_prueba(*self.argumentos)
         self.cursor.execute(f'''SELECT * FROM Inscritos WHERE No_Inscripción = {event}''')
 
@@ -729,17 +730,12 @@ class Inscripciones_2:
             id_alumno=self.data[0][1]
             self.cursor.execute(f'''SELECT * FROM Alumnos WHERE Id_Alumno = {id_alumno}''')
             self.data_alumno = self.cursor.fetchall()
-            self.add_consultar(self.fecha, self.data_alumno[0][4])
 
         #para id_alumno
-
         else:
             self.cursor.execute(f'''SELECT * FROM Alumnos WHERE Id_Alumno = {event}''')
             self.data_alumno = self.cursor.fetchall()
-            self.fecha_ing = self.fecha_split(self.data_alumno[0][4])
-            print(self.fecha_ing)
-            
-            self.add_consultar(self.fecha, self.fecha_ing)
+
         self.add_consultar(self.cmbx_Id_Alumno, self.data_alumno[0][0])
         self.add_consultar(self.cmbx_Id_Carrera, self.data_alumno[0][1])
         self.add_consultar(self.nombres, self.data_alumno[0][2])
@@ -749,6 +745,8 @@ class Inscripciones_2:
         self.add_consultar(self.departamento, self.data_alumno[0][9])
         self.add_consultar(self.telCel, self.data_alumno[0][6])
         self.add_consultar(self.telFijo, self.data_alumno[0][7])
+        self.fecha_ing = self.fecha_split(self.data_alumno[0][4])
+        self.add_consultar(self.fecha, self.fecha_ing)
 
         self.cursor.execute(f'''SELECT * FROM Inscritos WHERE Id_Alumno = {self.data_alumno[0][0]}''')
         self.datos = self.cursor.fetchall()
@@ -757,7 +755,7 @@ class Inscripciones_2:
             self.data_cursos = self.cursor.fetchall()
             print(self.data_cursos)
             self.tViews.insert("", tk.END, values=(i[0], i[3], self.data_cursos[0][1], i[4], i[2]))
-        
+        self.tViews.bind("<Double-1>", self.treeview_cmbx_curso)
 
         # self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Alumnos.Fecha_Ingreso, No_Inscripción, Dirección, Ciudad, Departamento, 
         #                     Telef_Cel, Telef_Fijo, Id_Carrera, Inscritos.Código_Curso, Descripción_Curso, Num_Horas, Fecha_de_Inscripción  FROM Inscritos 
@@ -791,8 +789,6 @@ class Inscripciones_2:
         #         i.insert(0, self.lista_consulta_i[self.a])
         #         i.config(state="readonly")
         #     self.a += 1
-
-        print(self.argumentos)
         # self.cursor.execute(f'''SELECT Inscritos.No_Inscripción, Inscritos.Código_Curso, Cursos.Descripción_Curso, Inscritos.Horario_Curso, Inscritos.Fecha_de_Inscripción FROM Inscritos
         #            JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso
         #            WHERE Inscritos.Id_Alumno = {self.lista_consulta_i[0]}
@@ -802,6 +798,20 @@ class Inscripciones_2:
         #     self.lista_materia = []
         #     self.lista_materia += i
         #     self.tViews.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[1], self.lista_materia[2], self.lista_materia[3], self.lista_materia[4]))
+    def treeview_cmbx_curso(self, event):
+        
+        self.add_consultar(self.noInscripcion, self.tvEntry0)
+        self.add_consultar(self.codigo_Curso, self.tvEntry1)
+        self.codigo_Curso.config(state="readonly")
+        self.add_consultar(self.nombreCurso, self.tvEntry2)
+        self.add_consultar(self.horario, self.tvEntry3)
+        self.fecha_ins= self.fecha_split(self.tvEntry4)
+        self.add_consultar(self.fechaInscripcion, self.fecha_ins)
+        self.fechaInscripcion.config(state="enabled")
+        self.obtener_curso_anterior()
+
+    def obtener_curso_anterior(self):
+        self.codigo_curso_antiguo=self.codigo_Curso.get()
 
     def limpiar_data(self):
         self.tvNoInscripcion.set('')
@@ -815,13 +825,13 @@ class Inscripciones_2:
         if not item:
             return
         self.data= self.tViews.item(item)
-        self.tvEntry0.set(self.data["values"][0])
-        self.tvEntry1.set(self.data["values"][1])
-        self.tvEntry2.set(self.data["values"][2])
+        self.tvEntry0=self.data["values"][0]
+        self.tvEntry1=self.data["values"][1]
+        self.tvEntry2=self.data["values"][2]
         if len(self.data["values"]) > 3:
-            self.tvEntry3.set(self.data["values"][3])
+            self.tvEntry3=self.data["values"][3]
             if len(self.data["values"]) > 4:
-                self.tvEntry4.set(self.data["values"][4])
+                self.tvEntry4=self.data["values"][4]
 
     def eliminar_data (self,seleccion):
         self.limpiar_data()
