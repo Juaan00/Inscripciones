@@ -303,10 +303,10 @@ class Inscripciones_2:
         selected_item = self.codigo_Curso.get()
         data=self.get_data_curso(selected_item)
         for i in data:
+            print(i)
             self.add_consultar(self.nombreCurso, i[1])
             self.nombreCurso.config(state="readonly")
             self.horario.config(state="readonly")
-            self.add_consultar(self.fechaInscripcion, datetime.today().strftime("%d/%m/%Y"))
             self.fechaInscripcion.config(state="enabled")
 
     def editar(self):
@@ -322,13 +322,14 @@ class Inscripciones_2:
         if self.codigo_curso_antiguo==nuevo_codigo_curso and self.fecha_inscripcion_antigua==nueva_fecha and self.horario_antiguo==nuevo_horario:
             messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
             return
-        if self.fecha_inscripcion_antigua!=nueva_fecha or self.horario_antiguo!=nuevo_horario:
-            self.cursor.execute("UPDATE Inscritos SET Fecha_de_Inscripción = ?, Horario_Curso = ? WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ?", (nueva_fecha, nuevo_horario, self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
-            self.conn.commit()
-            messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
-            self.limpiar()
-            return
-        else:
+        elif self.codigo_curso_antiguo==nuevo_codigo_curso:
+            if self.fecha_inscripcion_antigua!=nueva_fecha or self.horario_antiguo!=nuevo_horario:
+                self.cursor.execute("UPDATE Inscritos SET Fecha_de_Inscripción = ?, Horario_Curso = ? WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ?", (nueva_fecha, nuevo_horario, self.noInscripcion.get(),self.cmbx_Id_Alumno.get(), self.codigo_curso_antiguo))
+                self.conn.commit()
+                messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
+                self.limpiar()
+                return
+        elif self.codigo_curso_antiguo!=nuevo_codigo_curso:
             self.cursor.execute("SELECT * FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
             data=self.cursor.fetchall()
             try:
