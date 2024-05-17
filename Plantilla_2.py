@@ -807,10 +807,8 @@ class Inscripciones_2:
         self.tViews.bind("<Double-1>", self.treeview_cmbx_curso)
 
     def treeview_cmbx_curso(self, event):
-        try:
-            self.add_consultar(self.fechaInscripcion, self.tvEntry4)
-        except:
-            return
+
+        self.add_consultar(self.fechaInscripcion, self.tvEntry4)
         self.add_consultar(self.noInscripcion, self.tvEntry0)
         self.noInscripcion.config(state="disabled")
         self.add_consultar(self.codigo_Curso, self.tvEntry1)
@@ -994,6 +992,7 @@ class Inscripciones_2:
             self.tViews.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[1], self.lista_materia[2], self.lista_materia[3], self.lista_materia[4]))
         
         self.tViews.bind("<Double-1>", self.treeview_cmbx_curso)
+
     def activar_botones(self):
         self.btnEditar.config(state='normal')
         self.btnEliminar.config(state='normal')
