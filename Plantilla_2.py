@@ -12,6 +12,11 @@ import re
 from functools import partial
 from operator import itemgetter
 from tkinter import messagebox
+from datetime import datetime
+
+
+import random
+from datetime import datetime, timedelta
 
 if system() == "Windows":
     from ctypes import windll
@@ -188,10 +193,10 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Código del Curso')
         self.lblDscCurso.place(anchor="nw", x=100, y=140)
         #Entry Codigo del Curso 
-        self.codigo_Curso = ttk.Combobox(self.frm_1, name="descripc_curso",state="readonly", postcommand=self.combx_codigo_curso)
+        self.codigo_Curso = ttk.Combobox(self.frm_1, name="descripc_curso",state="disabled", postcommand=self.combx_codigo_curso)
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
-        self.codigo_Curso.bind("<<ComboboxSelected>>", lambda _: self.consultar_cursos_cmbx(self.codigo_Curso.get()))
+        # self.codigo_Curso.bind("<<ComboboxSelected>>", lambda _: self.consultar_cursos_cmbx(self.codigo_Curso.get()))
         self.codigo_Curso.bind("<<ComboboxSelected>>", self.cmbx_codigo_curso)
 
         
@@ -212,10 +217,9 @@ class Inscripciones_2:
         #Entry Horario
         self.horario = ttk.Combobox(self.frm_1, name="horario",state=tk.DISABLED)
         self.horario.place(anchor="nw", width=180, x=490, y=160)
-        self.horario.bind("<<ComboboxSelected>>", self.cmbx_codigo_curso)
-        self.horario.config(values=["Lun, Mier 7:00am - 9:00am", "Lun, Mier 9:00am - 11:00am", "Lun, Mier 11:00am - 1:00pm", "Lun, Mier 2:00pm - 4:00pm", "Lun, Mier 4:00pm - 6:00pm", 
+        self.horario.config(values=["Lun, Mie 7:00am - 9:00am", "Lun, Mie 9:00am - 11:00am", "Lun, Mie 11:00am - 1:00pm", "Lun, Mie 2:00pm - 4:00pm", "Lun, Mie 4:00pm - 6:00pm", 
                                     "Mar, Jue 7:00am - 9:00am", "Mar, Jue 9:00am - 11:00am", "Mar, Jue 11:00am - 1:00pm", "Mar, Jue 2:00pm - 4:00pm", "Mar, Jue 4:00pm - 6:00pm",
-                                    "Mier, Vier 7:00am - 9:00am", "Mier, Vier 9:00am - 11:00am", "Mier, Vier 11:00am - 1:00pm", "Mier, Vier 2:00pm - 4:00pm", "Mier, Vier 4:00pm - 6:00pm",])
+                                    "Mie, Vie 7:00am - 9:00am", "Mie, Vie 9:00am - 11:00am", "Mie, Vie 11:00am - 1:00pm", "Mie, Vie 2:00pm - 4:00pm", "Mie, Vie 4:00pm - 6:00pm",])
         
         #Fecha de Inscripción
         self.lblFechaInscripcion = ttk.Label(self.frm_1, name="lblfechainscripcion")
@@ -231,6 +235,7 @@ class Inscripciones_2:
         self.fechaInscripcion.bind("<Return>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
 
 
+    
         ''' Botones  de la Aplicación'''
         
         #Botón Consultar
@@ -241,17 +246,17 @@ class Inscripciones_2:
         self.btnConsultar.configure(text='  Consultar',font=('Arial', 9, 'bold'), width=90, height=30)
         self.btnConsultar.place(anchor="nw", x=100, y=235)
 
-        
+        #Botón Editar
         self.icono_e = tk.PhotoImage(file= PATH + ICONO_EDITAR)
         self.btnEditar = tk.Button(self.frm_1, name="btneditar", cursor="hand2", image=self.icono_e, compound=tk.LEFT,bd=0, command=self.editar)
-        self.btnEditar.configure(text='  Editar',font=('Arial', 9, 'bold'), width=90, height=30, bg="#f7f9fd")
+        self.btnEditar.configure(text='  Editar',font=('Arial', 9, 'bold'), width=90, height=30, bg="#f7f9fd", state="disabled")
         self.btnEditar.place(anchor="nw", x=220, y=235)
         
         #Botón Eliminar
         self.icono_d = tk.PhotoImage(file= PATH + ICONO_ELIMINAR)
         self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.ventana_eliminar,
                                      image=self.icono_d,compound=tk.LEFT)
-        self.btnEliminar.configure(text='   Eliminar',font=('Arial', 9, 'bold'), width=90, height=30, bg = "#f7f9fd", bd =0)
+        self.btnEliminar.configure(text='   Eliminar',font=('Arial', 9, 'bold'), width=90, height=30, bg = "#f7f9fd", bd =0, state="disabled")
         self.btnEliminar.place(anchor="nw", x=340, y=235)
         
         #Botón Cancelar
@@ -271,7 +276,7 @@ class Inscripciones_2:
         self.btnGrabar = tk.Button(self.frm_1, name="btngrabar", cursor="hand2",
                                    command= self.grabar,
                                    image=self.icono_g,compound=tk.LEFT, bd=0, bg="#f7f9fd")
-        self.btnGrabar.configure(text='  Grabar',font=('Arial', 9, 'bold'), width=90, height=30)
+        self.btnGrabar.configure(text='  Grabar',font=('Arial', 9, 'bold'), width=90, height=30, state="disabled")
         self.btnGrabar.place(anchor="nw", x=580, y=235)
         
         #Separador
@@ -298,54 +303,46 @@ class Inscripciones_2:
     def cmbx_codigo_curso(self,event):
 
         selected_item = self.codigo_Curso.get()
-
-        print(selected_item)
         data=self.get_data_curso(selected_item)
         for i in data:
-            print(i)
             self.add_consultar(self.nombreCurso, i[1])
             self.nombreCurso.config(state="readonly")
             self.horario.config(state="readonly")
-            self.add_consultar(self.fechaInscripcion, datetime.date.today().strftime("%d/%m/%Y"))
+            self.add_consultar(self.fechaInscripcion, datetime.today().strftime("%d/%m/%Y"))
             self.fechaInscripcion.config(state="enabled")
 
     def editar(self):
-        if self.codigo_curso_antiguo=='':
-            messagebox.showerror("Inscripciones", "No a seleccionado ninguna Inscripción para editar")
+        if self.codigo_Curso.get()=='':
+            messagebox.showerror("Inscripciones", "No has seleccionado ninguna Inscripción para editar")
             return
+        
         nuevo_codigo_curso=self.codigo_Curso.get()
-        if self.codigo_curso_antiguo==nuevo_codigo_curso:
+        nueva_fecha=self.fechaInscripcion.get()
+        nuevo_horario=self.horario.get()
+
+        if self.codigo_curso_antiguo==nuevo_codigo_curso and self.fecha_inscripcion_antigua==nueva_fecha and self.horario_antiguo==nuevo_horario:
             messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
             return
+        if self.fecha_inscripcion_antigua!=nueva_fecha or self.horario_antiguo!=nuevo_horario:
+            self.cursor.execute("UPDATE Inscritos SET Fecha_de_Inscripción = ?, Horario_Curso = ? WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ?", (nueva_fecha, nuevo_horario, self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
+            self.conn.commit()
+            messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
+            self.limpiar()
+            return
         else:
-            nuevo_horario=self.horario.get()
-            nueva_fecha=self.fechaInscripcion.get()
+            self.cursor.execute("SELECT * FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
+            data=self.cursor.fetchall()
             try:
-                print(self.codigo_curso_antiguo, nuevo_codigo_curso)
-                self.cursor.execute("UPDATE Inscritos SET Código_Curso = ?, Fecha_de_Inscripción = ?, Horario_Curso = ?  WHERE Código_Curso = ?", (nuevo_codigo_curso,nuevo_horario, nueva_fecha, self.codigo_curso_antiguo))
-                self.conn.commit()
-                messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
+                self.cursor.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso, Horario_Curso) VALUES (?,?,?,?,?)", (data[0][0], data[0][1], nueva_fecha, nuevo_codigo_curso, nuevo_horario))
             except:
-                messagebox.showerror("Inscripciones", "No se ha podido realizar el cambio, Curso repetido o inválido")
+                messagebox.showerror("Inscripciones", "Error al realizar el cambio, Curso repetido")
                 return
-        # string=''
-        # no_inscripcion=self.noInscripcion.get()
-        # id_alumno=self.cmbx_Id_Alumno.get()
-        # if self.noInscripcion.get() == '':
-        #         pass
-        # else:
-        #     string+=f'No. Inscripción {no_inscripcion}, '
-        #     numero_inscripcion=''
-        #     nuevo_curso=self.codigo_Curso.get()
-        #     self.lista_inscripciones=self.get_data_inscricpiones_complete(id_alumno)
-        #     for i in self.lista_inscripciones: 
-        #         if i[0] == numero_inscripcion:
-        #             self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE No_Registro = ?", (nuevo_curso, numero_inscripcion))
-        #             self.conn.commit()
-        # string= string.rstrip(', ')
-        # messagebox.showinfo(f"Edición Exitosa, estudiante {id_alumno}", f"Se realizaron cambios en:\n{string}")
-        # self.limpiar()
-        # return
+            
+            self.cursor.execute("DELETE  FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
+            self.conn.commit()
+            messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
+            self.limpiar()
+            return
      
     def centrar(self, win, ancho, alto):
         self.altura_pantalla = win.winfo_screenheight()
@@ -403,10 +400,10 @@ class Inscripciones_2:
         try:
             self.vFecha = entry.get()
             #compara el formato del texto con el formato y las fechas de libreria
-            self.vFecha = datetime.datetime.strptime(self.vFecha,'%d/%m/%Y') 
+            self.vFecha = datetime.strptime(self.vFecha,'%d/%m/%Y') 
         except ValueError:
             messagebox.showerror("Error", 'Digite un formato de fecha valida')
-            self.fecha_insert = datetime.datetime.now().strftime('%d/%m/%Y')
+            self.fecha_insert = datetime.now().strftime('%d/%m/%Y')
             entry.delete(0, tk.END)
             entry.insert(0,self.fecha_insert)    
 
@@ -506,17 +503,42 @@ class Inscripciones_2:
         return self.fecha_n
     
     def limpiar(self):
-        self.entry = [self.noInscripcion, self.cmbx_Id_Alumno, self.fecha, self.fechaInscripcion, 
-                    self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.direccion, self.ciudad, 
-                    self.departamento, self.telCel, self.telFijo, self.codigo_Curso, self.nombreCurso, 
-                    self.horario]
-        for i in self.entry:
-            i.config(state="normal")
-            i.delete(0, tk.END)
+        self.add_consultar(self.noInscripcion, '')
+        self.noInscripcion.config(state="enabled")
+        self.add_consultar(self.cmbx_Id_Alumno, '')
+        self.cmbx_Id_Alumno.config(state="enabled")
+        self.add_consultar(self.fecha, '')
+        self.add_consultar(self.fechaInscripcion, '')
+        self.add_consultar(self.cmbx_Id_Carrera, '')
+        self.add_consultar(self.nombres, '')
+        self.add_consultar(self.apellidos, '')
+        self.add_consultar(self.direccion, '')
+        self.add_consultar(self.ciudad, '')
+        self.add_consultar(self.departamento, '')
+        self.add_consultar(self.telCel, '')
+        self.add_consultar(self.telFijo, '')
+        self.add_consultar(self.codigo_Curso, '')
+        self.add_consultar(self.nombreCurso, '')
+        self.add_consultar(self.horario, '')
+        self.horario.config(state="disabled")
+        self.codigo_Curso.config(state="disabled")
+
+        self.btnCancelar.config(state='normal')
+        self.btnConsultar.config(state='normal')
+        self.btnEditar.config(state='disabled')
+        self.btnEliminar.config(state='disabled')
+        self.btnGrabar.config(state='disabled')
+        # self.entry = [self.noInscripcion, self.cmbx_Id_Alumno, self.fecha, self.fechaInscripcion, 
+        #             self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.direccion, self.ciudad, 
+        #             self.departamento, self.telCel, self.telFijo, self.codigo_Curso, self.nombreCurso, 
+        #             self.horario]
+        # for i in self.entry:
+        #     i.config(state="normal")
+        #     i.delete(0, tk.END) 
         
-        self.boton = [self.btnCancelar, self.btnConsultar, self.btnEditar, self.btnEliminar]
-        for i in self.boton:
-            i.config(state='normal')
+        # self.boton = [self.btnCancelar, self.btnConsultar, self.btnEditar, self.btnEliminar]
+        # for i in self.boton:
+        #     i.config(state='normal')
         
         self.guardado = False
 
@@ -616,8 +638,7 @@ class Inscripciones_2:
         try:
             self.item = self.tViews.selection()[0]
             self.values = self.tViews.item(self.item, 'values')
-            print(self.values[0])
-            return self.consultar(self.values[0])
+            self.consultar(self.values[0])
         except IndexError:
             pass
 
@@ -700,8 +721,7 @@ class Inscripciones_2:
                             ''')
         self.datos = self.cursor.fetchall()
         for i in self.datos:
-            self.f_inscripcion = self.fecha_split(i[3]) 
-            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], self.f_inscripcion, i[4], i[5]))
+            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4], i[5]))
         
         self.tViews.bind("<Double-1>", self.click)
         # print(self.tView_c_inscripcion.selection())
@@ -716,8 +736,7 @@ class Inscripciones_2:
                             ORDER BY Id_Alumno''') 
         self.datos = self.cursor.fetchall()
         for i in self.datos:
-            self.f_ingreso = self.fecha_split(i[4])
-            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], i[3], self.f_ingreso, i[5], i[6], i[7], i[8], i[9]))
+            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
         self.tViews.bind("<Double-1>", self.click)
 
     def consultar_cursos(self):
@@ -741,6 +760,7 @@ class Inscripciones_2:
             self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
    
     def consultar(self, event):
+        
         self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[90,90,270,150,130]) 
         self.tree_view_prueba(*self.argumentos)
         self.cursor.execute(f'''SELECT * FROM Inscritos WHERE No_Inscripción = {event}''')
@@ -767,64 +787,28 @@ class Inscripciones_2:
         self.add_consultar(self.departamento, self.data_alumno[0][9])
         self.add_consultar(self.telCel, self.data_alumno[0][6])
         self.add_consultar(self.telFijo, self.data_alumno[0][7])
-        self.fecha_ing = self.fecha_split(self.data_alumno[0][4])
-        self.add_consultar(self.fecha, self.fecha_ing)
+        self.add_consultar(self.fecha, self.data_alumno[0][4])
+
+        self.codigo_Curso.config(state="disabled")
+        self.noInscripcion.config(state="disabled")
+        self.fechaInscripcion.config(state="disabled")
+        self.nombreCurso.config(state="disabled")
+        self.horario.config(state="disabled")
+        self.cmbx_Id_Alumno.config(state="disabled")
+        self.activar_botones()
 
         self.cursor.execute(f'''SELECT * FROM Inscritos WHERE Id_Alumno = {self.data_alumno[0][0]}''')
         self.datos = self.cursor.fetchall()
         for i in self.datos:
             self.cursor.execute(f'''SELECT * FROM Cursos WHERE Código_Curso = {i[3]}''')
             self.data_cursos = self.cursor.fetchall()
-            print(self.data_cursos)
             self.tViews.insert("", tk.END, values=(i[0], i[3], self.data_cursos[0][1], i[4], i[2]))
+        
         self.tViews.bind("<Double-1>", self.treeview_cmbx_curso)
 
-        # self.cursor.execute(f''' SELECT Inscritos.Id_Alumno, Nombres, Apellidos, Alumnos.Fecha_Ingreso, No_Inscripción, Dirección, Ciudad, Departamento, 
-        #                     Telef_Cel, Telef_Fijo, Id_Carrera, Inscritos.Código_Curso, Descripción_Curso, Num_Horas, Fecha_de_Inscripción  FROM Inscritos 
-        #             JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno 
-        #             JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso 
-        #             JOIN Carreras ON Alumnos.Id_Carrera = Carreras.Código_Carrera 
-        #             WHERE Inscritos.No_Inscripción = {event}''')
-        # self.datos = self.cursor.fetchall()
-        # self.lista_consulta_i = []
-        # for i in self.datos:
-        #     self.lista_consulta_i += i 
-        
-        # self.fecha_ins = self.fecha_split(self.lista_consulta_i[3])
-        
-        # self.fecha_ing = self.fecha_split(self.lista_consulta_i[14])
-        
-        # self.limpiar()
-        
-        # self.entry_datos = [self.cmbx_Id_Alumno, self.nombres, self.apellidos, self.fecha, self.noInscripcion, self.direccion, self.ciudad,
-        #          self.departamento, self.telCel, self.telFijo, self.cmbx_Id_Carrera, self.codigo_Curso, self.nombreCurso, self.horario, 
-        #          self.fechaInscripcion]
-        # self.a = 0
-        # for i in self.entry_datos:
-        #     if i == self.fecha:
-        #         i.insert(0, self.fecha_ing)
-        #         i.config(state="readonly")
-        #     elif i == self.fechaInscripcion:
-        #         i.insert(0, self.fecha_ins)
-        #         i.config(state="readonly")
-        #     else:
-        #         i.insert(0, self.lista_consulta_i[self.a])
-        #         i.config(state="readonly")
-        #     self.a += 1
-        # self.cursor.execute(f'''SELECT Inscritos.No_Inscripción, Inscritos.Código_Curso, Cursos.Descripción_Curso, Inscritos.Horario_Curso, Inscritos.Fecha_de_Inscripción FROM Inscritos
-        #            JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso
-        #            WHERE Inscritos.Id_Alumno = {self.lista_consulta_i[0]}
-        #            ''')
-        # datos_materias_i = self.cursor.fetchall()
-        # for i in datos_materias_i:
-        #     self.lista_materia = []
-        #     self.lista_materia += i
-        #     self.tViews.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[1], self.lista_materia[2], self.lista_materia[3], self.lista_materia[4]))
     def treeview_cmbx_curso(self, event):
-        print(self.tvEntry0, self.tvEntry1, self.tvEntry2, self.tvEntry3, self.tvEntry4)
         try:
-            self.fecha_ins= self.fecha_split(self.tvEntry4)
-            self.add_consultar(self.fechaInscripcion, self.fecha_ins)
+            self.add_consultar(self.fechaInscripcion, self.tvEntry4)
         except:
             return
         self.add_consultar(self.noInscripcion, self.tvEntry0)
@@ -838,6 +822,9 @@ class Inscripciones_2:
 
     def obtener_curso_anterior(self):
         self.codigo_curso_antiguo=self.codigo_Curso.get()
+        self.fecha_inscripcion_antigua=self.fechaInscripcion.get()
+        self.horario_antiguo=self.horario.get()
+
 
     def limpiar_data(self):
         self.tvNoInscripcion.set('')
@@ -979,22 +966,23 @@ class Inscripciones_2:
     
     def consultar_estudiantes_cmbx(self, event):
         self.limpiar()
+        self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[90,90,270,150,130]) 
+        self.tree_view_prueba(*self.argumentos)
         self.cursor.execute(f'''SELECT Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento FROM Alumnos WHERE Id_Alumno = {event}''') 
         self.datos_estudiantes_cmbx = self.cursor.fetchall()
-        self.entry_datos = [self.cmbx_Id_Alumno, self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.fecha, self.direccion, 
-                    self.telCel, self.telFijo, self.ciudad, self.departamento]
-        self.d = 0
-        for i in self.datos_estudiantes_cmbx[0]:
-            if self.entry_datos[self.d] == self.fecha:
-                self.entry_datos[self.d].insert(0, self.fecha_split(i))
-            else:
-                self.entry_datos[self.d].insert(0, i)
-            self.entry_datos[self.d].config(state="readonly")
-            self.d += 1
-
-        self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[110,110,290,224,130]) 
-        self.tree_view_prueba(*self.argumentos)
-
+        print(self.datos_estudiantes_cmbx)
+        self.add_consultar(self.cmbx_Id_Alumno, self.datos_estudiantes_cmbx[0][0])
+        self.add_consultar(self.cmbx_Id_Carrera, self.datos_estudiantes_cmbx[0][1])
+        self.add_consultar(self.nombres, self.datos_estudiantes_cmbx[0][2])
+        self.add_consultar(self.apellidos, self.datos_estudiantes_cmbx[0][3])
+        self.add_consultar(self.fecha, self.datos_estudiantes_cmbx[0][4])
+        self.add_consultar(self.direccion, self.datos_estudiantes_cmbx[0][5])
+        self.add_consultar(self.telCel, self.datos_estudiantes_cmbx[0][6])
+        self.add_consultar(self.telFijo, self.datos_estudiantes_cmbx[0][7])
+        self.add_consultar(self.ciudad, self.datos_estudiantes_cmbx[0][8])
+        self.add_consultar(self.departamento, self.datos_estudiantes_cmbx[0][9])
+        self.noInscripcion.config(state="disabled")
+        self.activar_botones()
         self.cursor.execute(f'''SELECT Inscritos.No_inscripción, Inscritos.Código_Curso, Cursos.Descripción_Curso, Inscritos.Horario_Curso, Inscritos.Fecha_de_Inscripción FROM Inscritos
                    JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso
                    WHERE Inscritos.Id_Alumno = {event}
@@ -1004,34 +992,12 @@ class Inscripciones_2:
             self.lista_materia = []
             self.lista_materia += i
             self.tViews.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[1], self.lista_materia[2], self.lista_materia[3], self.lista_materia[4]))
-    
-    def consultar_cursos_cmbx(self,event):
-        #self.limpiar()
-        self.cursor.execute(f'''SELECT Código_Curso, Descripción_Curso, Horario_Curso FROM Cursos WHERE Código_Curso = {event}''')
-        self.datos = self.cursor.fetchall()
-        self.entry_datos = [self.codigo_Curso, self.nombreCurso, self.horario]
-        self.d = 0
-        for i in self.datos[0]:
-            self.entry_datos[self.d].insert(0, i)
-            self.entry_datos[self.d].config(state="readonly")
-            self.d += 1
         
-        self.argumentos = ('c_registros',['No Inscripción', 'Id Alumno', 'Nombres', 'Apellidos', 'Fecha de Inscripción'],[110,110,290,224,110])
-        
-        if self.guardado == False:
-            self.tree_view_prueba(*self.argumentos)
-        # else:self.tViews.delete()
-        
-        self.cursor.execute(f'''SELECT Inscritos.No_Inscripción, Inscritos.Id_Alumno, Nombres, Apellidos, Inscritos.Fecha_de_Inscripción FROM Inscritos
-                            JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno
-                            WHERE Inscritos.Código_Curso = {event}''')
-        datos_materias = self.cursor.fetchall()
-        if self.guardado == False:
-            for i in datos_materias:
-                self.lista_materia = []
-                self.lista_materia += i
-                self.tViews.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[1], self.lista_materia[2], self.lista_materia[3], self.lista_materia[4]))
-    
+        self.tViews.bind("<Double-1>", self.treeview_cmbx_curso)
+    def activar_botones(self):
+        self.btnEditar.config(state='normal')
+        self.btnEliminar.config(state='normal')
+        self.btnGrabar.config(state='normal')
     def get_data_curso(self, curso):
         self.cursor.execute("SELECT * FROM Cursos WHERE Código_Curso = ?", (curso,))
         self.data = self.cursor.fetchall()
@@ -1044,7 +1010,7 @@ class Inscripciones_2:
             entry.delete(0, 'end')
             entry.insert(0, value)
             entry.config(state="readonly")
-            
+
     def close_sqlite(self):
         self.conn.commit()
         self.conn.close()
