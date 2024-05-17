@@ -78,7 +78,7 @@ class Inscripciones_2:
         self.cmbx_Id_Alumno = ttk.Combobox(self.frm_1, name="cmbx_id_alumno",postcommand=self.combx_id_alumno, state="readonly"
                                            )
         self.cmbx_Id_Alumno.place(anchor="nw", width=110, x=20, y=40)
-        self.cmbx_Id_Alumno.bind("<<ComboboxSelected>>", lambda _: self.consultar_estudiantes_cmbx(self.cmbx_Id_Alumno.get()))
+        self.cmbx_Id_Alumno.bind("<<ComboboxSelected>>", self.consultar)
         
         #Label Nombres
         self.lblNombres = ttk.Label(self.frm_1, name="lblnombres")
@@ -125,7 +125,7 @@ class Inscripciones_2:
                                           validate="key", validatecommand=vcmd)
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
-        self.noInscripcion.bind("<<ComboboxSelected>>", lambda _: self.consultar(self.noInscripcion.get()))
+        self.noInscripcion.bind("<<ComboboxSelected>>", self.consultar)
         self.noInscripcion.bind("<Return>", self.enter)  
         self.noInscripcion.bind("<FocusIn>", self.noInscripcion.config(state="normal"))   
         
@@ -196,7 +196,6 @@ class Inscripciones_2:
         self.codigo_Curso = ttk.Combobox(self.frm_1, name="descripc_curso",state="disabled", postcommand=self.combx_codigo_curso)
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
-        # self.codigo_Curso.bind("<<ComboboxSelected>>", lambda _: self.consultar_cursos_cmbx(self.codigo_Curso.get()))
         self.codigo_Curso.bind("<<ComboboxSelected>>", self.cmbx_codigo_curso)
 
         
@@ -320,6 +319,7 @@ class Inscripciones_2:
         nueva_fecha=self.fechaInscripcion.get()
         nuevo_horario=self.horario.get()
 
+        print(self.codigo_curso_antiguo, self.fecha_inscripcion_antigua ,self.horario_antiguo+'\n' +nuevo_codigo_curso, nueva_fecha, nuevo_horario)
         if self.codigo_curso_antiguo==nuevo_codigo_curso and self.fecha_inscripcion_antigua==nueva_fecha and self.horario_antiguo==nuevo_horario:
             messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
             return
@@ -648,7 +648,8 @@ class Inscripciones_2:
         for i in self.noInscripcion['values']:
             self.enter_accion.append(str(i[0]))
         if str(self.noInscripcion.get()) in self.enter_accion:
-            self.consultar(self.noInscripcion.get())
+            # self.consultar(self.noInscripcion.get())
+            self.consultar
         else:
             messagebox.showinfo("Consulta Inscripción","No se encontraron datos con ese número de inscripción")
 
@@ -760,23 +761,28 @@ class Inscripciones_2:
             self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
    
     def consultar(self, event):
-        
+
+        id_alumno=self.cmbx_Id_Alumno.get()
+        no_inscripcion=self.noInscripcion.get()
+
+        print(id_alumno, no_inscripcion + "amungus")
         self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[90,90,270,150,130]) 
         self.tree_view_prueba(*self.argumentos)
-        self.cursor.execute(f'''SELECT * FROM Inscritos WHERE No_Inscripción = {event}''')
 
-        self.data = self.cursor.fetchall()
+        if id_alumno=='' and no_inscripcion=='':
+            if len(event)<10:
+                no_inscripcion=event
+            else:
+                id_alumno=event
 
-        #para no_inscripciones
-        if self.data!=[]:
+
+        if no_inscripcion!='':
+            self.cursor.execute(f'''SELECT * FROM Inscritos WHERE No_Inscripción = ?''', (no_inscripcion,))
+            self.data = self.cursor.fetchall()
             id_alumno=self.data[0][1]
-            self.cursor.execute(f'''SELECT * FROM Alumnos WHERE Id_Alumno = {id_alumno}''')
-            self.data_alumno = self.cursor.fetchall()
 
-        #para id_alumno
-        else:
-            self.cursor.execute(f'''SELECT * FROM Alumnos WHERE Id_Alumno = {event}''')
-            self.data_alumno = self.cursor.fetchall()
+        self.cursor.execute(f'''SELECT * FROM Alumnos WHERE Id_Alumno = ?''', (id_alumno,))
+        self.data_alumno = self.cursor.fetchall()
 
         self.add_consultar(self.cmbx_Id_Alumno, self.data_alumno[0][0])
         self.add_consultar(self.cmbx_Id_Carrera, self.data_alumno[0][1])
