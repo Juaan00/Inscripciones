@@ -315,10 +315,16 @@ class Inscripciones_2:
             messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
             return
         else:
-            print(self.codigo_curso_antiguo, nuevo_codigo_curso)
-            self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE Código_Curso = ?", (nuevo_codigo_curso, self.codigo_curso_antiguo))
-            self.conn.commit()
-            messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
+            nuevo_horario=self.horario.get()
+            nueva_fecha=self.fechaInscripcion.get()
+            try:
+                print(self.codigo_curso_antiguo, nuevo_codigo_curso)
+                self.cursor.execute("UPDATE Inscritos SET Código_Curso = ?, Fecha_de_Inscripción = ?, Horario_Curso = ?  WHERE Código_Curso = ?", (nuevo_codigo_curso,nuevo_horario, nueva_fecha, self.codigo_curso_antiguo))
+                self.conn.commit()
+                messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
+            except:
+                messagebox.showerror("Inscripciones", "No se ha podido realizar el cambio, Curso repetido o inválido")
+                return
         # string=''
         # no_inscripcion=self.noInscripcion.get()
         # id_alumno=self.cmbx_Id_Alumno.get()
