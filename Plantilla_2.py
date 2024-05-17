@@ -209,8 +209,11 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Horario')
         self.lblHorario.place(anchor="nw", x=490, y=140)
         #Entry Horario
-        self.horario = ttk.Entry(self.frm_1, name="horario",state=tk.DISABLED)
+        self.horario = ttk.Combobox(self.frm_1, name="horario",state=tk.DISABLED)
         self.horario.place(anchor="nw", width=180, x=490, y=160)
+        self.horario.config(values=["Lun, Mier 7:00am - 9:00am", "Lun, Mier 9:00am - 11:00am", "Lun, Mier 11:00am - 1:00pm", "Lun, Mier 2:00pm - 4:00pm", "Lun, Mier 4:00pm - 6:00pm", 
+                                    "Mar, Jue 7:00am - 9:00am", "Mar, Jue 9:00am - 11:00am", "Mar, Jue 11:00am - 1:00pm", "Mar, Jue 2:00pm - 4:00pm", "Mar, Jue 4:00pm - 6:00pm",
+                                    "Mier, Vier 7:00am - 9:00am", "Mier, Vier 9:00am - 11:00am", "Mier, Vier 11:00am - 1:00pm", "Mier, Vier 2:00pm - 4:00pm", "Mier, Vier 4:00pm - 6:00pm",])
         
         #Fecha de Inscripción
         self.lblFechaInscripcion = ttk.Label(self.frm_1, name="lblfechainscripcion")
@@ -297,10 +300,10 @@ class Inscripciones_2:
         print(selected_item)
         data=self.get_data_curso(selected_item)
         for i in data:
+            print(i)
             self.add_consultar(self.nombreCurso, i[1])
-            self.nombreCurso.config(state="disabled")
-            self.add_consultar(self.horario, i[2])
-            self.horario.config(state="disabled")
+            self.nombreCurso.config(state="readonly")
+            self.horario.config(state="readonly")
             self.add_consultar(self.fechaInscripcion, datetime.date.today().strftime("%d/%m/%Y"))
             self.fechaInscripcion.config(state="enabled")
 
