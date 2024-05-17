@@ -192,7 +192,7 @@ class Inscripciones_2:
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
         self.codigo_Curso.bind("<<ComboboxSelected>>", lambda _: self.consultar_cursos_cmbx(self.codigo_Curso.get()))
-        self.codigo_Curso.bind("<<ComboboxSelected>>", self.self.cmbx_codigo_curso)
+        self.codigo_Curso.bind("<<ComboboxSelected>>", self.cmbx_codigo_curso)
         
         #Label Nombre de Curso
         self.lblNombreCurso = ttk.Label(self.frm_1, name="lblnombrecurso")
@@ -670,15 +670,15 @@ class Inscripciones_2:
         self.limpiar()
         if self.cursor:
             self.cursor = self.conn.cursor()
-        self.argumentos = ('c_inscripción',['No. Inscripción', 'Nombres', 'Apellidos', 'Fecha_Inscripción', 'Código_Curso'],[100,110,290,224,224])
+        self.argumentos = ('c_inscripción',['No. Inscripción', 'Nombres', 'Apellidos', 'Fecha_Inscripción', 'Código_Curso', 'Horario'],[100,180,180,140,140,210])
         self.tree_view_prueba(*self.argumentos)
-        self.cursor.execute(''' SELECT Inscritos.No_Inscripción, Nombres, Apellidos, Inscritos.Fecha_de_Inscripción, Código_Curso FROM Inscritos
+        self.cursor.execute(''' SELECT Inscritos.No_Inscripción, Nombres, Apellidos, Inscritos.Fecha_de_Inscripción, Código_Curso, Horario_Curso FROM Inscritos
                             JOIN Alumnos ON Inscritos.Id_Alumno = Alumnos.Id_Alumno ORDER BY Inscritos.No_Inscripción
                             ''')
         self.datos = self.cursor.fetchall()
         for i in self.datos:
-            # self.fecha = self.fecha_split(i[3])
-            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4]))
+            self.f_inscripcion = self.fecha_split(i[3]) 
+            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], self.f_inscripcion, i[4], i[5]))
         
         self.tViews.bind("<Double-1>", self.click)
         # print(self.tView_c_inscripcion.selection())
@@ -693,7 +693,8 @@ class Inscripciones_2:
                             ORDER BY Id_Alumno''') 
         self.datos = self.cursor.fetchall()
         for i in self.datos:
-            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], i[3], i[4], i[5], i[6], i[7], i[8], i[9]))
+            self.f_ingreso = self.fecha_split(i[4])
+            self.tViews.insert("", tk.END, values=(i[0], i[1], i[2], i[3], self.f_ingreso, i[5], i[6], i[7], i[8], i[9]))
         self.tViews.bind("<Double-1>", self.click)
 
     def consultar_cursos(self):
@@ -969,7 +970,7 @@ class Inscripciones_2:
         self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[110,110,290,224,130]) 
         self.tree_view_prueba(*self.argumentos)
 
-        self.cursor.execute(f'''SELECT Inscritos.No_inscripción, Inscritos.Código_Curso, Cursos.Descripción_Curso, Cursos.Horario_Curso, Inscritos.Fecha_de_Inscripción FROM Inscritos
+        self.cursor.execute(f'''SELECT Inscritos.No_inscripción, Inscritos.Código_Curso, Cursos.Descripción_Curso, Inscritos.Horario_Curso, Inscritos.Fecha_de_Inscripción FROM Inscritos
                    JOIN Cursos ON Inscritos.Código_Curso = Cursos.Código_Curso
                    WHERE Inscritos.Id_Alumno = {event}
                    ''')
