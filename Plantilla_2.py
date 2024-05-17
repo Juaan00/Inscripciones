@@ -11,6 +11,7 @@ from signal import signal, SIGINT, SIG_IGN
 import re
 from functools import partial
 from operator import itemgetter
+from tkinter import messagebox
 
 if system() == "Windows":
     from ctypes import windll
@@ -191,7 +192,7 @@ class Inscripciones_2:
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
         self.codigo_Curso.bind("<<ComboboxSelected>>", lambda _: self.consultar_cursos_cmbx(self.codigo_Curso.get()))
-        self.codigo_Curso.bind("<<ComboboxSelected>>",cmbx_codigo_curso )
+        self.codigo_Curso.bind("<<ComboboxSelected>>", self.cmbx_codigo_curso)
         
         #Label Nombre de Curso
         self.lblNombreCurso = ttk.Label(self.frm_1, name="lblnombrecurso")
@@ -234,22 +235,6 @@ class Inscripciones_2:
                                       cursor="hand2", image=self.icono_c,compound=tk.LEFT,bd=0, relief="flat", bg="#f7f9fd")
         self.btnConsultar.configure(text='  Consultar',font=('Arial', 9, 'bold'), width=90, height=30)
         self.btnConsultar.place(anchor="nw", x=100, y=235)
- 
-        def cmbx_codigo_curso(event):
-
-            selected_item = self.codigo_Curso.get()
-
-            print(selected_item)
-            data=self.get_data_curso(selected_item)
-            for i in data:
-                self.add_consultar(self.nombreCurso, i[1])
-                self.nombreCurso.config(state="disabled")
-                self.add_consultar(self.horario, i[2])
-                self.horario.config(state="disabled")
-                self.add_consultar(self.fechaInscripcion, datetime.date.today().strftime("%d/%m/%Y"))
-                self.fechaInscripcion.config(state="disabled")
-
-        self.codigo_Curso.bind("<<ComboboxSelected>>",cmbx_codigo_curso )
 
         
         self.icono_e = tk.PhotoImage(file= PATH + ICONO_EDITAR)
@@ -335,7 +320,7 @@ class Inscripciones_2:
                     self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE No_Registro = ?", (nuevo_curso, numero_inscripcion))
                     self.conn.commit()
         string= string.rstrip(', ')
-        tk.messagebox.showinfo(f"Edición Exitosa, estudiante {id_alumno}", f"Se realizaron cambios en:\n{string}")
+        messagebox.showinfo(f"Edición Exitosa, estudiante {id_alumno}", f"Se realizaron cambios en:\n{string}")
         self.limpiar()
         return
      
@@ -377,7 +362,7 @@ class Inscripciones_2:
             if len(fechaRef) > 10:
                 raise ValueError("digite maximo 8 numeros")
         except ValueError as problem:
-            tk.messagebox.showerror("Error", str(problem))
+            messagebox.showerror("Error", str(problem))
             self.fecha.delete(10, tk.END)
 
     def verificarNumeros(self,char):
@@ -397,7 +382,7 @@ class Inscripciones_2:
             #compara el formato del texto con el formato y las fechas de libreria
             self.vFecha = datetime.datetime.strptime(self.vFecha,'%d/%m/%Y') 
         except ValueError:
-            tk.messagebox.showerror("Error", 'Digite un formato de fecha valida')
+            messagebox.showerror("Error", 'Digite un formato de fecha valida')
             self.fecha_insert = datetime.datetime.now().strftime('%d/%m/%Y')
             entry.delete(0, tk.END)
             entry.insert(0,self.fecha_insert)    
@@ -499,9 +484,9 @@ class Inscripciones_2:
     
     def limpiar(self):
         self.entry = [self.noInscripcion, self.cmbx_Id_Alumno, self.fecha, self.fechaInscripcion, 
-                        self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.direccion, self.ciudad, 
-                        self.departamento, self.telCel, self.telFijo, self.codigo_Curso, self.nombreCurso, 
-                        self.horario]
+                    self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.direccion, self.ciudad, 
+                    self.departamento, self.telCel, self.telFijo, self.codigo_Curso, self.nombreCurso, 
+                    self.horario]
         for i in self.entry:
             i.config(state="normal")
             i.delete(0, tk.END)
@@ -601,7 +586,7 @@ class Inscripciones_2:
             self.ventana_emergente.destroy()
             return self.consultar_carreras()
         else:
-            tk.messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
+            messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
             self.int.set(0)
             
     def click(self,event):
@@ -621,7 +606,7 @@ class Inscripciones_2:
         if str(self.noInscripcion.get()) in self.enter_accion:
             self.consultar(self.noInscripcion.get())
         else:
-            tk.messagebox.showinfo("Consulta Inscripción","No se encontraron datos con ese número de inscripción")
+            messagebox.showinfo("Consulta Inscripción","No se encontraron datos con ese número de inscripción")
 
     
     def tree_view_prueba(self, *kargs):
@@ -846,13 +831,13 @@ class Inscripciones_2:
                 if not item: raise TypeError
 
                 self.winEmerDelete.destroy()
-                alert = tk.messagebox.askquestion('Eliminando datos', 'Desea eliminar este valor?')
+                alert = messagebox.askquestion('Eliminando datos', 'Desea eliminar este valor?')
                 if alert == 'yes':            
                     self.eliminar_datos(self.data['values'][1], 'Código_Curso')
                     self.tViews.delete(item)
 
             except TypeError:
-                tk.messagebox.showerror("Error", str('Debe seleccionar primero un valor a eliminar en el cuadro de abajo'))
+                messagebox.showerror("Error", str('Debe seleccionar primero un valor a eliminar en el cuadro de abajo'))
                 self.winEmerDelete.destroy()
                 pass
 
@@ -860,13 +845,13 @@ class Inscripciones_2:
             item = self.tViews.get_children()[0]
             self.data = self.tViews.item(item)
             self.winEmerDelete.destroy()
-            alert = tk.messagebox.askquestion('Eliminando datos', 'Desea eliminar todos los cursos?')
+            alert = messagebox.askquestion('Eliminando datos', 'Desea eliminar todos los cursos?')
             if alert == 'yes':            
                 # print(self.tViews.get_children()[0])
                 self.eliminar_datos(self.data['values'][0], 'No_Inscripción')
                 self.tViews.delete(*self.tViews.get_children())
         else: 
-            tk.messagebox.showerror("Error", str('no se selecciono ninguna opcion'))
+            messagebox.showerror("Error", str('no se selecciono ninguna opcion'))
             pass
 
     guardado = False
@@ -877,7 +862,7 @@ class Inscripciones_2:
         self.btnEditar.config(state='disabled')
         
         if not self.cmbx_Id_Alumno.get():
-            tk.messagebox.showwarning("Advertencia", "Debe seleccionar su id de alumno")
+            messagebox.showwarning("Advertencia", "Debe seleccionar su id de alumno")
         elif self.cmbx_Id_Alumno.get() and self.guardado == False:
             self.consultar_ventana("Guardar Datos", "Seleciona una opción", ["Guardar Inscripción", "Guardar Estudiante"], "Seleccionar", self.boton_escoger_guardar)
         elif self.cmbx_Id_Alumno.get() and self.guardado == True:
@@ -896,7 +881,7 @@ class Inscripciones_2:
             self.cerrar_ventana()
         else: #tal vez se puede omitir este else
             self.guardado = False
-            tk.messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
+            messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
             self.int.set(0)
             self.cerrar_ventana()
             
@@ -908,7 +893,7 @@ class Inscripciones_2:
         for item_id in self.tViews.get_children():#lee los datos obtenidos en el treeview y revisa que no se agrege un curso repetido
             item = self.tViews.item(item_id)
             if nombreCurso == item['values'][2]:
-                tk.messagebox.showwarning("Advertencia", "el curso que esta por agregar ya existe, por favor, solicite otro curso")
+                messagebox.showwarning("Advertencia", "el curso que esta por agregar ya existe, por favor, solicite otro curso")
                 return
         try: #revisa si en el treeview tiene un no de inscripcion asociado
             if item['values']:
@@ -954,7 +939,7 @@ class Inscripciones_2:
         self.cursor.execute('''INSERT INTO Alumnos (Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento)   
                             VALUES (?,?,?,?,?,?,?,?,?,?)''', tuple(self.datos_ingresados))
         self.conn.commit()
-        return tk.messagebox.showinfo("Ingreso de Datos", "Datos ingresados correctamente")
+        return messagebox.showinfo("Ingreso de Datos", "Datos ingresados correctamente")
     
     def consultar_estudiantes_cmbx(self, event):
         self.limpiar()
@@ -1010,10 +995,12 @@ class Inscripciones_2:
                 self.lista_materia = []
                 self.lista_materia += i
                 self.tViews.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[1], self.lista_materia[2], self.lista_materia[3], self.lista_materia[4]))
+    
     def get_data_curso(self, curso):
         self.cursor.execute("SELECT * FROM Cursos WHERE Código_Curso = ?", (curso,))
         self.data = self.cursor.fetchall()
         return self.data
+    
     def get_data_entrys(self):
         self.nombre_actual=self.nombres.get()
         self.apellido_actual=self.apellidos.get()
