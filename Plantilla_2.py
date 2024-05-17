@@ -310,24 +310,31 @@ class Inscripciones_2:
             self.fechaInscripcion.config(state="enabled")
 
     def editar(self):
-        string=''
-        no_inscripcion=self.noInscripcion.get()
-        id_alumno=self.cmbx_Id_Alumno.get()
-        if self.noInscripcion.get() == '':
-                pass
+        print(self.codigo_curso_antiguo)
+        nuevo_codigo_curso=self.codigo_Curso.get()
+        if self.codigo_curso_antiguo==nuevo_codigo_curso:
+            messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
+            return
         else:
-            string+=f'No. Inscripción {no_inscripcion}, '
-            numero_inscripcion=''
-            nuevo_curso=self.codigo_Curso.get()
-            self.lista_inscripciones=self.get_data_inscricpiones_complete(id_alumno)
-            for i in self.lista_inscripciones: 
-                if i[0] == numero_inscripcion:
-                    self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE No_Registro = ?", (nuevo_curso, numero_inscripcion))
-                    self.conn.commit()
-        string= string.rstrip(', ')
-        messagebox.showinfo(f"Edición Exitosa, estudiante {id_alumno}", f"Se realizaron cambios en:\n{string}")
-        self.limpiar()
-        return
+            print(self.codigo_curso_antiguo, nuevo_codigo_curso)
+        # string=''
+        # no_inscripcion=self.noInscripcion.get()
+        # id_alumno=self.cmbx_Id_Alumno.get()
+        # if self.noInscripcion.get() == '':
+        #         pass
+        # else:
+        #     string+=f'No. Inscripción {no_inscripcion}, '
+        #     numero_inscripcion=''
+        #     nuevo_curso=self.codigo_Curso.get()
+        #     self.lista_inscripciones=self.get_data_inscricpiones_complete(id_alumno)
+        #     for i in self.lista_inscripciones: 
+        #         if i[0] == numero_inscripcion:
+        #             self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE No_Registro = ?", (nuevo_curso, numero_inscripcion))
+        #             self.conn.commit()
+        # string= string.rstrip(', ')
+        # messagebox.showinfo(f"Edición Exitosa, estudiante {id_alumno}", f"Se realizaron cambios en:\n{string}")
+        # self.limpiar()
+        # return
      
     def centrar(self, win, ancho, alto):
         self.altura_pantalla = win.winfo_screenheight()
