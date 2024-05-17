@@ -192,7 +192,7 @@ class Inscripciones_2:
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
         self.codigo_Curso.bind("<<ComboboxSelected>>", lambda _: self.consultar_cursos_cmbx(self.codigo_Curso.get()))
-        self.codigo_Curso.bind("<<ComboboxSelected>>", self.self.cmbx_codigo_curso)
+        self.codigo_Curso.bind("<<ComboboxSelected>>", self.cmbx_codigo_curso)
         
         #Label Nombre de Curso
         self.lblNombreCurso = ttk.Label(self.frm_1, name="lblnombrecurso")
@@ -209,7 +209,7 @@ class Inscripciones_2:
                         state="normal", takefocus=False,text='Horario')
         self.lblHorario.place(anchor="nw", x=490, y=140)
         #Entry Horario
-        self.horario = ttk.Entry(self.frm_1, name="horario",state=tk.DISABLED)
+        self.horario = ttk.Combobox(self.frm_1, name="horario",state=tk.DISABLED)
         self.horario.place(anchor="nw", width=180, x=490, y=160)
         
         #Fecha de Inscripción
@@ -297,10 +297,10 @@ class Inscripciones_2:
         print(selected_item)
         data=self.get_data_curso(selected_item)
         for i in data:
+            print(i)
             self.add_consultar(self.nombreCurso, i[1])
-            self.nombreCurso.config(state="disabled")
-            self.add_consultar(self.horario, i[2])
-            self.horario.config(state="disabled")
+            self.nombreCurso.config(state="readonly")
+            self.horario.config(state="readonly")
             self.add_consultar(self.fechaInscripcion, datetime.date.today().strftime("%d/%m/%Y"))
             self.fechaInscripcion.config(state="enabled")
 
