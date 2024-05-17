@@ -310,13 +310,15 @@ class Inscripciones_2:
             self.fechaInscripcion.config(state="enabled")
 
     def editar(self):
-        print(self.codigo_curso_antiguo)
         nuevo_codigo_curso=self.codigo_Curso.get()
         if self.codigo_curso_antiguo==nuevo_codigo_curso:
             messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
             return
         else:
             print(self.codigo_curso_antiguo, nuevo_codigo_curso)
+            self.cursor.execute("UPDATE Inscritos SET Código_Curso = ? WHERE Código_Curso = ?", (nuevo_codigo_curso, self.codigo_curso_antiguo))
+            self.conn.commit()
+            messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
         # string=''
         # no_inscripcion=self.noInscripcion.get()
         # id_alumno=self.cmbx_Id_Alumno.get()
