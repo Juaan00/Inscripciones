@@ -310,6 +310,9 @@ class Inscripciones_2:
             self.fechaInscripcion.config(state="enabled")
 
     def editar(self):
+        if self.codigo_curso_antiguo=='':
+            messagebox.showerror("Inscripciones", "No a seleccionado ninguna Inscripción para editar")
+            return
         nuevo_codigo_curso=self.codigo_Curso.get()
         if self.codigo_curso_antiguo==nuevo_codigo_curso:
             messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
@@ -738,8 +741,6 @@ class Inscripciones_2:
             self.tViews.insert("", tk.END, values=(i[0], i[1], i[2]))
    
     def consultar(self, event):
-
-        self.get_data_entrys()
         self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[90,90,270,150,130]) 
         self.tree_view_prueba(*self.argumentos)
         self.cursor.execute(f'''SELECT * FROM Inscritos WHERE No_Inscripción = {event}''')
@@ -820,15 +821,18 @@ class Inscripciones_2:
         #     self.lista_materia += i
         #     self.tViews.insert("", tk.END, values=(self.lista_materia[0], self.lista_materia[1], self.lista_materia[2], self.lista_materia[3], self.lista_materia[4]))
     def treeview_cmbx_curso(self, event):
-        
+        print(self.tvEntry0, self.tvEntry1, self.tvEntry2, self.tvEntry3, self.tvEntry4)
+        try:
+            self.fecha_ins= self.fecha_split(self.tvEntry4)
+            self.add_consultar(self.fechaInscripcion, self.fecha_ins)
+        except:
+            return
         self.add_consultar(self.noInscripcion, self.tvEntry0)
         self.noInscripcion.config(state="disabled")
         self.add_consultar(self.codigo_Curso, self.tvEntry1)
         self.codigo_Curso.config(state="readonly")
         self.add_consultar(self.nombreCurso, self.tvEntry2)
         self.add_consultar(self.horario, self.tvEntry3)
-        self.fecha_ins= self.fecha_split(self.tvEntry4)
-        self.add_consultar(self.fechaInscripcion, self.fecha_ins)
         self.fechaInscripcion.config(state="enabled")
         self.obtener_curso_anterior()
 
@@ -1033,23 +1037,6 @@ class Inscripciones_2:
         self.data = self.cursor.fetchall()
         return self.data
     
-    def get_data_entrys(self):
-        self.nombre_actual=self.nombres.get()
-        self.apellido_actual=self.apellidos.get()
-        self.fecha_actual=self.fecha.get()
-        self.direccion_actual=self.direccion.get()
-        self.telcel_actual=self.telCel.get()
-        self.telfijo_actual=self.telFijo.get()
-        self.ciudad_actual=self.ciudad.get()
-        self.departamento_actual=self.departamento.get()
-        self.noinscripcion_actual=self.noInscripcion.get()
-        self.idalumno_actual=self.cmbx_Id_Alumno.get()
-        self.idcarrera_actual=self.cmbx_Id_Carrera.get()
-        self.noInscripcion_actual=self.noInscripcion.get()
-        self.id_curso_actual=self.codigo_Curso.get()
-        self.nombre_curso_actual=self.nombreCurso.get()
-        self.horario_actual=self.horario.get()
-        self.fecha_inscripcion_actual=self.fechaInscripcion.get()
     def add_editar(self, entry):
             return entry.get()
     def add_consultar(self,entry, value):
