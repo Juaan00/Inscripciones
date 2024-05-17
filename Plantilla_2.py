@@ -805,7 +805,7 @@ class Inscripciones_2:
     def treeview_cmbx_curso(self, event):
         
         self.add_consultar(self.noInscripcion, self.tvEntry0)
-        self.noInscripcion.config(state="readonly")
+        self.noInscripcion.config(state="desabled")
         self.add_consultar(self.codigo_Curso, self.tvEntry1)
         self.codigo_Curso.config(state="readonly")
         self.add_consultar(self.nombreCurso, self.tvEntry2)
