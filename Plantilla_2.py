@@ -126,6 +126,7 @@ class Inscripciones_2:
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
         self.noInscripcion.bind("<<ComboboxSelected>>", self.consultar)
+        self.noInscripcion.bind("<FocusIn>", self.noInscripcion.config(state="normal"))
         self.noInscripcion.bind("<Return>", self.enter)   
         
         #Label Direccion
@@ -649,7 +650,7 @@ class Inscripciones_2:
             self.enter_accion.append(str(i[0]))
         if str(self.noInscripcion.get()) in self.enter_accion:
             # self.consultar(self.noInscripcion.get())
-            self.consultar
+            self.consultar(self.noInscripcion.get())
         else:
             messagebox.showinfo("Consulta Inscripción","No se encontraron datos con ese número de inscripción")
 
