@@ -126,8 +126,7 @@ class Inscripciones_2:
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
         self.noInscripcion.place(anchor="nw", width=100, x=680, y=40)
         self.noInscripcion.bind("<<ComboboxSelected>>", self.consultar)
-        self.noInscripcion.bind("<Return>", self.enter)  
-        self.noInscripcion.bind("<FocusIn>", self.noInscripcion.config(state="normal"))   
+        self.noInscripcion.bind("<Return>", self.enter)   
         
         #Label Direccion
         self.lblDireccion = ttk.Label(self.frm_1, name="lbldireccion")
@@ -774,8 +773,7 @@ class Inscripciones_2:
                 no_inscripcion=event
             else:
                 id_alumno=event
-
-
+                
         if no_inscripcion!='':
             self.cursor.execute(f'''SELECT * FROM Inscritos WHERE No_Inscripción = ?''', (no_inscripcion,))
             self.data = self.cursor.fetchall()
