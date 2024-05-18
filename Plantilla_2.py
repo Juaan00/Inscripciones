@@ -3,7 +3,6 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import sqlite3
-import datetime
 from pathlib import Path
 from subprocess import run
 from platform import system
@@ -13,7 +12,7 @@ from functools import partial
 from operator import itemgetter
 from tkinter import messagebox
 from datetime import datetime
-
+from datetime import date
 
 import random
 from datetime import datetime, timedelta
@@ -53,16 +52,16 @@ class Inscripciones_2:
             self.icon = tk.PhotoImage(file= PATH + ICONO)
             self.win.iconphoto(True, self.icon)
             
-        self.tvEntry0= tk.StringVar()
-        self.tvEntry1= tk.StringVar()
-        self.tvEntry2= tk.StringVar()
-        self.tvEntry3= tk.StringVar()
-        self.tvEntry4= tk.StringVar()
-        # self.tvNoInscripcion = tk.StringVar()
-        # self.tvNombreCurso = tk.StringVar()
-        # self.tvHorarios = tk.StringVar()
-        # self.tvFechaInscripcion = tk.StringVar()
-        # self.tvCodigoCurso = tk.StringVar()
+        # self.tvEntry0= tk.StringVar()
+        # self.tvEntry1= tk.StringVar()
+        # self.tvEntry2= tk.StringVar()
+        # self.tvEntry3= tk.StringVar()
+        # self.tvEntry4= tk.StringVar()
+        self.tvNoInscripcion = tk.StringVar()
+        self.tvNombreCurso = tk.StringVar()
+        self.tvHorarios = tk.StringVar()
+        self.tvFechaInscripcion = tk.StringVar()
+        self.tvCodigoCurso = tk.StringVar()
 
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
@@ -88,7 +87,6 @@ class Inscripciones_2:
         #Entry Nombres
         self.nombres = ttk.Entry(self.frm_1, name="nombres",state=tk.DISABLED)
         self.nombres.place(anchor="nw", width=190, x=150, y=40)
-
 
         #Label Apellidos
         self.lblApellidos = ttk.Label(self.frm_1, name="lblapellidos")
@@ -156,7 +154,6 @@ class Inscripciones_2:
         self.departamento = ttk.Entry(self.frm_1, name="departamento",state=tk.DISABLED)
         self.departamento.place(anchor="nw", width=130, x=390, y=100)
         
-
         #Label Telefono Celular
         self.lblTelCel = ttk.Label(self.frm_1, name="lbltelcel")
         self.lblTelCel.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -177,7 +174,6 @@ class Inscripciones_2:
         self.telFijo = ttk.Entry(self.frm_1, name="telfijo",state=tk.DISABLED)
         self.telFijo.place(anchor="nw", width=110, x=670, y=100)
 
-    
         #Label id_carrera
         self.lblIdCarrera = ttk.Label(self.frm_1, name="lblidcarrera")
         self.lblIdCarrera.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -198,7 +194,6 @@ class Inscripciones_2:
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
         self.codigo_Curso.bind("<<ComboboxSelected>>", self.cmbx_codigo_curso)
 
-        
         #Label Nombre de Curso
         self.lblNombreCurso = ttk.Label(self.frm_1, name="lblnombrecurso")
         self.lblNombreCurso.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -233,8 +228,6 @@ class Inscripciones_2:
         self.fechaInscripcion.bind("<Key>", lambda event, entry=self.fechaInscripcion: self.cuandoEscriba(event, entry))
         self.fechaInscripcion.bind("<Return>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
 
-
-    
         ''' Botones  de la Aplicación'''
         
         #Botón Consultar
@@ -269,7 +262,6 @@ class Inscripciones_2:
         # self.btnCancelar.place(anchor="nw", x=465, y=260, width=80)
         # self.btnCancelar.bind()
         
-    
         #Botón Grabar
         self.icono_g = tk.PhotoImage(file= PATH + ICONO_GUARDAR)
         self.btnGrabar = tk.Button(self.frm_1, name="btngrabar", cursor="hand2",
@@ -295,7 +287,6 @@ class Inscripciones_2:
     def run(self):
         self.mainwindow.mainloop()
 
-
     ''' A partir de este punto se deben incluir las funciones
      para el manejo de la base de datos '''
 
@@ -312,7 +303,7 @@ class Inscripciones_2:
 
     def editar(self):
         if self.codigo_Curso.get()=='':
-            messagebox.showerror("Inscripciones", "No has seleccionado ninguna Inscripción para editar")
+            messagebox.showerror("Inscripciones", "No has seleccionado ninguna Inscripción para editar, por favor haga doble click sobre el curso a editar")
             return
         
         nuevo_codigo_curso=self.codigo_Curso.get()
@@ -328,7 +319,7 @@ class Inscripciones_2:
                 self.cursor.execute("UPDATE Inscritos SET Fecha_de_Inscripción = ?, Horario_Curso = ? WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ?", (nueva_fecha, nuevo_horario, self.noInscripcion.get(),self.cmbx_Id_Alumno.get(), self.codigo_curso_antiguo))
                 self.conn.commit()
                 messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
-                self.limpiar()
+                # self.limpiar()
                 return
         elif self.codigo_curso_antiguo!=nuevo_codigo_curso:
             self.cursor.execute("SELECT * FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
@@ -359,7 +350,6 @@ class Inscripciones_2:
         for i in self.data:
             self.lista_inscripciones.append(i)
         return self.lista_inscripciones
-     
      
     def cuandoEscriba(self,event, entry):
         #coloca los / al escribir
@@ -547,10 +537,10 @@ class Inscripciones_2:
         
         self.argumentos = ('inicial', [''],[735])
         self.tree_view_prueba(*self.argumentos)
-    
-    
+     
     def consultar_ventana(self, *args): #ventana emergente, permite máximo 4 opciones para escoger, los parametros son: Titulo, Texto, Opciones, Botón y Función de botón
-        self.limpiar()
+        #self.limpiar() #eliminar, genera problemas con guardar y borrar, desconozco si da problemas en otro lado o si es necesario.
+
         self.ventana_emergente = tk.Toplevel(self.win)
         self.ventana_emergente.title(args[0])
         self.icon_consulta = tk.PhotoImage(file= PATH + ICONO)
@@ -654,7 +644,6 @@ class Inscripciones_2:
         else:
             messagebox.showinfo("Consulta Inscripción","No se encontraron datos con ese número de inscripción")
 
-    
     def tree_view_prueba(self, *kargs):
         def restrictor(Event):
             # Reviso si una zona especifica alrededor del cursor toca el separador de columnas
@@ -766,7 +755,7 @@ class Inscripciones_2:
         id_alumno=self.cmbx_Id_Alumno.get()
         no_inscripcion=self.noInscripcion.get()
 
-        print(id_alumno, no_inscripcion + "amungus")
+        # print(id_alumno, no_inscripcion + "amungus")
         self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[90,90,270,150,130]) 
         self.tree_view_prueba(*self.argumentos)
 
@@ -829,7 +818,6 @@ class Inscripciones_2:
         self.fecha_inscripcion_antigua=self.fechaInscripcion.get()
         self.horario_antiguo=self.horario.get()
 
-
     def limpiar_data(self):
         self.tvNoInscripcion.set('')
         self.tvCodigoCurso.set('')
@@ -884,36 +872,68 @@ class Inscripciones_2:
     guardado = False
 
     def grabar(self):
+    #def boton_escoger_guardar(self):
+        if not self.cmbx_Id_Alumno.get():
+            messagebox.showwarning("Advertencia", "Debe seleccionar su id de alumno")
+            return
+
+        #if self.int.get() == 1:
         self.btnConsultar.config(state='disabled')
         self.btnEliminar.config(state='disabled')
         self.btnEditar.config(state='disabled')
-        
-        if not self.cmbx_Id_Alumno.get():
-            messagebox.showwarning("Advertencia", "Debe seleccionar su id de alumno")
-        elif self.cmbx_Id_Alumno.get() and self.guardado == False:
-            self.consultar_ventana("Guardar Datos", "Seleciona una opción", ["Guardar Inscripción", "Guardar Estudiante"], "Seleccionar", self.boton_escoger_guardar)
-        elif self.cmbx_Id_Alumno.get() and self.guardado == True:
-            self.verificar_agregar_data()
+        self.add_consultar(self.fechaInscripcion, '')
+        self.add_consultar(self.noInscripcion, '')
+        self.noInscripcion.config(state="disabled")
+        self.add_consultar(self.codigo_Curso, '')
+        self.codigo_Curso.config(state="readonly")
+        self.add_consultar(self.nombreCurso, '')
+        self.add_consultar(self.horario, '')
+        self.fechaInscripcion.config(state="enabled")
+
+        if self.guardado: 
+            if self.horario.get() and self.nombreCurso.get() and self.noInscripcion.get() and self.fechaInscripcion.get():
+                self.verificar_agregar_data()
+            elif not self.codigo_Curso.get():
+                messagebox.showwarning("Advertencia", "Debe seleccionar un curso")
+            elif not self.horario.get():
+                messagebox.showwarning("Advertencia", "Debe seleccionar un horario")
+            elif not self.fechaInscripcion:
+                messagebox.showwarning("Advertencia", "Debe seleccionar una fecha de inscripcion")
         else:
-            pass
-
-    def boton_escoger_guardar(self):
-        if self.int.get() == 1:
+            self.asignar_no_inscripcion()
             self.guardado = True
-            self.cerrar_ventana()
-            self.verificar_agregar_data()
+        #self.ventana_emergente.destroy()
 
-        elif self.int.get() == 2:
-            self.guardado = True
-            self.cerrar_ventana()
-        else: #tal vez se puede omitir este else
-            self.guardado = False
-            messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
-            self.int.set(0)
-            self.cerrar_ventana()
+        #si no hay edicion de tabla de alumnos, esto ya no es necesario
+        # elif self.int.get() == 2:
+        #     self.guardado = True
+        #     self.ventana_emergente.destroy()
+        # else: #tal vez se puede omitir este else
+        #     self.guardado = False
+        #     messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
+        #     self.int.set(0)
+        #     self.ventana_emergente.destroy()
+
+    def asignar_no_inscripcion(self):
+
+        for item_id in self.tViews.get_children():#lee los datos obtenidos en el treeview y revisa que no se agrege un curso repetido
+            item = self.tViews.item(item_id)
+
+        try: #revisa si en el treeview tiene un no de inscripcion asociado
+            if item['values']:
+                self.noInscripcion.set(item['values'][0])
+                # noInscripcion = self.noInscripcion.get()
+        except: # sino le asigna el mayor +1
+            query = '''SELECT MAX(No_Inscripción) FROM Inscritos;'''
+            self.cursor.execute(query)
+            self.conn.commit()
+            ultimoNoInscrito = self.cursor.fetchall()
+            ultimoNoInscrito = int(ultimoNoInscrito[0][0])
+            self.noInscripcion.set(ultimoNoInscrito + 1)
+            messagebox.showinfo("Importante", "Se le ha asignado un numero de inscripcion, por favor guardelo")
             
     def verificar_agregar_data(self):
-        hoy = datetime.date.today()
+        hoy = date.today()
         nombreCurso = self.nombreCurso.get()
         Horario = self.horario.get()
 
@@ -922,18 +942,9 @@ class Inscripciones_2:
             if nombreCurso == item['values'][2]:
                 messagebox.showwarning("Advertencia", "el curso que esta por agregar ya existe, por favor, solicite otro curso")
                 return
-        try: #revisa si en el treeview tiene un no de inscripcion asociado
-            if item['values']:
-                self.noInscripcion.set(item['values'][0])
-                noInscripcion = self.noInscripcion.get()
-        except: # sino le asigna el mayor +1
-            query = '''SELECT MAX(No_Inscripción) FROM Inscritos;'''
-            self.cursor.execute(query)
-            self.conn.commit()
-            ultimoNoInscrito = self.cursor.fetchall()
-            ultimoNoInscrito = int(ultimoNoInscrito[0][0])
-            self.noInscripcion.set(ultimoNoInscrito + 1)
-            noInscripcion = self.noInscripcion
+        
+        noInscripcion = self.noInscripcion.get()
+        # noInscripcion = self.noInscripcion
 
         fechaInscripcion = self.fechaInscripcion.get() #le asigna a la fecha de inscripcion del dia actual
         if not fechaInscripcion:
@@ -1003,6 +1014,7 @@ class Inscripciones_2:
         self.btnEditar.config(state='normal')
         self.btnEliminar.config(state='normal')
         self.btnGrabar.config(state='normal')
+
     def get_data_curso(self, curso):
         self.cursor.execute("SELECT * FROM Cursos WHERE Código_Curso = ?", (curso,))
         self.data = self.cursor.fetchall()
@@ -1010,6 +1022,7 @@ class Inscripciones_2:
     
     def add_editar(self, entry):
             return entry.get()
+    
     def add_consultar(self,entry, value):
             entry.config(state="normal")
             entry.delete(0, 'end')
