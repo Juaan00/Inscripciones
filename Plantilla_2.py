@@ -14,6 +14,7 @@ from tkinter import messagebox
 from datetime import datetime
 from datetime import date
 
+
 import random
 from datetime import datetime, timedelta
 
@@ -224,7 +225,7 @@ class Inscripciones_2:
         self.fechaInscripcion = ttk.Entry(self.frm_1, name="fechainscripcion",state=tk.DISABLED,
                                           validate="key", validatecommand=(self.frm_1.register(self.onValidate), '%P', '%S'))
         self.fechaInscripcion.place(anchor="nw", width=90, x=690, y=160)
-        self.fechaInscripcion.bind("<FocusOut>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
+        #self.fechaInscripcion.bind("<FocusOut>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
         self.fechaInscripcion.bind("<Key>", lambda event, entry=self.fechaInscripcion: self.cuandoEscriba(event, entry))
         self.fechaInscripcion.bind("<Return>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
 
@@ -319,7 +320,7 @@ class Inscripciones_2:
                 self.cursor.execute("UPDATE Inscritos SET Fecha_de_Inscripción = ?, Horario_Curso = ? WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ?", (nueva_fecha, nuevo_horario, self.noInscripcion.get(),self.cmbx_Id_Alumno.get(), self.codigo_curso_antiguo))
                 self.conn.commit()
                 messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
-                # self.limpiar()
+                self.limpiar()
                 return
         elif self.codigo_curso_antiguo!=nuevo_codigo_curso:
             self.cursor.execute("SELECT * FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
@@ -435,10 +436,10 @@ class Inscripciones_2:
         self.conn.execute("PRAGMA foreign_keys = 1")
         self.cursor = self.conn.cursor()
 
-    def agregar_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
+    def agregar_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso, horarios):
         if not self.cursor:
             self.cursor = self.conn.cursor()
-        query = '''INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso) VALUES ('{}','{}','{}','{}')'''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
+        query = '''INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso, Horario_Curso) VALUES ('{}','{}','{}','{}', '{}')'''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso, horarios)
         self.cursor.execute(query)
         self.conn.commit()
         # self.cursor.close()
@@ -873,7 +874,7 @@ class Inscripciones_2:
 
     def grabar(self):
     #def boton_escoger_guardar(self):
-        if not self.cmbx_Id_Alumno.get():
+        if not self.cmbx_Id_Alumno.get():#se podria retirar
             messagebox.showwarning("Advertencia", "Debe seleccionar su id de alumno")
             return
 
@@ -881,17 +882,14 @@ class Inscripciones_2:
         self.btnConsultar.config(state='disabled')
         self.btnEliminar.config(state='disabled')
         self.btnEditar.config(state='disabled')
-        self.add_consultar(self.fechaInscripcion, '')
-        self.add_consultar(self.noInscripcion, '')
-        self.noInscripcion.config(state="disabled")
-        self.add_consultar(self.codigo_Curso, '')
-        self.codigo_Curso.config(state="readonly")
-        self.add_consultar(self.nombreCurso, '')
-        self.add_consultar(self.horario, '')
-        self.fechaInscripcion.config(state="enabled")
 
         if self.guardado: 
-            if self.horario.get() and self.nombreCurso.get() and self.noInscripcion.get() and self.fechaInscripcion.get():
+            print(self.horario.get())
+            print(self.codigo_Curso.get())
+            print(self.noInscripcion.get())
+            print(self.fechaInscripcion.get())
+
+            if self.horario.get() and self.codigo_Curso.get() and self.noInscripcion.get():
                 self.verificar_agregar_data()
             elif not self.codigo_Curso.get():
                 messagebox.showwarning("Advertencia", "Debe seleccionar un curso")
@@ -900,9 +898,18 @@ class Inscripciones_2:
             elif not self.fechaInscripcion:
                 messagebox.showwarning("Advertencia", "Debe seleccionar una fecha de inscripcion")
         else:
+            self.add_consultar(self.fechaInscripcion, '')
+            self.add_consultar(self.noInscripcion, '')
+            self.noInscripcion.config(state="disabled")
+            self.add_consultar(self.codigo_Curso, '')
+            self.codigo_Curso.config(state="readonly")
+            self.add_consultar(self.nombreCurso, '')
+            self.add_consultar(self.horario, '')
+            self.fechaInscripcion.config(state="enabled")
             self.asignar_no_inscripcion()
             self.guardado = True
         #self.ventana_emergente.destroy()
+            
 
         #si no hay edicion de tabla de alumnos, esto ya no es necesario
         # elif self.int.get() == 2:
@@ -935,6 +942,7 @@ class Inscripciones_2:
     def verificar_agregar_data(self):
         hoy = date.today()
         nombreCurso = self.nombreCurso.get()
+        idAlumnos = self.cmbx_Id_Alumno.get()
         Horario = self.horario.get()
 
         for item_id in self.tViews.get_children():#lee los datos obtenidos en el treeview y revisa que no se agrege un curso repetido
@@ -942,27 +950,40 @@ class Inscripciones_2:
             if nombreCurso == item['values'][2]:
                 messagebox.showwarning("Advertencia", "el curso que esta por agregar ya existe, por favor, solicite otro curso")
                 return
+            elif Horario == item['values'][3]:
+                messagebox.showwarning("Advertencia", "el horario coincide con otro ya inscrito, por favor, solicite otro horario")
+                return
         
         noInscripcion = self.noInscripcion.get()
         # noInscripcion = self.noInscripcion
 
         fechaInscripcion = self.fechaInscripcion.get() #le asigna a la fecha de inscripcion del dia actual
         if not fechaInscripcion:
-            fechaInscripcion = tk.StringVar()
-            fechaInscripcion = hoy.strftime('%Y-%m-%d') #revisar si se deja ese formato o el de dd/mm/yyyy por lo que de la otra forma aparecen los datos de la db
-            self.fechaInscripcion.insert(tk.END, fechaInscripcion)
+            alert = messagebox.askquestion("Advertencia", "se asignara la fecha de hoy como fecha de inscripcion")
+            if alert == 'yes':                
+                fechaInscripcion = tk.StringVar()
+                fechaInscripcion = hoy.strftime('%d/%m/%Y') #revisar si se deja ese formato o el de dd/mm/yyyy por lo que de la otra forma aparecen los datos de la db
+                self.fechaInscripcion.insert(tk.END, fechaInscripcion)
+            else:
+                messagebox.showwarning("Advertencia", "no se pudo realizar la inscripcion correctamente, intente de nuevo")
+                return
         else:
             pass
 
         if self.guardado == True: #verifica si la bandera de guardar esta activa
-            fechaInscripcion = self.fechaInscripcion.get()
+            #fechaInscripcion = self.fechaInscripcion.get()
             codigo = self.codigo_Curso.get()
             datos = (noInscripcion, codigo, nombreCurso, Horario, fechaInscripcion)
 
             if noInscripcion and nombreCurso and Horario and fechaInscripcion and codigo:
                 self.tViews.insert("", tk.END, values=datos)
-                self.agregar_datos(self.noInscripcion.get(), self.cmbx_Id_Alumno.get(), fechaInscripcion, self.codigo_Curso.get())#guarda en la db
-                self.guardado = False # baja la bandera de guardado
+                self.agregar_datos(noInscripcion, idAlumnos, fechaInscripcion, codigo, Horario)#guarda en la db
+                alert = messagebox.askquestion("Advertencia", "¿seguir inscribiendo materias?")
+                if alert != 'yes':
+                    self.guardado = False # baja la bandera de guardado
+                    self.limpiar()
+                else:
+                    pass
         
     def agregar_estudiantes(self): #ESTA FUNCION NO ESTA ACTIVA
         self.entry_datos = [self.cmbx_Id_Alumno, self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.fecha, self.direccion, 
