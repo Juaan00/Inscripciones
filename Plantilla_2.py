@@ -645,7 +645,7 @@ class Inscripciones_2:
         else:
             messagebox.showinfo("Consulta Inscripción","No se encontraron datos con ese número de inscripción")
 
-    def tree_view_prueba(self, *kargs):
+    def tree_view_prueba(self, *args):
         def restrictor(Event):
             # Reviso si una zona especifica alrededor del cursor toca el separador de columnas
             # Esta zona la obtuve con prueba y error.
@@ -655,19 +655,19 @@ class Inscripciones_2:
                     if(self.tViews.identify_region(Event.x+x, Event.y+y) == "separator"):
                         self.tViews.event_generate("<ButtonRelease-1>") # si esta en el rango, hace creer al equipo que solto el clic
                         break        
-        self.tViews = ttk.Treeview(self.frm_1, name=kargs[0],show='headings')
+        self.tViews = ttk.Treeview(self.frm_1, name=args[0],show='headings')
         self.tViews.configure(selectmode="extended")
         self.tViews.place(anchor="nw", height=264, width=730, x=30, y=281)
-        self.tViews.configure(columns=kargs[1])
+        self.tViews.configure(columns=args[1])
         self.tViews.column("#0", width=0)
         self.a = 0
-        for i in kargs[1]:
-            self.tViews.column(kargs[1][self.a],anchor="w",stretch=False,width=kargs[2][self.a])
+        for i in args[1]:
+            self.tViews.column(args[1][self.a],anchor="w",stretch=False,width=args[2][self.a])
             self.a += 1
         #Cabeceras
         self.b = 0
-        for i in kargs[1]:
-            self.tViews.heading(kargs[1][self.b],anchor="w", text=kargs[1][self.b], command=lambda c=i: self.sort_by_column(c, False))
+        for i in args[1]:
+            self.tViews.heading(args[1][self.b],anchor="w", text=args[1][self.b], command=lambda c=i: self.sort_by_column(c, False))
             self.b += 1
         #Scrollbars
         self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
@@ -721,7 +721,7 @@ class Inscripciones_2:
     def consultar_id_alumno(self):
         self.limpiar()
         self.argumentos = ('c_alumnos',['Id Alumno', 'Nombres', 'Apellidos', 'Id Carrera', 'Fecha de Ingreso', 'Dirección', 'Ciudad', 'Departamento', 'Telefono Celular', 'Telefono Fijo'],
-                           [100,200,200,100,120,200,200,200,100,100])
+                           [100,200,200,100,120,200,160,160,100,100])
         self.tree_view_prueba(*self.argumentos)
         
         self.cursor.execute(''' SELECT Id_alumno, Nombres, Apellidos, Id_Carrera, Fecha_Ingreso, Dirección, Ciudad, Departamento, Telef_Cel, Telef_Fijo FROM Alumnos
