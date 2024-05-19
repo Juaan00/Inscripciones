@@ -13,9 +13,7 @@ from operator import itemgetter
 from tkinter import messagebox
 from datetime import datetime
 from datetime import date
-
-
-import random
+# import random
 from datetime import datetime, timedelta
 
 if system() == "Windows":
@@ -52,12 +50,7 @@ class Inscripciones_2:
         elif system() == "Linux" or system() == "Darwin":
             self.icon = tk.PhotoImage(file= PATH + ICONO)
             self.win.iconphoto(True, self.icon)
-            
-        # self.tvEntry0= tk.StringVar()
-        # self.tvEntry1= tk.StringVar()
-        # self.tvEntry2= tk.StringVar()
-        # self.tvEntry3= tk.StringVar()
-        # self.tvEntry4= tk.StringVar()
+
         self.tvNoInscripcion = tk.StringVar()
         self.tvNombreCurso = tk.StringVar()
         self.tvHorarios = tk.StringVar()
@@ -110,7 +103,7 @@ class Inscripciones_2:
         self.fecha.place(anchor="nw", width=90, x=570, y=40)
         self.act_date = False
         self.fecha.bind("<Key>", lambda event, entry=self.fecha: self.cuandoEscriba(event, entry))
-        self.fecha.bind("<FocusOut>", lambda event, entry=self.fecha: self.validarFecha(entry))
+        # self.fecha.bind("<FocusOut>", lambda event, entry=self.fecha: self.validarFecha(entry))
         self.fecha.bind("<Return>", lambda event, entry=self.fecha: self.validarFecha(entry))   
         
         #Label No. Inscripción
@@ -225,16 +218,17 @@ class Inscripciones_2:
         self.fechaInscripcion = ttk.Entry(self.frm_1, name="fechainscripcion",state=tk.DISABLED,
                                           validate="key", validatecommand=(self.frm_1.register(self.onValidate), '%P', '%S'))
         self.fechaInscripcion.place(anchor="nw", width=90, x=690, y=160)
-        #self.fechaInscripcion.bind("<FocusOut>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
+        self.fechaInscripcion.bind("<FocusOut>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
         self.fechaInscripcion.bind("<Key>", lambda event, entry=self.fechaInscripcion: self.cuandoEscriba(event, entry))
         self.fechaInscripcion.bind("<Return>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
+        
 
         ''' Botones  de la Aplicación'''
         
         #Botón Consultar
         self.icono_c = tk.PhotoImage(file= PATH + ICONO_CONSULTA)
         self.btnConsultar = tk.Button(self.frm_1, name="btnconsultar",
-                                      command=lambda: self.consultar_ventana("Consultar Datos", "Seleccione una opción", ["No. Inscripción", "Id Alumno", "Cursos","Carrera"], "Consultar",self.boton_escoger_consulta),
+                                      command=lambda: self.consultar_ventana(100,200,"Consultar Datos", "Seleccione una opción", ["No. Inscripción", "Id Alumno", "Cursos","Carrera"], "Consultar",self.boton_escoger_consulta),
                                       cursor="hand2", image=self.icono_c,compound=tk.LEFT,bd=0, relief="flat", bg="#f7f9fd")
         self.btnConsultar.configure(text='  Consultar',font=('Arial', 9, 'bold'), width=90, height=30)
         self.btnConsultar.place(anchor="nw", x=100, y=235)
@@ -247,7 +241,7 @@ class Inscripciones_2:
         
         #Botón Eliminar
         self.icono_d = tk.PhotoImage(file= PATH + ICONO_ELIMINAR)
-        self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = self.ventana_eliminar,
+        self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = lambda:self.consultar_ventana(100, 240,"Borrar Datos", "Seleccione una opción", ["Eliminar un curso","Eliminar todos los cursos"], "Seleccionar", self.eliminar_data),
                                      image=self.icono_d,compound=tk.LEFT)
         self.btnEliminar.configure(text='   Eliminar',font=('Arial', 9, 'bold'), width=90, height=30, bg = "#f7f9fd", bd =0, state="disabled")
         self.btnEliminar.place(anchor="nw", x=340, y=235)
@@ -296,7 +290,7 @@ class Inscripciones_2:
         selected_item = self.codigo_Curso.get()
         data=self.get_data_curso(selected_item)
         for i in data:
-            print(i)
+            # print(i)
             self.add_consultar(self.nombreCurso, i[1])
             self.nombreCurso.config(state="readonly")
             self.horario.config(state="readonly")
@@ -311,11 +305,13 @@ class Inscripciones_2:
         nueva_fecha=self.fechaInscripcion.get()
         nuevo_horario=self.horario.get()
 
-        print(self.codigo_curso_antiguo, self.fecha_inscripcion_antigua ,self.horario_antiguo+'\n' +nuevo_codigo_curso, nueva_fecha, nuevo_horario)
+        # print(self.codigo_curso_antiguo, self.fecha_inscripcion_antigua ,self.horario_antiguo+'\n' +nuevo_codigo_curso, nueva_fecha, nuevo_horario)
         if self.codigo_curso_antiguo==nuevo_codigo_curso and self.fecha_inscripcion_antigua==nueva_fecha and self.horario_antiguo==nuevo_horario:
             messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
             return
         elif self.codigo_curso_antiguo==nuevo_codigo_curso:
+            # if self.verificar_coincidencia_horarios():
+            #     return
             if self.fecha_inscripcion_antigua!=nueva_fecha or self.horario_antiguo!=nuevo_horario:
                 self.cursor.execute("UPDATE Inscritos SET Fecha_de_Inscripción = ?, Horario_Curso = ? WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ?", (nueva_fecha, nuevo_horario, self.noInscripcion.get(),self.cmbx_Id_Alumno.get(), self.codigo_curso_antiguo))
                 self.conn.commit()
@@ -325,11 +321,15 @@ class Inscripciones_2:
         elif self.codigo_curso_antiguo!=nuevo_codigo_curso:
             self.cursor.execute("SELECT * FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
             data=self.cursor.fetchall()
+            if self.verificar_coincidencia_horarios():
+                return
             try:
                 self.cursor.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso, Horario_Curso) VALUES (?,?,?,?,?)", (data[0][0], data[0][1], nueva_fecha, nuevo_codigo_curso, nuevo_horario))
             except:
-                messagebox.showerror("Inscripciones", "Error al realizar el cambio, Curso repetido")
-                return
+                if self.verificar_duplicados_cursos():
+                    return
+                # messagebox.showerror("Inscripciones", "Error al realizar el cambio, Curso repetido")
+                # return
             
             self.cursor.execute("DELETE  FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
             self.conn.commit()
@@ -343,6 +343,8 @@ class Inscripciones_2:
 
         self.x = (self.ancho_pantalla // 2) - (ancho // 2)
         self.y = (self.altura_pantalla // 2) - (alto // 2)
+
+        '''Centra las ventanas que se ponen, normales o emergentes'''
      
     def get_data_inscricpiones_complete(self, id_alumno):
         self.cursor.execute("SELECT * FROM Inscritos WHERE Id_Alumno = ?", (id_alumno,))
@@ -366,27 +368,7 @@ class Inscripciones_2:
                 entry.insert(5,"/")
         if event.char.isdigit() or event.char =='\x08' or event.char =='': # \x08 = Backspace, '' = Delete
             self.act_date=True
-
-    def limite(self,event):
-        #Evita el exceso de numeros
-        fechaRef = self.fecha.get()
-        try:
-            if len(fechaRef) > 10:
-                raise ValueError("digite maximo 8 numeros")
-        except ValueError as problem:
-            messagebox.showerror("Error", str(problem))
-            self.fecha.delete(10, tk.END)
-
-    def verificarNumeros(self,char):
-        #permite borrar los /
-        if self.act_date:
-            self.act_date = False 
-            return char.isdigit() or char == '/'
-        else:
-            if char == '/' and self.act_date:
-                return char.isdigit() or char == '/'
-            else:
-                return char.isdigit()
+        '''verifica que se ponga el '/' '''
 
     def validarFecha(self,entry):
         try:
@@ -397,27 +379,9 @@ class Inscripciones_2:
             messagebox.showerror("Error", 'Digite un formato de fecha valida')
             self.fecha_insert = datetime.now().strftime('%d/%m/%Y')
             entry.delete(0, tk.END)
-            entry.insert(0,self.fecha_insert)    
+            entry.insert(0,self.fecha_insert)
 
-    def habilitar_caracteres_entry(self,entrada, caracter):
-
-        def verificarNumeros(char):        
-            return char.isdigit()
-        
-        def verificarLetras(char):        
-            return char.isalpha()
-        
-        def convertir_mayusculas(*args):
-            contenido = entrada.get()
-            entrada.delete(0, tk.END)
-            entrada.insert(0, contenido.upper())
-
-        if caracter == 'N':
-            entrada.validate_cmd = self.frm_1.register(verificarNumeros)
-            entrada.config(validate="key", validatecommand=(entrada.validate_cmd,"%S"))
-        elif caracter == 'L':
-            entrada.config(validate="key", validatecommand=(entrada.register(verificarLetras), "%S"))
-            entrada.bind('<KeyRelease>', convertir_mayusculas)    
+        '''Verifica el formato de escritura de la fecha'''  
     
     def onValidate(self,P, S):
         self.numeros = re.compile('^[0-9]*$')
@@ -442,7 +406,8 @@ class Inscripciones_2:
         query = '''INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso, Horario_Curso) VALUES ('{}','{}','{}','{}', '{}')'''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso, horarios)
         self.cursor.execute(query)
         self.conn.commit()
-        # self.cursor.close()
+        
+        '''Ingresa datos en el db'''
 
     def eliminar_datos(self, codigo, pront):
         if not self.cursor:
@@ -451,17 +416,8 @@ class Inscripciones_2:
         # query = '''DELETE FROM Inscritos WHERE ''' + pront + ''' = '{}' '''.format(codigo) 
         self.cursor.execute(query)
         self.conn.commit()
-        # self.cursor.close()
-    
-    def actualiza_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso):
-        if not self.cursor:
-            self.cursor = self.conn.cursor()
-        query = ''' UPDATE Inscritos SET No_Inscripción = '{}', Id_Alumno = '{}', Fecha_de_Inscripción = '{}', Código_Curso = '{}'  '''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
-        self.cursor.execute(query)
-        dato = self.cursor.rowcount
-        self.conn.commit()
-        # self.cursor.close()
-        return dato
+
+        '''Elimina datos en el db'''
 
     def combx_id_alumno(self):
         self.cmbx_Id_Alumno.config(state="normal")
@@ -483,16 +439,6 @@ class Inscripciones_2:
         self.dato_codigo_curso = self.cursor.fetchall()
         self.codigo_Curso['values'] = self.dato_codigo_curso
         self.codigo_Curso.config(state="readonly")
-        
-    def fecha_split(self,fecha):
-        self.split = fecha.split("-")
-        self.fecha_n = f"{self.split[2]}/{self.split[1]}/{self.split[0]}"
-        return self.fecha_n
-    
-    def fecha_split_al_reves(self,fecha):
-        self.split = fecha.split("/")
-        self.fecha_n = f"{self.split[2]}-{self.split[1]}-{self.split[0]}"
-        return self.fecha_n
     
     def limpiar(self):
         self.add_consultar(self.noInscripcion, '')
@@ -539,17 +485,19 @@ class Inscripciones_2:
         self.argumentos = ('inicial', [''],[735])
         self.tree_view_prueba(*self.argumentos)
      
-    def consultar_ventana(self, *args): #ventana emergente, permite máximo 4 opciones para escoger, los parametros son: Titulo, Texto, Opciones, Botón y Función de botón
-        #self.limpiar() #eliminar, genera problemas con guardar y borrar, desconozco si da problemas en otro lado o si es necesario.
+    def consultar_ventana(self,ancho=100, alto=100, *args): #ventana emergente, permite máximo 4 opciones para escoger, los parametros son: Titulo, Texto, Opciones, Botón y Función de botón
 
+        ALTO = alto
+        ANCHO = ancho + 30*len(args[2])
         self.ventana_emergente = tk.Toplevel(self.win)
         self.ventana_emergente.title(args[0])
         self.icon_consulta = tk.PhotoImage(file= PATH + ICONO)
         self.ventana_emergente.iconphoto(False, self.icon_consulta)
          
         self.ventana_emergente.resizable(False, False)
-        self.centrar(self.ventana_emergente, 400, 110 + 30*len(args[2]))
-        self.ventana_emergente.geometry(f"400x{110 + 30*len(args[2])}+{self.x}+{self.y}")
+        self.ventana_emergente.geometry("{}x{}".format(ALTO, ANCHO))
+        self.centrar(self.ventana_emergente, ALTO, ANCHO)
+        self.ventana_emergente.geometry(f"+{self.x}+{self.y}")
         self.ventana_emergente.grab_set()
         self.frm_consulta = tk.Frame(self.ventana_emergente, name=f"frm_{args[0]}")
         self.frm_consulta.configure(background= "#f7f9fd", height=200, width=400)
@@ -565,49 +513,16 @@ class Inscripciones_2:
         
         self.c = 1
         for i in range(len(args[2])):
-            self.check = ttk.Radiobutton(self.frm_consulta, name=f"check{i}", variable=self.int, value=self.c)
+            self.check = tk.Radiobutton(self.frm_consulta, name=f"check{i}", variable=self.int, value=self.c, background= "#f7f9fd")
             self.check.configure(text=args[2][i])
             self.check.place(anchor="nw", x=40, y=50 + 30*i)
             self.c += 1
     
         self.btnEscoger = ttk.Button(self.frm_consulta, name="btnEscoger", cursor="hand2", command=args[4])
         self.btnEscoger.configure(text=args[3])
-        self.btnEscoger.place(anchor="nw", x=153, y=50 + 30*len(args[2]))
+        self.btnEscoger.place(relx=0.5, y=60 + 30*len(args[2]),anchor="c")
         
         self.ventana_emergente.mainloop()
-        
-    def ventana_eliminar(self): # no modificar
-        #crea la ventana
-        ALTO = 100
-        ANCHO = 240
-        self.winEmerDelete = tk.Toplevel(self.win)
-        self.winEmerDelete.grab_set()
-        self.winEmerDelete.title("Borrar Datos")
-        self.winEmerDelete.iconphoto(False, self.icono_d)
-        self.winEmerDelete.resizable(False, False)
-        self.winEmerDelete.geometry("{}x{}".format(ANCHO, ALTO))
-        self.centrar(self.winEmerDelete, ANCHO, ALTO)
-        self.winEmerDelete.geometry(f"+{self.x}+{self.y}")
-        #crea el Frame
-        self.frm_EmerDelete = tk.Frame(self.winEmerDelete, name="frm_borrar")
-        self.frm_EmerDelete.configure(background= "#f7f9fd", height=200, width=400)
-        self.frm_EmerDelete.pack(fill='both', expand=True)
-
-        def respuesta():
-            self.eliminar_data(self.var.get())
-        
-        self.var = tk.IntVar() #variable de respuesta
-
-        #crea los option
-        self.radio1 = tk.Radiobutton(self.frm_EmerDelete,name="checkpara1", text="Eliminar un curso", variable=self.var, value=1,background= "#f7f9fd" )
-        self.radio1.place(anchor="nw", x=40, y=0)
-
-        radioAll = tk.Radiobutton(self.frm_EmerDelete,name="checkparatodo", text="Eliminar todos los cursos", variable=self.var, value=2, background= "#f7f9fd")
-        radioAll.place(anchor="nw", x=40, y=30)
-
-        #crea el boton
-        botonVemerEliminiar = tk.Button(self.frm_EmerDelete, text="Seleccionar", command= respuesta)
-        botonVemerEliminiar.place(anchor="nw", x=60, y=60)
 
     def boton_escoger_consulta(self): # Función que se ejecuta al presionar el botón de la ventana emergente cuando se está consultando
         if self.int.get() == 1: 
@@ -645,7 +560,7 @@ class Inscripciones_2:
         else:
             messagebox.showinfo("Consulta Inscripción","No se encontraron datos con ese número de inscripción")
 
-    def tree_view_prueba(self, *args):
+    def tree_view_prueba(self, *kargs):
         def restrictor(Event):
             # Reviso si una zona especifica alrededor del cursor toca el separador de columnas
             # Esta zona la obtuve con prueba y error.
@@ -655,19 +570,19 @@ class Inscripciones_2:
                     if(self.tViews.identify_region(Event.x+x, Event.y+y) == "separator"):
                         self.tViews.event_generate("<ButtonRelease-1>") # si esta en el rango, hace creer al equipo que solto el clic
                         break        
-        self.tViews = ttk.Treeview(self.frm_1, name=args[0],show='headings')
+        self.tViews = ttk.Treeview(self.frm_1, name=kargs[0],show='headings')
         self.tViews.configure(selectmode="extended")
         self.tViews.place(anchor="nw", height=264, width=730, x=30, y=281)
-        self.tViews.configure(columns=args[1])
+        self.tViews.configure(columns=kargs[1])
         self.tViews.column("#0", width=0)
         self.a = 0
-        for i in args[1]:
-            self.tViews.column(args[1][self.a],anchor="w",stretch=False,width=args[2][self.a])
+        for i in kargs[1]:
+            self.tViews.column(kargs[1][self.a],anchor="w",stretch=False,width=kargs[2][self.a])
             self.a += 1
         #Cabeceras
         self.b = 0
-        for i in args[1]:
-            self.tViews.heading(args[1][self.b],anchor="w", text=args[1][self.b], command=lambda c=i: self.sort_by_column(c, False))
+        for i in kargs[1]:
+            self.tViews.heading(kargs[1][self.b],anchor="w", text=kargs[1][self.b], command=lambda c=i: self.sort_by_column(c, False))
             self.b += 1
         #Scrollbars
         self.scroll_H = ttk.Scrollbar(self.frm_1, name="scroll_h")
@@ -721,7 +636,7 @@ class Inscripciones_2:
     def consultar_id_alumno(self):
         self.limpiar()
         self.argumentos = ('c_alumnos',['Id Alumno', 'Nombres', 'Apellidos', 'Id Carrera', 'Fecha de Ingreso', 'Dirección', 'Ciudad', 'Departamento', 'Telefono Celular', 'Telefono Fijo'],
-                           [100,200,200,100,120,200,160,160,100,100])
+                           [100,200,200,100,120,200,200,200,100,100])
         self.tree_view_prueba(*self.argumentos)
         
         self.cursor.execute(''' SELECT Id_alumno, Nombres, Apellidos, Id_Carrera, Fecha_Ingreso, Dirección, Ciudad, Departamento, Telef_Cel, Telef_Fijo FROM Alumnos
@@ -819,14 +734,16 @@ class Inscripciones_2:
         self.fecha_inscripcion_antigua=self.fechaInscripcion.get()
         self.horario_antiguo=self.horario.get()
 
-    def limpiar_data(self):
+    def limpiar_data(self): #Limita las variables de borrado
+
         self.tvNoInscripcion.set('')
         self.tvCodigoCurso.set('')
         self.tvFechaInscripcion.set('')
         self.tvNombreCurso.set('')
         self.tvHorarios.set('')
     
-    def obtener_fila(self, event):
+    def obtener_fila(self, event): #Obtiene el dato seleccionado en el Treeview
+
         item = self.tViews.focus()
         if not item:
             return
@@ -839,14 +756,16 @@ class Inscripciones_2:
             if len(self.data["values"]) > 4:
                 self.tvEntry4=self.data["values"][4]
 
-    def eliminar_data (self,seleccion):
+    def eliminar_data (self,): #Metodo para eliminar los datos seleccionados o todos los datos
+
         self.limpiar_data()
+        seleccion=self.int.get()
         if seleccion == 1:
             try:
                 item = self.tViews.selection()
                 if not item: raise TypeError
 
-                self.winEmerDelete.destroy()
+                self.ventana_emergente.destroy()
                 alert = messagebox.askquestion('Eliminando datos', 'Desea eliminar este valor?')
                 if alert == 'yes':            
                     self.eliminar_datos(self.data['values'][1], 'Código_Curso')
@@ -854,43 +773,42 @@ class Inscripciones_2:
 
             except TypeError:
                 messagebox.showerror("Error", str('Debe seleccionar primero un valor a eliminar en el cuadro de abajo'))
-                self.winEmerDelete.destroy()
+                self.ventana_emergente.destroy()
                 pass
 
         elif seleccion == 2:
             item = self.tViews.get_children()[0]
             self.data = self.tViews.item(item)
-            self.winEmerDelete.destroy()
+            self.ventana_emergente.destroy()
             alert = messagebox.askquestion('Eliminando datos', 'Desea eliminar todos los cursos?')
             if alert == 'yes':            
                 # print(self.tViews.get_children()[0])
                 self.eliminar_datos(self.data['values'][0], 'No_Inscripción')
                 self.tViews.delete(*self.tViews.get_children())
         else: 
-            messagebox.showerror("Error", str('no se selecciono ninguna opcion'))
+            messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
             pass
 
-    guardado = False
+    guardado = False #bandera que identifica si se esta guardando
 
-    def grabar(self):
-    #def boton_escoger_guardar(self):
-        if not self.cmbx_Id_Alumno.get():#se podria retirar
+    def grabar(self): #metodo asociado al boton de guardar
+
+        if not self.cmbx_Id_Alumno.get():
             messagebox.showwarning("Advertencia", "Debe seleccionar su id de alumno")
             return
 
-        #if self.int.get() == 1:
         self.btnConsultar.config(state='disabled')
         self.btnEliminar.config(state='disabled')
         self.btnEditar.config(state='disabled')
 
         if self.guardado: 
-            print(self.horario.get())
-            print(self.codigo_Curso.get())
-            print(self.noInscripcion.get())
-            print(self.fechaInscripcion.get())
+            # print(self.horario.get())
+            # print(self.codigo_Curso.get())
+            # print(self.noInscripcion.get())
+            # print(self.fechaInscripcion.get())
 
             if self.horario.get() and self.codigo_Curso.get() and self.noInscripcion.get():
-                self.verificar_agregar_data()
+                self.agregar_data_verificada()
             elif not self.codigo_Curso.get():
                 messagebox.showwarning("Advertencia", "Debe seleccionar un curso")
             elif not self.horario.get():
@@ -908,20 +826,8 @@ class Inscripciones_2:
             self.fechaInscripcion.config(state="enabled")
             self.asignar_no_inscripcion()
             self.guardado = True
-        #self.ventana_emergente.destroy()
-            
 
-        #si no hay edicion de tabla de alumnos, esto ya no es necesario
-        # elif self.int.get() == 2:
-        #     self.guardado = True
-        #     self.ventana_emergente.destroy()
-        # else: #tal vez se puede omitir este else
-        #     self.guardado = False
-        #     messagebox.showwarning("Advertencia", "Debe seleccionar una opción")
-        #     self.int.set(0)
-        #     self.ventana_emergente.destroy()
-
-    def asignar_no_inscripcion(self):
+    def asignar_no_inscripcion(self): # Autoincrementa el numero de inscripcion cuando el usuario no lo tiene y extrae cuando si del treeview
 
         for item_id in self.tViews.get_children():#lee los datos obtenidos en el treeview y revisa que no se agrege un curso repetido
             item = self.tViews.item(item_id)
@@ -929,7 +835,6 @@ class Inscripciones_2:
         try: #revisa si en el treeview tiene un no de inscripcion asociado
             if item['values']:
                 self.noInscripcion.set(item['values'][0])
-                # noInscripcion = self.noInscripcion.get()
         except: # sino le asigna el mayor +1
             query = '''SELECT MAX(No_Inscripción) FROM Inscritos;'''
             self.cursor.execute(query)
@@ -939,23 +844,38 @@ class Inscripciones_2:
             self.noInscripcion.set(ultimoNoInscrito + 1)
             messagebox.showinfo("Importante", "Se le ha asignado un numero de inscripcion, por favor guardelo")
             
-    def verificar_agregar_data(self):
+    def verificar_duplicados_cursos(self):
+
+        for item_id in self.tViews.get_children():#lee los datos obtenidos en el treeview y revisa que no se agrege un curso repetido
+            item = self.tViews.item(item_id)
+            if self.nombreCurso.get() == item['values'][2]:
+                messagebox.showwarning("Advertencia", "el curso que esta por agregar ya existe, por favor, solicite otro curso")
+                return True
+            else:
+                pass
+        '''Evita que el curso se repita al guardar o editar'''
+            
+    def verificar_coincidencia_horarios(self):
+
+        for item_id in self.tViews.get_children():#lee los datos obtenidos en el treeview y revisa que no se agrege un curso repetido
+            item = self.tViews.item(item_id)
+            if self.horario.get() == item['values'][3]:
+                messagebox.showwarning("Advertencia", "el horario coincide con otro ya inscrito, por favor, solicite otro horario")
+                return True
+            else:
+                pass
+        '''Evita que el horario coincida con otro al guardar o editar'''
+            
+    def agregar_data_verificada(self): #verifica si tiene fecha o setea fecha, previo a guardar los nuevos datos inscritos
+        
         hoy = date.today()
         nombreCurso = self.nombreCurso.get()
         idAlumnos = self.cmbx_Id_Alumno.get()
         Horario = self.horario.get()
-
-        for item_id in self.tViews.get_children():#lee los datos obtenidos en el treeview y revisa que no se agrege un curso repetido
-            item = self.tViews.item(item_id)
-            if nombreCurso == item['values'][2]:
-                messagebox.showwarning("Advertencia", "el curso que esta por agregar ya existe, por favor, solicite otro curso")
-                return
-            elif Horario == item['values'][3]:
-                messagebox.showwarning("Advertencia", "el horario coincide con otro ya inscrito, por favor, solicite otro horario")
-                return
-        
         noInscripcion = self.noInscripcion.get()
-        # noInscripcion = self.noInscripcion
+
+        if self.verificar_duplicados_cursos() or self.verificar_coincidencia_horarios():
+            return
 
         fechaInscripcion = self.fechaInscripcion.get() #le asigna a la fecha de inscripcion del dia actual
         if not fechaInscripcion:
@@ -971,7 +891,6 @@ class Inscripciones_2:
             pass
 
         if self.guardado == True: #verifica si la bandera de guardar esta activa
-            #fechaInscripcion = self.fechaInscripcion.get()
             codigo = self.codigo_Curso.get()
             datos = (noInscripcion, codigo, nombreCurso, Horario, fechaInscripcion)
 
@@ -981,24 +900,13 @@ class Inscripciones_2:
                 alert = messagebox.askquestion("Advertencia", "¿seguir inscribiendo materias?")
                 if alert != 'yes':
                     self.guardado = False # baja la bandera de guardado
-                    self.limpiar()
+                    self.limpiar() #limpia toda la inscripcion y deja para otro
                 else:
                     pass
-        
-    def agregar_estudiantes(self): #ESTA FUNCION NO ESTA ACTIVA
-        self.entry_datos = [self.cmbx_Id_Alumno, self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.fecha, self.direccion, 
-                            self.telCel, self.telFijo, self.ciudad, self.departamento]
-        self.datos_ingresados = []
-        for i in self.entry_datos:
-            if i == self.fecha:
-                self.datos_ingresados.append(self.fecha_split_al_reves(i.get()))
             else:
-                self.datos_ingresados.append(i.get())
-        self.limpiar()
-        self.cursor.execute('''INSERT INTO Alumnos (Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento)   
-                            VALUES (?,?,?,?,?,?,?,?,?,?)''', tuple(self.datos_ingresados))
-        self.conn.commit()
-        return messagebox.showinfo("Ingreso de Datos", "Datos ingresados correctamente")
+                messagebox.showwarning("Advertencia", "no se pudo realizar la inscripcion correctamente, intente de nuevo")
+        else:
+            pass
     
     def consultar_estudiantes_cmbx(self, event):
         self.limpiar()
@@ -1006,7 +914,7 @@ class Inscripciones_2:
         self.tree_view_prueba(*self.argumentos)
         self.cursor.execute(f'''SELECT Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento FROM Alumnos WHERE Id_Alumno = {event}''') 
         self.datos_estudiantes_cmbx = self.cursor.fetchall()
-        print(self.datos_estudiantes_cmbx)
+        #print(self.datos_estudiantes_cmbx)
         self.add_consultar(self.cmbx_Id_Alumno, self.datos_estudiantes_cmbx[0][0])
         self.add_consultar(self.cmbx_Id_Carrera, self.datos_estudiantes_cmbx[0][1])
         self.add_consultar(self.nombres, self.datos_estudiantes_cmbx[0][2])
@@ -1057,7 +965,7 @@ class Inscripciones_2:
             run("cls", shell=True)
         elif system() == "Linux" or system() == "Darwin":
             run("clear", shell=True) 
-        print('Conexión SQL cerrada, programa finalizado')
+        # print('Conexión SQL cerrada, programa finalizado')
 
 if __name__ == "__main__":
     app = Inscripciones_2()
@@ -1065,3 +973,129 @@ if __name__ == "__main__":
     signal(SIGINT, SIG_IGN) # Ignorar la señal de interrupción versión mejorada
     app.run()
     app.close_sqlite()
+
+################################################
+
+# def ventana_eliminar(self): # no modificar
+#     #crea la ventana
+#     ALTO = 100
+#     ANCHO = 240
+#     self.winEmerDelete = tk.Toplevel(self.win)
+#     self.winEmerDelete.grab_set()
+#     self.winEmerDelete.title("Borrar Datos")
+#     self.winEmerDelete.iconphoto(False, self.icono_d)
+#     self.winEmerDelete.resizable(False, False)
+#     self.winEmerDelete.geometry("{}x{}".format(ANCHO, ALTO))
+#     self.centrar(self.winEmerDelete, ANCHO, ALTO)
+#     self.winEmerDelete.geometry(f"+{self.x}+{self.y}")
+#     #crea el Frame
+#     self.frm_EmerDelete = tk.Frame(self.winEmerDelete, name="frm_borrar")
+#     self.frm_EmerDelete.configure(background= "#f7f9fd", height=200, width=400)
+#     self.frm_EmerDelete.pack(fill='both', expand=True)
+
+#     def respuesta():
+#         self.eliminar_data(self.var.get())
+
+#     self.var = tk.IntVar() #variable de respuesta
+
+#     #crea los option
+#     self.radio1 = tk.Radiobutton(self.frm_EmerDelete,name="checkpara1", text="Eliminar un curso", variable=self.var, value=1,background= "#f7f9fd" )
+#     self.radio1.place(anchor="nw", x=40, y=0)
+
+#     radioAll = tk.Radiobutton(self.frm_EmerDelete,name="checkparatodo", text="Eliminar todos los cursos", variable=self.var, value=2, background= "#f7f9fd")
+#     radioAll.place(anchor="nw", x=40, y=30)
+
+#     #crea el boton
+#     botonVemerEliminiar = tk.Button(self.frm_EmerDelete, text="Seleccionar", command= respuesta)
+#     botonVemerEliminiar.place(anchor="nw", x=60, y=60)
+
+#self.consultar_ventana(240,100,"Borrar Datos", "Seleccione una opción", ["Eliminar un curso","Eliminar todos los cursos"], "Seleccionar",self.eliminar_data(self.int.get()))
+
+##################################
+
+# def agregar_estudiantes(self): #ESTA FUNCION NO ESTA ACTIVA
+#     self.entry_datos = [self.cmbx_Id_Alumno, self.cmbx_Id_Carrera, self.nombres, self.apellidos, self.fecha, self.direccion, 
+#                         self.telCel, self.telFijo, self.ciudad, self.departamento]
+#     self.datos_ingresados = []
+#     for i in self.entry_datos:
+#         if i == self.fecha:
+#             self.datos_ingresados.append(self.fecha_split_al_reves(i.get()))
+#         else:
+#             self.datos_ingresados.append(i.get())
+#     self.limpiar()
+#     self.cursor.execute('''INSERT INTO Alumnos (Id_Alumno, Id_Carrera, Nombres, Apellidos, Fecha_Ingreso, Dirección, Telef_Cel, Telef_Fijo, Ciudad, Departamento)   
+#                         VALUES (?,?,?,?,?,?,?,?,?,?)''', tuple(self.datos_ingresados))
+#     self.conn.commit()
+#     return messagebox.showinfo("Ingreso de Datos", "Datos ingresados correctamente")
+
+########################################
+
+    # def fecha_split(self,fecha):
+    #     self.split = fecha.split("-")
+    #     self.fecha_n = f"{self.split[2]}/{self.split[1]}/{self.split[0]}"
+    #     return self.fecha_n
+    
+    # def fecha_split_al_reves(self,fecha):
+    #     self.split = fecha.split("/")
+    #     self.fecha_n = f"{self.split[2]}-{self.split[1]}-{self.split[0]}"
+    #     return self.fecha_n
+
+###################################################
+
+    # def limite(self,event):
+    #     #Evita el exceso de numeros
+    #     fechaRef = self.fecha.get()
+    #     try:
+    #         if len(fechaRef) > 10:
+    #             raise ValueError("digite maximo 8 numeros")
+    #     except ValueError as problem:
+    #         messagebox.showerror("Error", str(problem))
+    #         self.fecha.delete(10, tk.END)
+    # '''Se limita el numero de caracteres'''
+
+    # # def verificarNumeros(self,char):
+
+    #     if self.act_date:
+    #         self.act_date = False 
+    #         return char.isdigit() or char == '/'
+    #     else:
+    #         if char == '/' and self.act_date:
+    #             return char.isdigit() or char == '/'
+    #         else:
+    #             return char.isdigit()
+
+    #     '''permite borrar los '/' '''
+
+################################################
+
+    # def actualiza_datos(self, NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso): No se esta usando
+    #     if not self.cursor:
+    #         self.cursor = self.conn.cursor()
+    #     query = ''' UPDATE Inscritos SET No_Inscripción = '{}', Id_Alumno = '{}', Fecha_de_Inscripción = '{}', Código_Curso = '{}'  '''.format (NoInscritos, IdAlumno, FechaInscripcion, CodigoCurso)
+    #     self.cursor.execute(query)
+    #     dato = self.cursor.rowcount
+    #     self.conn.commit()
+    #     # self.cursor.close()
+    #     return dato
+
+############################## no se uso el de arriba? ################
+
+# def habilitar_caracteres_entry(self,entrada, caracter):
+
+    #     def verificarNumeros(char):        
+    #         return char.isdigit()
+        
+    #     def verificarLetras(char):        
+    #         return char.isalpha()
+        
+    #     def convertir_mayusculas(*args):
+    #         contenido = entrada.get()
+    #         entrada.delete(0, tk.END)
+    #         entrada.insert(0, contenido.upper())
+
+    #     if caracter == 'N':
+    #         entrada.validate_cmd = self.frm_1.register(verificarNumeros)
+    #         entrada.config(validate="key", validatecommand=(entrada.validate_cmd,"%S"))
+    #     elif caracter == 'L':
+    #         entrada.config(validate="key", validatecommand=(entrada.register(verificarLetras), "%S"))
+    #         entrada.bind('<KeyRelease>', convertir_mayusculas)  
