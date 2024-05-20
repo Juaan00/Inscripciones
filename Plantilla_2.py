@@ -34,7 +34,6 @@ class Inscripciones_2:
         self.db_name = 'Inscripciones.db'    
         self.win = tk.Tk(master)
         self.is_fields_enabled = False
-
         self.win.configure(background="#f7f9fd", height=600, width=800)
         self.centrar(self.win, 800, 600)
         self.win.geometry(f"+{self.x}+{self.y}")
@@ -50,17 +49,14 @@ class Inscripciones_2:
         elif system() == "Linux" or system() == "Darwin":
             self.icon = tk.PhotoImage(file= PATH + ICONO)
             self.win.iconphoto(True, self.icon)
-
         self.tvNoInscripcion = None
         self.tvNombreCurso = None
         self.tvHorarios = None
         self.tvFechaInscripcion = None
         self.tvCodigoCurso = None
-
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
         self.frm_1.configure(background="#f7f9fd", height=600, width=800)
-
         #Label id_Alumno
         self.lblIdAlumno = ttk.Label(self.frm_1, name="lblidalumno")
         self.lblIdAlumno.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -72,7 +68,6 @@ class Inscripciones_2:
                                            )
         self.cmbx_Id_Alumno.place(anchor="nw", width=110, x=20, y=40)
         self.cmbx_Id_Alumno.bind("<<ComboboxSelected>>", self.consultar)
-        
         #Label Nombres
         self.lblNombres = ttk.Label(self.frm_1, name="lblnombres")
         self.lblNombres.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -81,7 +76,6 @@ class Inscripciones_2:
         #Entry Nombres
         self.nombres = ttk.Entry(self.frm_1, name="nombres",state=tk.DISABLED)
         self.nombres.place(anchor="nw", width=190, x=150, y=40)
-
         #Label Apellidos
         self.lblApellidos = ttk.Label(self.frm_1, name="lblapellidos")
         self.lblApellidos.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -91,13 +85,11 @@ class Inscripciones_2:
         self.apellidos = ttk.Entry(self.frm_1, name="apellidos",state=tk.DISABLED)
         self.apellidos.place(anchor="nw", width=190, x=360, y=40)
         self.apellidos.insert(0,"")
-        
         #Label Fecha
         self.lblFecha = ttk.Label(self.frm_1, name="lblfecha")
         self.lblFecha.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                                 state="normal", takefocus=False,text='Fecha Ingreso')
         self.lblFecha.place(anchor="nw", x=570, y=20)
-
         self.fecha = ttk.Entry(self.frm_1, name="fechas",state=tk.DISABLED, validate="key", validatecommand=(self.frm_1.register(self.onValidate), '%P', '%S'))
         self.fecha.configure(justify="right")
         self.fecha.place(anchor="nw", width=90, x=570, y=40)
@@ -105,7 +97,6 @@ class Inscripciones_2:
         self.fecha.bind("<Key>", lambda event, entry=self.fecha: self.cuandoEscriba(event, entry))
         # self.fecha.bind("<FocusOut>", lambda event, entry=self.fecha: self.validarFecha(entry))
         self.fecha.bind("<Return>", lambda event, entry=self.fecha: self.validarFecha(entry))   
-        
         #Label No. Inscripción
         self.lblNoInscripcion = ttk.Label(self.frm_1, name="lblnoinscripcion")
         self.lblNoInscripcion.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -120,7 +111,6 @@ class Inscripciones_2:
         self.noInscripcion.bind("<<ComboboxSelected>>", self.consultar)
         self.noInscripcion.bind("<FocusIn>", self.noInscripcion.config(state="normal"))
         self.noInscripcion.bind("<Return>", self.enter)   
-        
         #Label Direccion
         self.lblDireccion = ttk.Label(self.frm_1, name="lbldireccion")
         self.lblDireccion.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -129,7 +119,6 @@ class Inscripciones_2:
         #Entry Direccion
         self.direccion = ttk.Entry(self.frm_1, name="direccion",state=tk.DISABLED)
         self.direccion.place(anchor="nw", width=200, x=20, y=100)
-
         #Label Ciudad
         self.lblCiudad = ttk.Label(self.frm_1, name="lblciudad")
         self.lblCiudad.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -138,7 +127,6 @@ class Inscripciones_2:
         #Entry Ciudad
         self.ciudad = ttk.Entry(self.frm_1, name="ciudad",state=tk.DISABLED)
         self.ciudad.place(anchor="nw", width=130, x=240, y=100)
-        
         #Label Departamento
         self.lblDepartamento = ttk.Label(self.frm_1, name="lbldepartamento")
         self.lblDepartamento.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -147,18 +135,15 @@ class Inscripciones_2:
         #Entry Departamento
         self.departamento = ttk.Entry(self.frm_1, name="departamento",state=tk.DISABLED)
         self.departamento.place(anchor="nw", width=130, x=390, y=100)
-        
         #Label Telefono Celular
         self.lblTelCel = ttk.Label(self.frm_1, name="lbltelcel")
         self.lblTelCel.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
                         state="normal", takefocus=False,text='Teléfono Celular')
         self.lblTelCel.place(anchor="nw", x=540, y=80)
-        
         #Entry Telefono Celular
         self.telCel = ttk.Entry(self.frm_1, name="telcel",state=tk.DISABLED)
         self.telCel.place(anchor="nw", width=110, x=540, y=100)
         # self.habilitar_caracteres_entry(self.telCel, 'N')
-
         #Label Telefono Fijo
         self.lblTelFijo = ttk.Label(self.frm_1, name="lbltelfijo")
         self.lblTelFijo.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -167,7 +152,6 @@ class Inscripciones_2:
         #Entry Telefono Fijo
         self.telFijo = ttk.Entry(self.frm_1, name="telfijo",state=tk.DISABLED)
         self.telFijo.place(anchor="nw", width=110, x=670, y=100)
-
         #Label id_carrera
         self.lblIdCarrera = ttk.Label(self.frm_1, name="lblidcarrera")
         self.lblIdCarrera.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -176,7 +160,6 @@ class Inscripciones_2:
         #Combobox id_carrera
         self.cmbx_Id_Carrera = ttk.Entry(self.frm_1, name="cmbx_id_carrera",state=tk.DISABLED)
         self.cmbx_Id_Carrera.place(anchor="nw", width=60, x=20, y=160)
-
         #Label Codigo del Curso
         self.lblDscCurso = ttk.Label(self.frm_1, name="lbldsccurso")
         self.lblDscCurso.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -187,7 +170,6 @@ class Inscripciones_2:
         self.codigo_Curso.configure(justify="left", width=166)
         self.codigo_Curso.place(anchor="nw", width=110, x=100, y=160)
         self.codigo_Curso.bind("<<ComboboxSelected>>", self.cmbx_codigo_curso)
-
         #Label Nombre de Curso
         self.lblNombreCurso = ttk.Label(self.frm_1, name="lblnombrecurso")
         self.lblNombreCurso.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -196,7 +178,6 @@ class Inscripciones_2:
         #Entry Nombre de Curso
         self.nombreCurso = ttk.Entry(self.frm_1, name="nombrecurso",state=tk.DISABLED)
         self.nombreCurso.place(anchor="nw", width=240, x=230, y=160)
-        
         #Label Horario
         self.lblHorario = ttk.Label(self.frm_1, name="lblhorario")
         self.lblHorario.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -208,7 +189,6 @@ class Inscripciones_2:
         self.horario.config(values=["Lun, Mie 7:00am - 9:00am", "Lun, Mie 9:00am - 11:00am", "Lun, Mie 11:00am - 1:00pm", "Lun, Mie 2:00pm - 4:00pm", "Lun, Mie 4:00pm - 6:00pm", 
                                     "Mar, Jue 7:00am - 9:00am", "Mar, Jue 9:00am - 11:00am", "Mar, Jue 11:00am - 1:00pm", "Mar, Jue 2:00pm - 4:00pm", "Mar, Jue 4:00pm - 6:00pm",
                                     "Mie, Vie 7:00am - 9:00am", "Mie, Vie 9:00am - 11:00am", "Mie, Vie 11:00am - 1:00pm", "Mie, Vie 2:00pm - 4:00pm", "Mie, Vie 4:00pm - 6:00pm",])
-        
         #Fecha de Inscripción
         self.lblFechaInscripcion = ttk.Label(self.frm_1, name="lblfechainscripcion")
         self.lblFechaInscripcion.configure(background="#f7f9fd",font="{Arial} 8 {bold}", justify="left",
@@ -221,10 +201,8 @@ class Inscripciones_2:
         self.fechaInscripcion.bind("<FocusOut>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
         self.fechaInscripcion.bind("<Key>", lambda event, entry=self.fechaInscripcion: self.cuandoEscriba(event, entry))
         self.fechaInscripcion.bind("<Return>", lambda event, entry=self.fechaInscripcion: self.validarFecha(entry))
-        
 
         ''' Botones  de la Aplicación'''
-        
         #Botón Consultar
         self.icono_c = tk.PhotoImage(file= PATH + ICONO_CONSULTA)
         self.btnConsultar = tk.Button(self.frm_1, name="btnconsultar",
@@ -232,20 +210,17 @@ class Inscripciones_2:
                                       cursor="hand2", image=self.icono_c,compound=tk.LEFT,bd=0, relief="flat", bg="#f7f9fd")
         self.btnConsultar.configure(text='  Consultar',font=('Arial', 9, 'bold'), width=90, height=30)
         self.btnConsultar.place(anchor="nw", x=100, y=235)
-
         #Botón Editar
         self.icono_e = tk.PhotoImage(file= PATH + ICONO_EDITAR)
         self.btnEditar = tk.Button(self.frm_1, name="btneditar", cursor="hand2", image=self.icono_e, compound=tk.LEFT,bd=0, command=self.editar)
         self.btnEditar.configure(text='  Editar',font=('Arial', 9, 'bold'), width=90, height=30, bg="#f7f9fd", state="disabled")
         self.btnEditar.place(anchor="nw", x=220, y=235)
-        
         #Botón Eliminar
         self.icono_d = tk.PhotoImage(file= PATH + ICONO_ELIMINAR)
         self.btnEliminar = tk.Button(self.frm_1, name="btneliminar", cursor="hand2",command = lambda:self.consultar_ventana(100, 240,"Borrar Datos", "Seleccione una opción", ["Eliminar un curso","Eliminar todos los cursos"], "Seleccionar", self.eliminar_data),
                                      image=self.icono_d,compound=tk.LEFT)
         self.btnEliminar.configure(text='   Eliminar',font=('Arial', 9, 'bold'), width=90, height=30, bg = "#f7f9fd", bd =0, state="disabled")
         self.btnEliminar.place(anchor="nw", x=340, y=235)
-        
         #Botón Cancelar
         self.icono_n = tk.PhotoImage(file= PATH + ICONO_CANCELAR)
         self.btnCancelar = tk.Button(self.frm_1, name="btncancelar", cursor="hand2", command=self.limpiar,
@@ -256,7 +231,6 @@ class Inscripciones_2:
         # self.btnCancelar.configure(text='Cancelar')
         # self.btnCancelar.place(anchor="nw", x=465, y=260, width=80)
         # self.btnCancelar.bind()
-        
         #Botón Grabar
         self.icono_g = tk.PhotoImage(file= PATH + ICONO_GUARDAR)
         self.btnGrabar = tk.Button(self.frm_1, name="btngrabar", cursor="hand2",
@@ -264,18 +238,14 @@ class Inscripciones_2:
                                    image=self.icono_g,compound=tk.LEFT, bd=0, bg="#f7f9fd")
         self.btnGrabar.configure(text='  Grabar',font=('Arial', 9, 'bold'), width=90, height=30, state="disabled")
         self.btnGrabar.place(anchor="nw", x=580, y=235)
-        
         #Separador
         separator1 = ttk.Separator(self.frm_1)
         separator1.configure(orient="horizontal")
         separator1.place(anchor="nw", width=796, x=2, y=215)
-
         ''' Treeview de la Aplicación'''
-
         #Treeview
         self.argumentos = ('inicial', [''],[735])
         self.tree_view_prueba(*self.argumentos)
-
         # Main widget
         self.mainwindow = self.win
 
@@ -286,7 +256,6 @@ class Inscripciones_2:
      para el manejo de la base de datos '''
 
     def cmbx_codigo_curso(self,event):
-
         selected_item = self.codigo_Curso.get()
         data=self.get_data_curso(selected_item)
         for i in data:
@@ -308,14 +277,12 @@ class Inscripciones_2:
 
     def editar(self):
         if self.codigo_Curso.get()=='':
-            messagebox.showerror("Inscripciones", "No has seleccionado ninguna Inscripción para editar, por favor haga doble click sobre el curso a editar")
+            messagebox.showerror("Inscripciones", "No has seleccionado ninguna Inscripción para editar, por favor haga doble click sobre el curso que quiere editar")
             self.resetear_campos()
             return
-        
         nuevo_codigo_curso=self.codigo_Curso.get()
         nueva_fecha=self.fechaInscripcion.get()
         nuevo_horario=self.horario.get()
-        
         if self.codigo_curso_antiguo==nuevo_codigo_curso and self.fecha_inscripcion_antigua==nueva_fecha and self.horario_antiguo==nuevo_horario:
             messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
             return
@@ -332,14 +299,14 @@ class Inscripciones_2:
         elif self.codigo_curso_antiguo!=nuevo_codigo_curso:
             self.cursor.execute("SELECT * FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
             data=self.cursor.fetchall()
-            if self.verificar_coincidencia_horarios():
-                return
+            if self.horario_antiguo!=nuevo_horario:
+                if self.verificar_coincidencia_horarios():
+                    return
             try:
                 self.cursor.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso, Horario_Curso) VALUES (?,?,?,?,?)", (data[0][0], data[0][1], nueva_fecha, nuevo_codigo_curso, nuevo_horario))
             except:
                 messagebox.showerror("Inscripciones", "Error al realizar el cambio, Curso repetido")
                 return
-            
             self.cursor.execute("DELETE  FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
             self.conn.commit()
             messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
@@ -873,11 +840,10 @@ class Inscripciones_2:
         '''Evita que el curso se repita al guardar o editar'''
             
     def verificar_coincidencia_horarios(self):
-
         for item_id in self.tViews.get_children():#lee los datos obtenidos en el treeview y revisa que no se agrege un curso repetido
             item = self.tViews.item(item_id)
             if self.horario.get() == item['values'][3]:
-                messagebox.showwarning("Advertencia", "el horario coincide con otro ya inscrito, por favor, solicite otro horario")
+                messagebox.showwarning("Advertencia", "El horario seleccionado se superpone con otro ya reservado. Por favor, elija una franja horaria diferente.")
                 return True
             else:
                 pass
