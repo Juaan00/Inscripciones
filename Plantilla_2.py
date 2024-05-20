@@ -51,11 +51,11 @@ class Inscripciones_2:
             self.icon = tk.PhotoImage(file= PATH + ICONO)
             self.win.iconphoto(True, self.icon)
 
-        self.tvNoInscripcion = tk.StringVar()
-        self.tvNombreCurso = tk.StringVar()
-        self.tvHorarios = tk.StringVar()
-        self.tvFechaInscripcion = tk.StringVar()
-        self.tvCodigoCurso = tk.StringVar()
+        self.tvNoInscripcion = None
+        self.tvNombreCurso = None
+        self.tvHorarios = None
+        self.tvFechaInscripcion = None
+        self.tvCodigoCurso = None
 
         # Crea los frames
         self.frm_1 = tk.Frame(self.win, name="frm_1")
@@ -300,6 +300,11 @@ class Inscripciones_2:
         self.codigo_curso_antiguo=''
         self.fecha_inscripcion_antigua=''
         self.horario_antiguo=''
+        self.tvEntry0=None
+        self.tvEntry1=None
+        self.tvEntry2=None
+        self.tvEntry3=None
+        self.tvEntry4=None
 
     def editar(self):
         if self.codigo_Curso.get()=='':
@@ -328,13 +333,11 @@ class Inscripciones_2:
             self.cursor.execute("SELECT * FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
             data=self.cursor.fetchall()
             if self.verificar_coincidencia_horarios():
-                self.resetear_campos()
                 return
             try:
                 self.cursor.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso, Horario_Curso) VALUES (?,?,?,?,?)", (data[0][0], data[0][1], nueva_fecha, nuevo_codigo_curso, nuevo_horario))
             except:
                 messagebox.showerror("Inscripciones", "Error al realizar el cambio, Curso repetido")
-                self.resetear_campos()
                 return
             
             self.cursor.execute("DELETE  FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
@@ -604,6 +607,8 @@ class Inscripciones_2:
         self.frm_1.pack(side="top")
         self.frm_1.pack_propagate(0)
         # Hago que mi función sea llamada cada vez que el usuario hace clic y mueve el cursor.
+
+        self.resetear_campos()
         self.tViews.bind("<B1-Motion>", restrictor)
         self.tViews.bind("<<TreeviewSelect>>", self.obtener_fila)
 
@@ -724,7 +729,10 @@ class Inscripciones_2:
         self.tViews.bind("<Double-1>", self.treeview_cmbx_curso)
 
     def treeview_cmbx_curso(self, event):
+        if self.tvEntry4==None and self.tvEntry1==None and self.tvEntry2==None and self.tvEntry3==None:
+            return
         try:
+            self.add_consultar(self.fechaInscripcion, self.tvEntry4)
             self.add_consultar(self.noInscripcion, self.tvEntry0)
             self.noInscripcion.config(state="disabled")
             self.add_consultar(self.codigo_Curso, self.tvEntry1)
@@ -732,24 +740,11 @@ class Inscripciones_2:
             self.add_consultar(self.nombreCurso, self.tvEntry2)
             self.add_consultar(self.horario, self.tvEntry3)
             self.fechaInscripcion.config(state="enabled")
-            self.add_consultar(self.fechaInscripcion, self.tvEntry4)
-            self.obtener_curso_anterior()
+            self.resetear_campos()
         except:
-            self.codigo_Curso.config(state="disabled")
-            self.nombreCurso.config(state="disabled")
-            self.horario.config(state="disabled")
-            self.fechaInscripcion.config(state="disabled")
-        finally:
-            self.tvEntry0=''
-            self.tvEntry1=''
-            self.tvEntry2=''
-            self.tvEntry3=''
-            self.tvEntry4=''
-        # self.tvEntry0 = ''
-        # self.tvEntry1 = ''
-        # self.tvEntry2 = ''
-        # self.tvEntry3 = ''
-        # self.tvEntry4 = ''
+            self.resetear_campos()
+        self.noInscripcion.config(state="disabled")
+        self.obtener_curso_anterior()
 
     def obtener_curso_anterior(self):
         self.codigo_curso_antiguo=self.codigo_Curso.get()
@@ -777,8 +772,6 @@ class Inscripciones_2:
             self.tvEntry3=self.data["values"][3]
             if len(self.data["values"]) > 4:
                 self.tvEntry4=self.data["values"][4]
-
-        
 
     def eliminar_data (self,): #Metodo para eliminar los datos seleccionados o todos los datos
 
