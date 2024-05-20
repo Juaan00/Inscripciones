@@ -295,17 +295,22 @@ class Inscripciones_2:
             self.nombreCurso.config(state="readonly")
             self.horario.config(state="readonly")
             self.fechaInscripcion.config(state="enabled")
+    
+    def resetear_campos(self):
+        self.codigo_curso_antiguo=''
+        self.fecha_inscripcion_antigua=''
+        self.horario_antiguo=''
 
     def editar(self):
         if self.codigo_Curso.get()=='':
             messagebox.showerror("Inscripciones", "No has seleccionado ninguna Inscripción para editar, por favor haga doble click sobre el curso a editar")
+            self.resetear_campos()
             return
         
         nuevo_codigo_curso=self.codigo_Curso.get()
         nueva_fecha=self.fechaInscripcion.get()
         nuevo_horario=self.horario.get()
-
-        # print(self.codigo_curso_antiguo, self.fecha_inscripcion_antigua ,self.horario_antiguo+'\n' +nuevo_codigo_curso, nueva_fecha, nuevo_horario)
+        
         if self.codigo_curso_antiguo==nuevo_codigo_curso and self.fecha_inscripcion_antigua==nueva_fecha and self.horario_antiguo==nuevo_horario:
             messagebox.showerror("Inscripciones", "No se ha realizado ningun cambio")
             return
@@ -316,24 +321,26 @@ class Inscripciones_2:
                 self.cursor.execute("UPDATE Inscritos SET Fecha_de_Inscripción = ?, Horario_Curso = ? WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ?", (nueva_fecha, nuevo_horario, self.noInscripcion.get(),self.cmbx_Id_Alumno.get(), self.codigo_curso_antiguo))
                 self.conn.commit()
                 messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
+                self.resetear_campos()
                 self.limpiar()
                 return
         elif self.codigo_curso_antiguo!=nuevo_codigo_curso:
             self.cursor.execute("SELECT * FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
             data=self.cursor.fetchall()
             if self.verificar_coincidencia_horarios():
+                self.resetear_campos()
                 return
             try:
                 self.cursor.execute("INSERT INTO Inscritos (No_Inscripción, Id_Alumno, Fecha_de_Inscripción, Código_Curso, Horario_Curso) VALUES (?,?,?,?,?)", (data[0][0], data[0][1], nueva_fecha, nuevo_codigo_curso, nuevo_horario))
             except:
-                if self.verificar_duplicados_cursos():
-                    return
-                # messagebox.showerror("Inscripciones", "Error al realizar el cambio, Curso repetido")
-                # return
+                messagebox.showerror("Inscripciones", "Error al realizar el cambio, Curso repetido")
+                self.resetear_campos()
+                return
             
             self.cursor.execute("DELETE  FROM Inscritos WHERE No_Inscripción = ? AND Id_Alumno = ? AND Código_Curso = ? ", (self.noInscripcion.get(),self.cmbx_Id_Alumno.get(),self.codigo_curso_antiguo))
             self.conn.commit()
             messagebox.showinfo("Inscripciones", "Se ha realizado el cambio exitosamente")
+            self.resetear_campos()
             self.limpiar()
             return
      
@@ -671,7 +678,6 @@ class Inscripciones_2:
         id_alumno=self.cmbx_Id_Alumno.get()
         no_inscripcion=self.noInscripcion.get()
 
-        # print(id_alumno, no_inscripcion + "amungus")
         self.argumentos = ('c_registros',['No Inscripción', 'Código Curso', 'Nombre del Curso', 'Horario', 'Fecha de Inscripción'],[90,90,270,150,130]) 
         self.tree_view_prueba(*self.argumentos)
 
@@ -718,16 +724,32 @@ class Inscripciones_2:
         self.tViews.bind("<Double-1>", self.treeview_cmbx_curso)
 
     def treeview_cmbx_curso(self, event):
-
-        self.add_consultar(self.fechaInscripcion, self.tvEntry4)
-        self.add_consultar(self.noInscripcion, self.tvEntry0)
-        self.noInscripcion.config(state="disabled")
-        self.add_consultar(self.codigo_Curso, self.tvEntry1)
-        self.codigo_Curso.config(state="readonly")
-        self.add_consultar(self.nombreCurso, self.tvEntry2)
-        self.add_consultar(self.horario, self.tvEntry3)
-        self.fechaInscripcion.config(state="enabled")
-        self.obtener_curso_anterior()
+        try:
+            self.add_consultar(self.noInscripcion, self.tvEntry0)
+            self.noInscripcion.config(state="disabled")
+            self.add_consultar(self.codigo_Curso, self.tvEntry1)
+            self.codigo_Curso.config(state="readonly")
+            self.add_consultar(self.nombreCurso, self.tvEntry2)
+            self.add_consultar(self.horario, self.tvEntry3)
+            self.fechaInscripcion.config(state="enabled")
+            self.add_consultar(self.fechaInscripcion, self.tvEntry4)
+            self.obtener_curso_anterior()
+        except:
+            self.codigo_Curso.config(state="disabled")
+            self.nombreCurso.config(state="disabled")
+            self.horario.config(state="disabled")
+            self.fechaInscripcion.config(state="disabled")
+        finally:
+            self.tvEntry0=''
+            self.tvEntry1=''
+            self.tvEntry2=''
+            self.tvEntry3=''
+            self.tvEntry4=''
+        # self.tvEntry0 = ''
+        # self.tvEntry1 = ''
+        # self.tvEntry2 = ''
+        # self.tvEntry3 = ''
+        # self.tvEntry4 = ''
 
     def obtener_curso_anterior(self):
         self.codigo_curso_antiguo=self.codigo_Curso.get()
@@ -755,6 +777,8 @@ class Inscripciones_2:
             self.tvEntry3=self.data["values"][3]
             if len(self.data["values"]) > 4:
                 self.tvEntry4=self.data["values"][4]
+
+        
 
     def eliminar_data (self,): #Metodo para eliminar los datos seleccionados o todos los datos
 
